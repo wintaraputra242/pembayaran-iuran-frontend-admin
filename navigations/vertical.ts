@@ -4,9 +4,7 @@ export default [
         type: 'group',
         title: 'Master Data',
         icon: 'ri-box-3-line',
-        badgeContent: '5',
         open: true,
-        badgeClass: 'bg-error',
         children: [
             { type: 'link', title: 'Warga', to: '/typography' },
             { type: 'link', title: 'Regu', to: '/typography' },

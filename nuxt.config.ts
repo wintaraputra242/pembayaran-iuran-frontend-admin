@@ -12,7 +12,7 @@ export default defineNuxtConfig({
        meta: [
         { name: 'apple-mobile-web-app-capable', content: 'yes' },
         { name: 'apple-mobile-web-app-status-bar-style', content: 'default' },
-        { name: 'apple-mobile-web-app-title', content: 'NamaAppKamu' }
+        { name: 'apple-mobile-web-app-title', content: 'PembayaranIuran' }
       ],
 
       link: [
