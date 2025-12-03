@@ -6,7 +6,7 @@ export default [
         icon: 'ri-box-3-line',
         open: true,
         children: [
-            { type: 'link', title: 'Warga', to: '/typography' },
+            { type: 'link', title: 'Warga', to: '/master-data/warga' },
             { type: 'link', title: 'Regu', to: '/typography' },
             { type: 'link', title: 'Informasi Iuran', to: '/typography' },
         ],

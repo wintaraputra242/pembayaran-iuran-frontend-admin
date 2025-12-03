@@ -39,14 +39,14 @@ const loadData = async () => {
 let observer: IntersectionObserver
 
 onMounted(() => {
-  const sentinelNotification = document.getElementById('sentinelNotification')
+  const sentinelWarga = document.getElementById('sentinelWarga')
   observer = new IntersectionObserver(entries => {
     if (entries[0].isIntersecting) {
       loadData()
     }
   })
 
-  if (sentinelNotification) observer.observe(sentinelNotification)
+  if (sentinelWarga) observer.observe(sentinelWarga)
 
   // Initial load
   loadData()
@@ -63,17 +63,34 @@ onMounted(() => {
       <VTable fixed-header height="400px">
         <thead>
           <tr>
+            <th>No.</th>
+            <th>NIK</th>
             <th>Nama</th>
-            <th>Informasi</th>
-            <th>Tanggal</th>
+            <th>Alamat</th>
+            <th>No. HP</th>
+            <th>Status</th>
+            <th></th>
           </tr>
         </thead>
 
         <tbody>
-          <tr v-for="item in items" :key="item.id">
+          <tr v-for="(item, i) in items" :key="item.id">
+            <td>{{ i + 1 }}</td>
+            <td>{{ item.nama }}</td>
+            <td>{{ item.info }}</td>
             <td>{{ item.nama }}</td>
             <td>{{ item.info }}</td>
             <td>{{ item.created_at }}</td>
+            <td>
+              <div class="d-flex">
+                <IconBtn variant="text" color="secondary">
+                  <VIcon icon="ri-edit-line" />
+                </IconBtn>
+                <IconBtn variant="text" color="secondary">
+                  <VIcon icon="ri-delete-bin-line" />
+                </IconBtn>
+              </div>
+            </td>
           </tr>
 
           <!-- Loading -->
@@ -84,7 +101,7 @@ onMounted(() => {
           </tr>
 
           <tr>
-            <div id="sentinelNotification" style="height: 1px;"></div>
+            <div id="sentinelWarga" style="height: 1px;"></div>
           </tr>
         </tbody>
       </VTable>
