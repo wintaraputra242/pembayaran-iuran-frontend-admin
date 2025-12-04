@@ -35,13 +35,14 @@ const uploaderRef = ref(null)
 const selectedFile = ref<File | null>(null)
 
 const optionsUploader = {
-  url: '/',
+  url: 'javascript:void(0)',
   autoProcessQueue: false,
   maxFiles: 1,
-  acceptedFiles: ".xlsx,.xls",
+  maxFilesize: 5,
   addRemoveLinks: true,
   clickable: true,
-  dictDefaultMessage: "Tarik file Excel ke sini atau klik untuk pilih",
+  dictDefaultMessage: 'Tarik file Excel / klik untuk pilih',
+  acceptedFiles: ".xlsx,.xls",
 }
 
 const dropzoneEvents = {
@@ -96,7 +97,14 @@ const rules = {
       return "No. HP harus format Indonesia (contoh: 081234567890)"
 
     return true
-  }
+  },
+
+  file: (v: File) => {
+    if (!v) return "File wajib diupload"
+    if (v.size > 5_000_000) return "Maksimal 5 MB"
+    if (!['application/vnd.ms-excel','application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'].includes(v.type)) return "Hanya file Excel"
+    return true
+  },
 }
 
 watch(
@@ -191,7 +199,12 @@ const handleClose = () => {
             <VForm @submit.prevent="() => {}">
               <VRow align="center" class="pt-1">
                 <VCol cols="12">
-                  <FileUploader ref="uploaderRef" :options="optionsUploader" :on-events="dropzoneEvents" />
+                  <FileUploader 
+                    ref="uploaderRef" 
+                    :options="optionsUploader"
+                    :on-events="dropzoneEvents" 
+                    :rules="[rules.file]" 
+                  />
                 </VCol>
                 <VCol cols="12">
                   <div class="d-flex justify-end flex-wrap gap-2">
