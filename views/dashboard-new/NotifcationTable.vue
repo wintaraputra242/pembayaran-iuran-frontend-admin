@@ -60,12 +60,12 @@ onMounted(() => {
     <div
       class="table-scroll-wrapper"
     >
-      <VTable fixed-header height="400px">
+      <VTable fixed-header height="400px" class="my-table">
         <thead>
           <tr>
-            <th>Nama</th>
-            <th>Informasi</th>
-            <th>Tanggal</th>
+            <th style="width: 150px;">Nama</th>
+            <th style="width: 200px;">Informasi</th>
+            <th style="width: 150px;">Tanggal</th>
           </tr>
         </thead>
 
@@ -76,15 +76,19 @@ onMounted(() => {
             <td>{{ item.created_at }}</td>
           </tr>
 
+          <tr v-if="!isLoading && items && items.length === 0">
+            <td colspan="3" class="text-center">Tidak ada data</td>
+          </tr>
+
           <!-- Loading -->
           <tr v-if="isLoading">
-            <td colspan="3" class="text-center py-3">
+            <td colspan="3" rowspan="2" class="text-center py-3">
               <VProgressCircular indeterminate size="26" />
             </td>
           </tr>
 
-          <tr>
-            <div id="sentinelNotification" style="height: 1px;"></div>
+          <tr v-if="hasMore">
+            <td colspan="3"><div id="sentinelNotification" style="height: 1px; width: 100%;"></div></td>
           </tr>
         </tbody>
       </VTable>
@@ -98,12 +102,5 @@ onMounted(() => {
   overflow-y: auto;
   overflow-x: hidden;
   height: 100%;
-}
-
-/* optional: biar header lebih jelas */
-thead th {
-  font-weight: 600;
-  background: white;
-  z-index: 3;
 }
 </style>

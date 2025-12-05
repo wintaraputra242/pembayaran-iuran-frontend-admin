@@ -1,14 +1,4 @@
 <script lang="ts" setup>
-// import { useDropzone } from 'vue3-dropzone'
-
-// const files = ref([])
-
-// const onDrop = (acceptedFiles: any[]) => {
-//   files.value.push(...acceptedFiles)
-// }
-
-// const { getRootProps, getInputProps } = useDropzone({ onDrop })
-
 const emit = defineEmits<{
   (e: 'reload'): void;
   (e: 'close'): void;
@@ -16,9 +6,14 @@ const emit = defineEmits<{
 
 const props = withDefaults(defineProps<{
   isShow: boolean
+  isEdit: boolean
+  item?: object | null
 }>(), {
   isShow: false,
+  isEdit: false,
 })
+
+const form = ref(null)
 
 const defaultParams = {
   nik: '',
@@ -116,10 +111,22 @@ watch(
 )
 
 const handleClose = () => {
-  Object.assign(params, defaultParams)
+  form.value?.reset()
   
   emit('close')
 }
+
+watch(
+  () => props.isEdit,
+  newVal => {
+    if (!newVal) return
+
+    params.nik = props.item?.id
+    params.nama_warga = props.item?.nama
+    params.alamat = props.item?.info
+    params.no_hp = props.item?.created_at
+  }
+)
 </script>
 
 <template>
@@ -127,13 +134,13 @@ const handleClose = () => {
     <VCard>
       <VCardTitle class="pt-3">
         <div class="d-flex align-center justify-space-between">
-          <h3>Tambah</h3>
+          <h3>{{ props.isEdit ? 'Edit' : 'Tambah' }}</h3>
           <IconBtn variant="text" color="secondary" size="small" @click="handleClose">
             <VIcon icon="ri-close-line" />
           </IconBtn>
         </div>
       </VCardTitle>
-      <VCardText class="pb-0 py-1">
+      <VCardText v-if="!props.isEdit" class="pb-0 py-1">
         <div class="d-flex justify-end">
           <VBtn variant="flat" :color="tab === 'form' ? 'primary' : 'secondary'" @click="tab === 'form' ? (tab = 'import') : (tab = 'form')">
             <VIcon :icon="tab === 'form' ? 'ri-download-2-line' : 'ri-close-line'" class="me-2" />
@@ -144,7 +151,7 @@ const handleClose = () => {
       <VCardItem>
         <VTabsWindow v-model="tab">
           <VTabsWindowItem value="form">
-            <VForm @submit.prevent="() => {}">
+            <VForm ref="form" @submit.prevent="() => {}">
               <VRow align="center" class="pt-1">
                 <VCol cols="12">
                   <VTextField
@@ -186,9 +193,9 @@ const handleClose = () => {
                       <VIcon icon="ri-close-line" class="me-1" />
                       Batal
                     </VBtn>
-                    <VBtn variant="flat" color="success" size="small" type="submit">
-                      <VIcon icon="ri-add-line" class="me-1" />
-                      Tambah
+                    <VBtn variant="flat" :color="props.isEdit ? 'info' : 'success'" size="small" type="submit">
+                      <VIcon :icon="props.isEdit ? 'ri-save-2-line' : 'ri-add-line'" class="me-1" />
+                      {{ props.isEdit ? 'Simpan' : 'Tambah'}}
                     </VBtn>
                   </div>
                 </VCol>

@@ -1,5 +1,11 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, ref } from 'vue';
+
+const emit = defineEmits<{
+  (e: 'updateStatus', item: object): void;
+  (e: 'edit', item: object): void;
+  (e: 'delete', item: object): void;
+}>();
 
 // Dummy data simulasi API
 const allDummyData = Array.from({ length: 100 }, (_, i) => ({
@@ -60,16 +66,16 @@ onMounted(() => {
     <div
       class="table-scroll-wrapper"
     >
-      <VTable fixed-header height="400px">
+      <VTable fixed-header height="400px" class="my-table">
         <thead>
           <tr>
-            <th>No.</th>
-            <th>NIK</th>
-            <th>Nama</th>
-            <th>Alamat</th>
-            <th>No. HP</th>
-            <th>Status</th>
-            <th></th>
+            <th style="width: 70px">No.</th>
+            <th style="width: 150px">NIK</th>
+            <th style="width: 200px">Nama</th>
+            <th style="width: 250px">Alamat</th>
+            <th style="width: 140px">No. HP</th>
+            <th style="width: 120px">Status</th>
+            <th style="width: 150px"></th>
           </tr>
         </thead>
 
@@ -82,11 +88,14 @@ onMounted(() => {
             <td>{{ item.info }}</td>
             <td>{{ item.created_at }}</td>
             <td>
-              <div class="d-flex">
-                <IconBtn variant="text" color="secondary">
+              <div class="d-flex gap-2">
+                <IconBtn variant="outlined" class="rounded-lg" size="small" color="secondary" @click="emit('updateStatus', item)">
+                  <VIcon icon="ri-eye-off-line" />
+                </IconBtn>
+                <IconBtn variant="outlined" class="rounded-lg" size="small" color="secondary" @click="emit('edit', item)">
                   <VIcon icon="ri-edit-line" />
                 </IconBtn>
-                <IconBtn variant="text" color="secondary">
+                <IconBtn variant="outlined" class="rounded-lg" size="small" color="error" @click="emit('delete', item)">
                   <VIcon icon="ri-delete-bin-line" />
                 </IconBtn>
               </div>
@@ -95,13 +104,13 @@ onMounted(() => {
 
           <!-- Loading -->
           <tr v-if="isLoading">
-            <td colspan="3" class="text-center py-3">
+            <td colspan="7" rowspan="2" class="text-center py-3">
               <VProgressCircular indeterminate size="26" />
             </td>
           </tr>
 
-          <tr>
-            <div id="sentinelWarga" style="height: 1px;"></div>
+          <tr v-if="hasMore">
+            <td colspan="7"><div id="sentinelWarga" style="height: 1px; width: 100%;"></div></td>
           </tr>
         </tbody>
       </VTable>
@@ -115,12 +124,5 @@ onMounted(() => {
   overflow-y: auto;
   overflow-x: hidden;
   height: 100%;
-}
-
-/* optional: biar header lebih jelas */
-thead th {
-  font-weight: 600;
-  background: white;
-  z-index: 3;
 }
 </style>

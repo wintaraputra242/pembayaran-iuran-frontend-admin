@@ -1,1 +1,33 @@
 // Write your overrides
+.v-table__wrapper {
+  padding: 0 !important;
+}
+
+.v-table--fixed-header .v-table__wrapper:nth-child(1) {
+  margin-right: calc(var(--v-scrollbar-width) * -1);
+}
+
+.v-table table {
+  table-layout: fixed !important;
+}
+
+.my-table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+th {
+  white-space: nowrap;
+}
+
+th, td {
+  padding: 8px 12px !important;
+}
+
+.v-btn__loader .v-progress-circular__overlay {
+  stroke: rgba($color: #ffff, $alpha: 0.5) !important;   /* warna loader */
+}
+
+.v-btn--variant-text .v-progress-circular__overlay {
+  stroke: currentColor !important; /* utk btn text agar warna cocok */
+}
