@@ -71,6 +71,7 @@ const handleUpdateStatus = (item: object) => {
 
 <template>
   <div>
+    <h2 class="mb-3">Data Warga</h2>
     <VRow class="match-height">
       <VCol
         cols="12"

@@ -111,6 +111,7 @@ watch(
 )
 
 const handleClose = () => {
+  
   form.value?.reset()
   
   emit('close')

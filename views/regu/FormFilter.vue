@@ -5,7 +5,7 @@ const emit = defineEmits<{
 }>();
 
 const filter = reactive({
-  nama_warga: '',
+  nama_regu: '',
   status: null,
 })
 </script>
@@ -17,15 +17,8 @@ const filter = reactive({
         <VRow align="center">
           <VCol cols="12">
             <VTextField
-              v-model="filter.nama_warga"
-              placeholder="Masukkan nama warga"
-            />
-          </VCol>
-          <VCol cols="12">
-            <VSelect
-              v-model="filter.status"
-              :items="['Aktif', 'Tidak Aktif']"
-              placeholder="Pilih status"
+              v-model="filter.nama_regu"
+              placeholder="Masukkan nama regu"
             />
           </VCol>
           <VCol cols="12">

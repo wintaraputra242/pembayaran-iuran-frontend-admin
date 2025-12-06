@@ -7,7 +7,7 @@ export default [
         open: true,
         children: [
             { type: 'link', title: 'Warga', to: '/master-data/warga' },
-            { type: 'link', title: 'Regu', to: '/typography' },
+            { type: 'link', title: 'Regu', to: '/master-data/regu' },
             { type: 'link', title: 'Informasi Iuran', to: '/typography' },
         ],
     },

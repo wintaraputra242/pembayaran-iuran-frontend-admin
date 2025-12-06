@@ -1,5 +1,11 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, ref } from 'vue';
+
+const emit = defineEmits<{
+  (e: 'showAnggota', item: object): void;
+  (e: 'edit', item: object): void;
+  (e: 'delete', item: object): void;
+}>();
 
 // Dummy data simulasi API
 const allDummyData = Array.from({ length: 100 }, (_, i) => ({
@@ -39,14 +45,14 @@ const loadData = async () => {
 let observer: IntersectionObserver
 
 onMounted(() => {
-  const sentinelNotification = document.getElementById('sentinelNotification')
+  const sentinelWarga = document.getElementById('sentinelWarga')
   observer = new IntersectionObserver(entries => {
     if (entries[0].isIntersecting) {
       loadData()
     }
   })
 
-  if (sentinelNotification) observer.observe(sentinelNotification)
+  if (sentinelWarga) observer.observe(sentinelWarga)
 
   // Initial load
   loadData()
@@ -56,39 +62,48 @@ onMounted(() => {
 <template>
   <VCard class="pa-0">
     <VCardItem class="pa-2">
-    <!-- Wrapper table yang di-scroll -->
       <div
         class="table-scroll-wrapper"
       >
         <VTable fixed-header height="400px" class="my-table">
           <thead>
             <tr>
-              <th style="width: 150px;">Nama</th>
-              <th style="width: 200px;">Informasi</th>
-              <th style="width: 150px;">Tanggal</th>
+              <th style="width: 70px">No.</th>
+              <th style="width: 250px">Nama</th>
+              <th style="width: 200px">Ketua Regu</th>
+              <th style="width: 150px"></th>
             </tr>
           </thead>
-
+  
           <tbody>
-            <tr v-for="item in items" :key="item.id">
-              <td>{{ item.nama }}</td>
+            <tr v-for="(item, i) in items" :key="item.id">
+              <td>{{ i + 1 }}</td>
               <td>{{ item.info }}</td>
-              <td>{{ item.created_at }}</td>
+              <td>{{ item.nama }}</td>
+              <td>
+                <div class="d-flex gap-2">
+                  <IconBtn variant="outlined" class="rounded-lg" size="small" color="secondary" @click="emit('showAnggota', item)">
+                    <VIcon icon="ri-team-line" />
+                  </IconBtn>
+                  <IconBtn variant="outlined" class="rounded-lg" size="small" color="secondary" @click="emit('edit', item)">
+                    <VIcon icon="ri-edit-line" />
+                  </IconBtn>
+                  <IconBtn variant="outlined" class="rounded-lg" size="small" color="error" @click="emit('delete', item)">
+                    <VIcon icon="ri-delete-bin-line" />
+                  </IconBtn>
+                </div>
+              </td>
             </tr>
-
-            <tr v-if="!isLoading && items && items.length === 0">
-              <td colspan="3" class="text-center">Tidak ada data</td>
-            </tr>
-
+  
             <!-- Loading -->
             <tr v-if="isLoading">
-              <td colspan="3" rowspan="2" class="text-center py-3">
+              <td colspan="7" rowspan="2" class="text-center py-3">
                 <VProgressCircular indeterminate size="26" />
               </td>
             </tr>
-
+  
             <tr v-if="hasMore">
-              <td colspan="3"><div id="sentinelNotification" style="height: 1px; width: 100%;"></div></td>
+              <td colspan="7"><div id="sentinelWarga" style="height: 1px; width: 100%;"></div></td>
             </tr>
           </tbody>
         </VTable>
