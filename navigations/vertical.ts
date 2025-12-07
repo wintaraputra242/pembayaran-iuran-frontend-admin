@@ -8,7 +8,7 @@ export default [
         children: [
             { type: 'link', title: 'Warga', to: '/master-data/warga' },
             { type: 'link', title: 'Regu', to: '/master-data/regu' },
-            { type: 'link', title: 'Informasi Iuran', to: '/typography' },
+            { type: 'link', title: 'Informasi Iuran', to: '/master-data/informasi-iuran' },
         ],
     },
     { type: 'link', title: 'Pembayaran', icon: 'ri-cash-line', to: '/icons' },
