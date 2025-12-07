@@ -183,7 +183,7 @@ onMounted(() => {
       @confirm="deleteItem"
     />
 
-    <AnnouncementDialog 
+    <AnnouncementDialog
       v-model="showAnnouncement"
       message="Pembuatan akun Ketua Regu hanya dapat dilakukan setelah Regu dibuat terlebih dahulu. Setelah Regu berhasil ditambahkan, sistem akan otomatis membuatkan akun Ketua Regu terkait."
       @close="showAnnouncement = false; showFormData = true"

@@ -2,7 +2,7 @@
 import { onMounted, ref } from 'vue';
 
 const emit = defineEmits<{
-  (e: 'updateStatus', item: object): void;
+  (e: 'editPassword', item: object): void;
   (e: 'edit', item: object): void;
   (e: 'delete', item: object): void;
 }>();
@@ -69,46 +69,37 @@ onMounted(() => {
           <thead>
             <tr>
               <th style="width: 70px">No.</th>
-              <th class="text-center" style="width: 150px">Jenis Iuran</th>
-              <th style="width: 250px">Judul</th>
-              <th style="width: 400px">Keterangan</th>
-              <th style="width: 100px">Periode</th>
-              <th style="width: 150px">Jumlah Iuran</th>
-              <th style="width: 150px">Status</th>
-              <th style="width: 150px"></th>
+              <th style="width: 400px">Nama</th>
+              <th style="width: 200px">Username</th>
+              <th class="text-center" style="width: 200px">Role</th>
+              <th style="width: 100px"></th>
             </tr>
           </thead>
   
           <tbody>
             <tr v-for="(item, i) in items" :key="item.id">
               <td>{{ i + 1 }}</td>
+              <td>{{ item.info }}</td>
+              <td>{{ item.nama }}</td>
               <td align="center">
-                <!-- <v-chip :color="'info'">
-                  Bulanan
+                <!-- <v-chip :color="'success'">
+                  Admin
                 </v-chip> -->
-                <v-chip :color="'error'">
-                  Kematian
+                <v-chip :color="'info'">
+                  Ketua Regu
                 </v-chip>
-              </td>
-              <td>{{ item.info }}</td>
-              <td>{{ item.info }}</td>
-              <td>{{ item.nama }}</td>
-              <td>{{ item.nama }}</td>
-              <td>
-                <!-- <span class="text-success">Aktif</span> -->
-                <span class="text-error">Tidak Aktif</span>
               </td>
               <td>
                 <div class="d-flex gap-2">
-                  <IconBtn variant="outlined" class="rounded-lg" size="small" color="secondary" @click="emit('updateStatus', item)">
-                    <VIcon icon="ri-eye-off-line" />
+                  <IconBtn variant="outlined" class="rounded-lg" size="small" color="secondary" @click="emit('editPassword', item)">
+                    <VIcon icon="ri-lock-2-line" />
                   </IconBtn>
                   <IconBtn variant="outlined" class="rounded-lg" size="small" color="secondary" @click="emit('edit', item)">
                     <VIcon icon="ri-edit-line" />
                   </IconBtn>
-                  <IconBtn variant="outlined" class="rounded-lg" size="small" color="error" @click="emit('delete', item)">
+                  <!-- <IconBtn variant="outlined" class="rounded-lg" size="small" color="error" @click="emit('delete', item)">
                     <VIcon icon="ri-delete-bin-line" />
-                  </IconBtn>
+                  </IconBtn> -->
                 </div>
               </td>
             </tr>

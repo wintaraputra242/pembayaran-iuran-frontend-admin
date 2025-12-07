@@ -6,11 +6,15 @@ const emit = defineEmits<{
 
 const props = withDefaults(defineProps<{
   isShow: boolean
+  isCreate: boolean
   isEdit: boolean
+  isEditPassword: boolean
   item?: object | null
 }>(), {
   isShow: false,
+  isCreate: false,
   isEdit: false,
+  isEditPassword: false,
 })
 
 const form = ref(null)
@@ -121,6 +125,26 @@ function checkPasswordStrength(pw: string) {
 const handleJumpFromUsers = () => {
   localStorage.setItem('from', 'create-user')
 }
+
+const conditionForm = (create: boolean, edit: boolean, editPassword: boolean) => {
+  if (create) {
+    return {
+      title: 'Tambah'
+    }
+  }
+  if (edit) {
+    return {
+      title: 'Edit'
+    }
+  }
+  if (editPassword) {
+    return {
+      title: 'Edit Pasword'
+    }
+  }
+
+  return {}
+}
 </script>
 
 <template>
@@ -128,13 +152,13 @@ const handleJumpFromUsers = () => {
     <VCard class="position-relative">
       <VCardTitle class="pt-3 position-sticky top-0" style="background-color: #fff !important; z-index: 10;">
         <div class="d-flex align-center justify-space-between">
-          <h3>{{ props.isEdit ? 'Edit' : 'Tambah' }}</h3>
+          <h3>{{ conditionForm(props.isCreate, props.isEdit, props.isEditPassword)?.title || '-' }}</h3>
           <IconBtn variant="text" color="secondary" size="small" @click="handleClose">
             <VIcon icon="ri-close-line" />
           </IconBtn>
         </div>
       </VCardTitle>
-      <VCardText v-if="!props.isEdit" class="pb-0 pt-2">
+      <VCardText v-if="props.isCreate" class="pb-0 pt-2">
         <NuxtLink class="text-info" to="/master-data/regu" @click="handleJumpFromUsers">
           Ingin menambahkan pengguna dengan role <b>Ketua Regu</b>? 
         </NuxtLink>
@@ -142,78 +166,82 @@ const handleJumpFromUsers = () => {
       <VCardItem>
         <VForm ref="form" @submit.prevent="() => {}">
           <VRow align="center" class="pt-1">
-            <VCol cols="12">
-              <VTextField
-                v-model="params.name"
-                label="Nama"
-                placeholder="Masukkan nama pengguna"
-                :rules="[rules.name]"
-              />
-            </VCol>
-            <VCol cols="12">
-              <VTextField
-                v-model="params.username"
-                label="Username"
-                placeholder="Masukkan username pengguna"
-                :rules="[rules.username]"
-              />
-            </VCol>
-            <VCol cols="12">
-              <VSelect
-                v-model="params.role"
-                label="Role"
-                placeholder="Masukkan role pengguna"
-                :items="['Admin']"
-                :rules="[rules.role]"
-              />
-            </VCol>
-            <VCol cols="12">
-              <VTextField
-                v-model="params.password"
-                label="Password"
-                placeholder="Masukkan password pengguna"
-                :rules="[rules.password]"
-                @focus="isPasswordFocused = true"
-                @blur="isPasswordFocused = false"
-                @update:model-value="checkPasswordStrength(params.password)"
-              />
-
-              <div v-if="isPasswordFocused || params.password" class="mt-3">
-
-                <VProgressLinear
-                  :model-value="passwordStrength"
-                  :color="progressColor"
-                  height="10"
-                  striped
-                  class="rounded-pill"
+            <template v-if="props.isCreate || props.isEdit">
+              <VCol cols="12">
+                <VTextField
+                  v-model="params.name"
+                  label="Nama"
+                  placeholder="Masukkan nama pengguna"
+                  :rules="[rules.name]"
+                />
+              </VCol>
+              <VCol cols="12">
+                <VTextField
+                  v-model="params.username"
+                  label="Username"
+                  placeholder="Masukkan username pengguna"
+                  :rules="[rules.username]"
+                />
+              </VCol>
+              <VCol cols="12">
+                <VSelect
+                  v-model="params.role"
+                  label="Role"
+                  placeholder="Masukkan role pengguna"
+                  :items="['Admin']"
+                  :rules="[rules.role]"
+                />
+              </VCol>
+            </template>
+            <template v-if="props.isCreate || props.isEditPassword">
+              <VCol cols="12">
+                <VTextField
+                  v-model="params.password"
+                  label="Password"
+                  placeholder="Masukkan password pengguna"
+                  :rules="[rules.password]"
+                  @focus="isPasswordFocused = true"
+                  @blur="isPasswordFocused = false"
+                  @update:model-value="checkPasswordStrength(params.password)"
                 />
 
-                <span :style="{ color: passwordColor }" class="font-weight-medium">
-                  {{ passwordStatus }}
-                </span>
+                <div v-if="isPasswordFocused || params.password" class="mt-3">
 
-                <div class="mt-3">
-                  <span class="text-body-2">Password yang kuat disarankan menggunakan minimal 8 karakter dengan variasi huruf besar, huruf kecil, dan angka.</span>
+                  <VProgressLinear
+                    :model-value="passwordStrength"
+                    :color="progressColor"
+                    height="10"
+                    striped
+                    class="rounded-pill"
+                  />
+
+                  <span :style="{ color: passwordColor }" class="font-weight-medium">
+                    {{ passwordStatus }}
+                  </span>
+
+                  <div class="mt-3">
+                    <span class="text-body-2">Password yang kuat disarankan menggunakan minimal 8 karakter dengan variasi huruf besar, huruf kecil, dan angka.</span>
+                  </div>
                 </div>
-              </div>
-            </VCol>
-            <VCol cols="12">
-              <VTextField
-                v-model="params.c_password"
-                label="Konfirmasi Password"
-                placeholder="Masukkan konfirmasi password"
-                :rules="[rules.c_password(params.c_password, params.password)]"
-              />
-            </VCol>
+              </VCol>
+              <VCol cols="12">
+                <VTextField
+                  v-model="params.c_password"
+                  label="Konfirmasi Password"
+                  placeholder="Masukkan konfirmasi password"
+                  :rules="[rules.c_password(params.c_password, params.password)]"
+                />
+              </VCol>
+            </template>
             <VCol cols="12">
               <div class="d-flex justify-end flex-wrap gap-2">
                 <VBtn variant="text" color="secondary" size="small" @click="handleClose">
                   <VIcon icon="ri-close-line" class="me-1" />
                   Batal
                 </VBtn>
-                <VBtn variant="flat" :color="props.isEdit ? 'info' : 'success'" size="small" type="submit">
-                  <VIcon :icon="props.isEdit ? 'ri-save-2-line' : 'ri-add-line'" class="me-1" />
-                  {{ props.isEdit ? 'Simpan' : 'Tambah'}}
+                <VBtn variant="flat" :color="props.isEdit || props.isEditPassword ? 'info' : 'success'" size="small" type="submit">
+                  <VIcon :icon="props.isEdit || props.isEditPassword ? 'ri-save-2-line' : 'ri-add-line'" class="me-1" />
+                  {{ props.isEdit || props.isEditPassword ? 'Simpan' : 'Tambah'}}
                 </VBtn>
               </div>
             </VCol>

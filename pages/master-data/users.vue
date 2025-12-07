@@ -7,7 +7,9 @@ const showFormData = ref(false)
 const isEdit = ref(false)
 
 const handleCloseFormData = () => {
+  if (isCreate.value) isCreate.value = false
   if (isEdit.value) isEdit.value = false
+  if (isEditPassword.value) isEditPassword.value = false
 
   showFormData.value = false
 }
@@ -81,6 +83,22 @@ const handleUpdateStatus = (item: object) => {
   showConfirmation.value = true 
   itemSelected.value = item
 }
+
+const isCreate = ref(false)
+
+const handleCreate = () => {
+  showFormData.value = true 
+  isCreate.value = true
+}
+
+const isEditPassword = ref(false)
+
+const handleEditPassword = (item: object) => {
+  showFormData.value = true 
+  isEditPassword.value = true
+  itemSelected.value = item
+}
+
 </script>
 
 <template>
@@ -90,18 +108,18 @@ const handleUpdateStatus = (item: object) => {
       <VCol
         cols="12"
       >
-        <FormFilterUsers @show-form-data="showFormData = true" />
+        <FormFilterUsers @show-form-data="handleCreate" />
       </VCol>
   
       <VCol
         cols="12"
         md="4"
       >
-        <DataTableUsers @edit="handleEditData" @delete="handleDeleteData" @update-status="handleUpdateStatus" />
+        <DataTableUsers @edit="handleEditData" @delete="handleDeleteData" @edit-password="handleEditPassword" />
       </VCol>
     </VRow>
 
-    <DialogFormDataUsers :is-show="showFormData" :is-edit="isEdit" :item="itemSelected" @close="handleCloseFormData" />
+    <DialogFormDataUsers :is-show="showFormData" :is-create="isCreate" :is-edit="isEdit" :is-edit-password="isEditPassword" :item="itemSelected" @close="handleCloseFormData" />
 
     <ConfirmDialog
       v-model="showConfirmation"
