@@ -2,6 +2,7 @@
 const emit = defineEmits<{
   (e: 'reload'): void;
   (e: 'showFormData'): void;
+  (e: 'resetAllAnggota'): void;
 }>();
 
 const filter = reactive({
@@ -33,6 +34,10 @@ const filter = reactive({
               <VBtn variant="flat" color="success" @click="emit('showFormData')">
                 <VIcon icon="ri-add-large-line" class="me-2" />
                 Tambah Data
+              </VBtn>
+              <VBtn variant="flat" color="error" @click="emit('resetAllAnggota')">
+                <VIcon icon="ri-user-community-line" class="me-2" />
+                Reset Semua Anggota
               </VBtn>
             </div>
           </VCol>

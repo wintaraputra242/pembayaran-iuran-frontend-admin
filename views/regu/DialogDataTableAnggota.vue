@@ -5,6 +5,7 @@ const emit = defineEmits<{
   (e: 'changeLeader', item: object): void;
   (e: 'delete', item: object): void;
   (e: 'close'): void;
+  (e: 'resetAnggota', items: object[]): void;
 }>();
 
 const props = withDefaults(defineProps<{
@@ -150,10 +151,14 @@ const btnTabStyle: any = {
         </div>
       </VCardTitle>
       <VCardText class="pb-0 py-1">
-        <div class="d-flex justify-end">
+        <div class="d-flex justify-end flex-wrap gap-2">
           <VBtn variant="flat" :color="btnTabStyle[tab].color" @click="btnTabStyle[tab].action">
             <VIcon :icon="btnTabStyle[tab].icon" />
             {{ btnTabStyle[tab].content }}
+          </VBtn>
+          <VBtn v-if="tab === 'table'" variant="flat" color="error" @click="emit('resetAnggota', dataDummy)">
+            <VIcon icon="ri-user-community-line" class="me-1" />
+            Reset Anggota
           </VBtn>
         </div>
       </VCardText>

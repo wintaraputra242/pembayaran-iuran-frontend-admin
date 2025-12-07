@@ -141,6 +141,31 @@ const handleSetLeaderAnggota = (item: object) => {
 
 const showAnnouncement = ref(false)
 
+const handleResetAllAnggota = () => {
+  confirmOptions.title = 'Reset Semua Anggota?'
+  confirmOptions.message = 'Apakah Anda yakin ingin me-reset semua anggota yang ada dimasing-masing regu? Tindakan ini tidak dapat dibatalkan.'
+  confirmOptions.confirmText = 'Reset'
+  confirmOptions.cancelText = 'Batal'
+  confirmOptions.confirmColor = 'error'
+  confirmOptions.confirmIcon = 'ri-user-community-line'
+
+  showConfirmation.value = true 
+}
+
+const handleResetAnggota = (item: object[]) => {
+  fromDialog.value = 'data-table-anggota-regu'
+
+  confirmOptions.title = 'Reset Anggota?'
+  confirmOptions.message = 'Apakah Anda yakin ingin me-reset anggota yang ada di regu A?'
+  confirmOptions.confirmText = 'Reset'
+  confirmOptions.cancelText = 'Batal'
+  confirmOptions.confirmColor = 'error'
+  confirmOptions.confirmIcon = 'ri-user-community-line'
+
+  showConfirmation.value = true 
+  itemSelected.value = item
+}
+
 onMounted(() => {
   if(localStorage.getItem('from') && localStorage.getItem('from') === 'create-user') {
     showAnnouncement.value = true
@@ -156,7 +181,7 @@ onMounted(() => {
       <VCol
         cols="12"
       >
-        <FormFilterRegu @show-form-data="showFormData = true" />
+        <FormFilterRegu @show-form-data="showFormData = true" @reset-all-anggota="handleResetAllAnggota" />
       </VCol>
   
       <VCol
@@ -169,7 +194,7 @@ onMounted(() => {
 
     <DialogFormDataRegu :is-show="showFormData" :is-edit="isEdit" :item="itemSelected" @close="handleCloseFormData" />
 
-    <DialogDataTableAnggotaRegu :is-show="showAnggota" :data="[]" :item="itemSelected" :is-loading="isLoadingGetAnggota" @close="handleCloseShowAnggota" @change-leader="handleChangeLeaderAnggota" @delete="handleDeleteDataAnggota" @set-leader="handleSetLeaderAnggota" />
+    <DialogDataTableAnggotaRegu :is-show="showAnggota" :data="[]" :item="itemSelected" :is-loading="isLoadingGetAnggota" @close="handleCloseShowAnggota" @change-leader="handleChangeLeaderAnggota" @delete="handleDeleteDataAnggota" @set-leader="handleSetLeaderAnggota" @reset-anggota="handleResetAnggota" />
 
     <ConfirmDialog
       v-model="showConfirmation"
