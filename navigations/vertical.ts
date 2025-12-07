@@ -6,6 +6,7 @@ export default [
         icon: 'ri-box-3-line',
         open: true,
         children: [
+            { type: 'link', title: 'Pengguna', to: '/master-data/users' },
             { type: 'link', title: 'Warga', to: '/master-data/warga' },
             { type: 'link', title: 'Regu', to: '/master-data/regu' },
             { type: 'link', title: 'Informasi Iuran', to: '/master-data/informasi-iuran' },

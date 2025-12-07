@@ -1,10 +1,11 @@
 <script lang="ts" setup>
-import { NuxtLink } from '#components'
+import { NuxtLink } from '#components';
 
-import type { NavLink } from '@layouts/types'
+import type { NavLink } from '@layouts/types';
 
 defineProps<{
-  item: NavLink
+  item: NavLink,
+  isChild?: boolean,
 }>()
 </script>
 
@@ -18,6 +19,7 @@ defineProps<{
       :to="item.to"
       :href="item.href"
       :target="item.target"
+      :class="{ 'pl-11': isChild}"
     >
       <VIcon
         :icon="item.icon || 'ri-checkbox-blank-circle-line'"

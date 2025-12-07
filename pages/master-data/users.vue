@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import DataTableInformasiIuran from '@/views/informasi-iuran/DataTable.vue';
-import DialogFormDataInformasiIuran from '@/views/informasi-iuran/DialogFormData.vue';
-import FormFilterInformasiIuran from '@/views/informasi-iuran/FormFilter.vue';
+import DataTableUsers from '@/views/users/DataTable.vue';
+import DialogFormDataUsers from '@/views/users/DialogFormData.vue';
+import FormFilterUsers from '@/views/users/FormFilter.vue';
 
 const showFormData = ref(false)
 const isEdit = ref(false)
@@ -85,23 +85,23 @@ const handleUpdateStatus = (item: object) => {
 
 <template>
   <div>
-    <h2 class="mb-3">Data Informasi Iuran</h2>
+    <h2 class="mb-3">Data Pengguna</h2>
     <VRow class="match-height">
       <VCol
         cols="12"
       >
-        <FormFilterInformasiIuran @show-form-data="showFormData = true" />
+        <FormFilterUsers @show-form-data="showFormData = true" />
       </VCol>
   
       <VCol
         cols="12"
         md="4"
       >
-        <DataTableInformasiIuran @edit="handleEditData" @delete="handleDeleteData" @update-status="handleUpdateStatus" />
+        <DataTableUsers @edit="handleEditData" @delete="handleDeleteData" @update-status="handleUpdateStatus" />
       </VCol>
     </VRow>
 
-    <DialogFormDataInformasiIuran :is-show="showFormData" :is-edit="isEdit" :item="itemSelected" @close="handleCloseFormData" />
+    <DialogFormDataUsers :is-show="showFormData" :is-edit="isEdit" :item="itemSelected" @close="handleCloseFormData" />
 
     <ConfirmDialog
       v-model="showConfirmation"

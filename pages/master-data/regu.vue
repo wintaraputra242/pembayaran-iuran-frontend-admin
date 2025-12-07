@@ -138,6 +138,15 @@ const handleSetLeaderAnggota = (item: object) => {
   showConfirmation.value = true 
   itemSelected.value = item
 }
+
+const showAnnouncement = ref(false)
+
+onMounted(() => {
+  if(localStorage.getItem('from') && localStorage.getItem('from') === 'create-user') {
+    showAnnouncement.value = true
+    localStorage.removeItem('from')
+  } 
+})
 </script>
 
 <template>
@@ -172,6 +181,12 @@ const handleSetLeaderAnggota = (item: object) => {
       :confirm-icon="confirmOptions.confirmIcon"
       :loading="isLoadingConfirm"
       @confirm="deleteItem"
+    />
+
+    <AnnouncementDialog 
+      v-model="showAnnouncement"
+      message="Pembuatan akun Ketua Regu hanya dapat dilakukan setelah Regu dibuat terlebih dahulu. Setelah Regu berhasil ditambahkan, sistem akan otomatis membuatkan akun Ketua Regu terkait."
+      @close="showAnnouncement = false; showFormData = true"
     />
   </div>
 </template>
