@@ -12,7 +12,7 @@ export default [
             { type: 'link', title: 'Informasi Iuran', to: '/master-data/informasi-iuran' },
         ],
     },
-    { type: 'link', title: 'Pembayaran', icon: 'ri-cash-line', to: '/icons' },
+    { type: 'link', title: 'Pembayaran', icon: 'ri-cash-line', to: '/pembayaran' },
     { type: 'link', title: 'Laporan', icon: 'ri-table-line', to: '/tables' },
     { type: 'link', title: 'Aktivitas', icon: 'ri-time-line', to: '/cards' },
 

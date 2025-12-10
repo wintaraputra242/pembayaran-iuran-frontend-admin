@@ -31,3 +31,22 @@ th, td {
 .v-btn--variant-text .v-progress-circular__overlay {
   stroke: currentColor !important; /* utk btn text agar warna cocok */
 }
+
+.text-primary.hover-text:hover {
+  color: #1A347A !important;
+}
+.text-secondary.hover-text:hover {
+  color: #7C7F84 !important;
+}
+.text-success.hover-text:hover {
+  color: #4DB600 !important;
+}
+.text-info.hover-text:hover {
+  color: #173a99 !important;
+}
+.text-warning.hover-text:hover {
+  color: #E6A200 !important;
+}
+.text-error.hover-text:hover {
+  color: #E64449 !important;
+}

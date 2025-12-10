@@ -83,12 +83,12 @@ onMounted(() => {
             <tr v-for="(item, i) in items" :key="item.id">
               <td>{{ i + 1 }}</td>
               <td align="center">
-                <!-- <v-chip :color="'info'">
+                <!-- <VChip :color="'info'">
                   Bulanan
-                </v-chip> -->
-                <v-chip :color="'error'">
+                </VChip> -->
+                <VChip :color="'error'">
                   Kematian
-                </v-chip>
+                </VChip>
               </td>
               <td>{{ item.info }}</td>
               <td>{{ item.info }}</td>

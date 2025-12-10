@@ -1,11 +1,11 @@
 <script lang="ts" setup>
-import NavItems from '@/layouts/components/NavItems.vue'
-import logo from '@images/logo.svg?raw'
-import VerticalNavLayout from '@layouts/components/VerticalNavLayout.vue'
+import NavItems from '@/layouts/components/NavItems.vue';
+import logo from '@images/logo.svg?raw';
+import VerticalNavLayout from '@layouts/components/VerticalNavLayout.vue';
 
 // Components
-import Footer from '@/layouts/components/Footer.vue'
-import UserProfile from '@/layouts/components/UserProfile.vue'
+import Footer from '@/layouts/components/Footer.vue';
+import UserProfile from '@/layouts/components/UserProfile.vue';
 </script>
 
 <template>
@@ -45,7 +45,7 @@ import UserProfile from '@/layouts/components/UserProfile.vue'
         />
         <!-- eslint-enable -->
 
-        <h1 class="font-weight-medium leading-normal text-base text-uppercase">
+        <h1 class="font-weight-medium leading-normal text-body-2 text-uppercase">
           Pembayaran Iuran <br> Admin
         </h1>
       </NuxtLink>
