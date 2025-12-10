@@ -173,11 +173,15 @@ const handleSendNotif = (type: string) => {
 watch(() => showSuccessConfirm.value, (newVal) => {
   if (!newVal) {
     if (fromDialog.value && fromDialog.value === 'data-table-history-payment-warga') {
+      console.log('masuk sini data-table-history-payment-warga');
+      
       showHistoryPayment.value = true
       return
     }
 
     if (fromDialog.value && fromDialog.value === 'data-check-no-payment') {
+      console.log('masuk sini data-check-no-payment');
+
       showNoPaymentList.value = true
       return
     }
@@ -187,11 +191,15 @@ watch(() => showSuccessConfirm.value, (newVal) => {
 
   if (newVal) {
     if (fromDialog.value && fromDialog.value === 'data-table-history-payment-warga') {
+      console.log('masuk sini data-table-history-payment-warga true');
+
       showHistoryPayment.value = false
       return
     }
 
     if (fromDialog.value && fromDialog.value === 'data-check-no-payment') {
+      console.log('masuk sini data-check-no-payment true');
+
       showNoPaymentList.value = false
       return
     }
@@ -252,7 +260,7 @@ onMounted(() => {
     <!-- <SuccessDialog v-model="showSuccessConfirm" title="Kirim Notif Berhasil" message="Anda telah mengirim notifikasi terkait Iuran A ke warga atas nama I Nyoman Ari" /> -->
 
     <!-- <SuccessDialog v-model="showSuccessConfirm" title="Kirim Notif Berhasil" message="Anda telah mengirim notifikasi ke semua warga yang belum membayar Iuran A" /> -->
-    <!-- <SuccessDialog v-model="showSuccessConfirm" title="Kirim Notif Berhasil" message="Anda telah mengirim notifikasi ke warga atas nama A, karena belum membayar Iuran A" /> -->
+    <SuccessDialog v-model="showSuccessConfirm" title="Kirim Notif Berhasil" message="Anda telah mengirim notifikasi ke warga atas nama A, karena belum membayar Iuran A" />
 
     <DialogNoPaymentPembayaran :is-show="showNoPaymentList" @close="showNoPaymentList = false" @send-notif="handleSendNotif('data-check-no-payment')" />
   </div>

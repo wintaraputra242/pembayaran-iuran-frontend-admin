@@ -6,30 +6,38 @@ import VerticalNavLayout from '@layouts/components/VerticalNavLayout.vue';
 // Components
 import Footer from '@/layouts/components/Footer.vue';
 import UserProfile from '@/layouts/components/UserProfile.vue';
+
+import { useScrollStatus } from '@/composables/useScrollNavbar';
+
+const { isMobile } = useDevice()
+const { isScrolled } = useScrollStatus(20)
 </script>
 
 <template>
   <VerticalNavLayout>
     <!-- 👉 navbar -->
     <template #navbar="{ toggleVerticalOverlayNavActive }">
-      <div class="d-flex h-100 align-center">
-        <!-- 👉 Vertical nav toggle in overlay mode -->
-        <IconBtn
-          class="ms-n3 d-lg-none"
-          @click="toggleVerticalOverlayNavActive(true)"
-        >
-          <VIcon icon="ri-menu-line" />
-        </IconBtn>
-
-        <VSpacer />
-
-        <IconBtn class="me-2">
-          <VIcon icon="ri-notification-line" />
-        </IconBtn>
-
-        <!-- <NavbarThemeSwitcher class="me-2" /> -->
-
-        <UserProfile />
+      <div class="transition" :class="{ 'position-fixed w-100 top-0 left-0 py-3 px-5': isMobile, 'h-100': !isMobile, 'bg-surface elevation-1': isScrolled }">
+        <div class="d-flex h-100 align-center">
+          <!-- 👉 Vertical nav toggle in overlay mode -->
+          <IconBtn
+            class="d-lg-none"
+            :class="{ 'ms-n3': !isMobile }"
+            @click="toggleVerticalOverlayNavActive(true)"
+          >
+            <VIcon icon="ri-menu-line" />
+          </IconBtn>
+  
+          <VSpacer />
+  
+          <IconBtn class="me-2">
+            <VIcon icon="ri-notification-line" />
+          </IconBtn>
+  
+          <!-- <NavbarThemeSwitcher class="me-2" /> -->
+  
+          <UserProfile />
+        </div>
       </div>
     </template>
 
@@ -93,5 +101,9 @@ import UserProfile from '@/layouts/components/UserProfile.vue';
     line-height: 1.75rem;
     text-transform: uppercase;
   }
+}
+
+.transition {
+  transition: all 0.1s ease-in !important;
 }
 </style>
