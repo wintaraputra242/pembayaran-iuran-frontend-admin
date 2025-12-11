@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import ListInformasiIuranCreatePembayaran from '@/views/create-pembayaran/ListInformasiIuran.vue';
+import DataTableAnggotaReguList from '@/views/regu-list/DataTableAnggota.vue';
+import DataTableNoPaymentReguList from '@/views/regu-list/DataTableNoPayment.vue';
 
 const tab = ref('anggota')
 
@@ -31,7 +32,7 @@ const filters = reactive({
             prepend-inner-icon="ri-search-2-line"
           />
         </div>
-        <ListInformasiIuranCreatePembayaran :type="'kematian'" />
+        <DataTableAnggotaReguList />
       </VTabsWindowItem>
       <VTabsWindowItem value="belum_bayar">
         <div class="py-3">
@@ -41,7 +42,7 @@ const filters = reactive({
             prepend-inner-icon="ri-search-2-line"
           />
         </div>
-        <ListInformasiIuranCreatePembayaran :type="'bulanan'" />
+        <DataTableNoPaymentReguList />
       </VTabsWindowItem>
     </VTabsWindow>
   </div>
