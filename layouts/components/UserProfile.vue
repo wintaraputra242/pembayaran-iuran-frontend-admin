@@ -68,7 +68,7 @@ import avatar1 from '@images/avatars/avatar-1.png';
           </VListItem>
 
           <!-- 👉 Settings -->
-          <VListItem link>
+          <VListItem link to="/my-activity">
             <template #prepend>
               <VIcon
                 class="me-2"
