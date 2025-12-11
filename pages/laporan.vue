@@ -1,8 +1,5 @@
 <script setup lang="ts">
 import DataTableLaporan from '@/views/laporan/DataTable.vue';
-import DialogFormDataLaporan from '@/views/laporan/DialogFormData.vue';
-import DialogHistoryPaymentWargaLaporan from '@/views/laporan/DialogHistoryPaymentWarga.vue';
-import DialogNoPaymentLaporan from '@/views/laporan/DialogNoPayment.vue';
 import FormFilterLaporan from '@/views/laporan/FormFilter.vue';
 import eCommerce2 from '@images/eCommerce/2.png';
 
@@ -15,12 +12,6 @@ const handleCloseFormData = () => {
   if (isEdit.value) isEdit.value = false
 
   showFormData.value = false
-}
-
-const handleCloseShowHistoryPaymentWarga = () => {
-  fromDialog.value = ''
-
-  showHistoryPayment.value = false
 }
 
 const itemSelected = ref<object | null>(null)
@@ -43,7 +34,7 @@ async function deleteItem() {
   isLoadingConfirm.value = false
   showConfirmation.value = false
 
-  console.log("Item dihapus!")
+  showSuccessConfirm.value = true
 }
 
 const confirmOptions = {
@@ -55,164 +46,20 @@ const confirmOptions = {
   confirmIcon: '',
 }
 
-const handleDeleteData = (item: object) => {
-  confirmOptions.title = 'Hapus Data?'
-  confirmOptions.message = 'Apakah Anda yakin ingin menghapus data ini? Tindakan ini tidak dapat dibatalkan.'
-  confirmOptions.confirmText = 'Hapus'
+const handleExportExcel = (item: object) => {
+  confirmOptions.title = 'Export Data?'
+  confirmOptions.message = 'Apakah Anda yakin ingin mengeksport data dari tanggal 12 juni 2025 sampai 19 februari 2026 dengan regu A?'
+  confirmOptions.confirmText = 'Export'
   confirmOptions.cancelText = 'Batal'
-  confirmOptions.confirmColor = 'error'
-  confirmOptions.confirmIcon = 'ri-delete-bin-line'
+  confirmOptions.confirmColor = 'success'
+  confirmOptions.confirmIcon = 'ri-export-line'
 
   showConfirmation.value = true 
   itemSelected.value = item
 }
-
-const showAnggota = ref(false)
-const isLoadingGetAnggota = ref(false)
-
-const handleShowAnggota = (item: object) => {
-  isLoadingGetAnggota.value = true
-
-  setTimeout(() => {
-    isLoadingGetAnggota.value = false
-  }, 5000)
-  
-  showAnggota.value = true 
-  itemSelected.value = item
-}
-
-const fromDialog = ref('')
-
-const handleChangeLeaderAnggota = (item: object) => {
-  fromDialog.value = 'data-table-anggota-regu'
-
-  confirmOptions.title = 'Ganti Ketua Pembayaran A?'
-  confirmOptions.message = 'Apakah Anda yakin ingin mengganti ketua regu A yang sebelumnya atas nama Made Sovian ke Putu Agus?'
-  confirmOptions.confirmText = 'Ganti'
-  confirmOptions.cancelText = 'Batal'
-  confirmOptions.confirmColor = 'info'
-  confirmOptions.confirmIcon = 'ri-save-2-line'
-
-  showConfirmation.value = true 
-  itemSelected.value = item
-}
-
-watch(() => showConfirmation.value, (newVal) => {
-  if (!newVal) {
-    if (fromDialog.value && fromDialog.value === 'data-table-anggota-regu') {
-      showAnggota.value = true
-      return
-    }
-
-    fromDialog.value = ''
-  }
-
-  if (newVal) {
-    if (fromDialog.value && fromDialog.value === 'data-table-anggota-regu') {
-      showAnggota.value = false
-      return
-    }
-  }
-})
 
 const showPaymentProof = ref(false)
-
-watch(() => showPaymentProof.value, (newVal) => {
-  if (!newVal) {
-    if (fromDialog.value && fromDialog.value === 'data-table-history-payment-warga') {
-      showHistoryPayment.value = true
-      return
-    }
-
-    fromDialog.value = ''
-  }
-
-  if (newVal) {
-    if (fromDialog.value && fromDialog.value === 'data-table-history-payment-warga') {
-      showHistoryPayment.value = false
-      return
-    }
-  }
-})
-
-const showAnnouncement = ref(false)
-
-const handleResetAllAnggota = () => {
-  confirmOptions.title = 'Reset Semua Anggota?'
-  confirmOptions.message = 'Apakah Anda yakin ingin me-reset semua anggota yang ada dimasing-masing regu? Tindakan ini tidak dapat dibatalkan.'
-  confirmOptions.confirmText = 'Reset'
-  confirmOptions.cancelText = 'Batal'
-  confirmOptions.confirmColor = 'error'
-  confirmOptions.confirmIcon = 'ri-user-community-line'
-
-  showConfirmation.value = true 
-}
-
-const handleShowBuktiBayar = () => {
-  showPaymentProof.value  = true
-}
-
-const showHistoryPayment = ref(false)
-
-const handleHistoryPayment = (item: object) => {
-  showHistoryPayment.value = true
-}
-
-const handleShowBuktiBayarHistoryPayment = () => {
-  fromDialog.value = 'data-table-history-payment-warga'
-
-  showPaymentProof.value = true
-}
-
 const showSuccessConfirm = ref(false)
-
-const handleSendNotif = (type: string) => {
-  fromDialog.value = type
-
-  showSuccessConfirm.value = true
-}
-
-watch(() => showSuccessConfirm.value, (newVal) => {
-  if (!newVal) {
-    if (fromDialog.value && fromDialog.value === 'data-table-history-payment-warga') {
-      console.log('masuk sini data-table-history-payment-warga');
-      
-      showHistoryPayment.value = true
-      return
-    }
-
-    if (fromDialog.value && fromDialog.value === 'data-check-no-payment') {
-      console.log('masuk sini data-check-no-payment');
-
-      showNoPaymentList.value = true
-      return
-    }
-
-    fromDialog.value = ''
-  }
-
-  if (newVal) {
-    if (fromDialog.value && fromDialog.value === 'data-table-history-payment-warga') {
-      console.log('masuk sini data-table-history-payment-warga true');
-
-      showHistoryPayment.value = false
-      return
-    }
-
-    if (fromDialog.value && fromDialog.value === 'data-check-no-payment') {
-      console.log('masuk sini data-check-no-payment true');
-
-      showNoPaymentList.value = false
-      return
-    }
-  }
-})
-
-const showNoPaymentList = ref(false)
-
-const handleShowNoPayment = () => {
-  showNoPaymentList.value = true
-}
 </script>
 
 <template>
@@ -222,18 +69,16 @@ const handleShowNoPayment = () => {
       <VCol
         cols="12"
       >
-        <FormFilterLaporan @show-form-data="router.push('/create-pembayaran')" @reset-all-anggota="handleResetAllAnggota" @show-no-payment="handleShowNoPayment" />
+        <FormFilterLaporan @export-excel="handleExportExcel" />
       </VCol>
   
       <VCol
         cols="12"
         md="4"
       >
-        <DataTableLaporan @edit="handleEditData" @delete="handleDeleteData" @show-anggota="handleShowAnggota" @show-bukti-bayar="handleShowBuktiBayar" @show-history-payment="handleHistoryPayment" />
+        <DataTableLaporan @show-bukti-bayar="showPaymentProof = true" />
       </VCol>
     </VRow>
-
-    <DialogFormDataLaporan :is-show="showFormData" :is-edit="isEdit" :item="itemSelected" @close="handleCloseFormData" />
 
     <ConfirmDialog
       v-model="showConfirmation"
@@ -249,14 +94,6 @@ const handleShowNoPayment = () => {
 
     <PaymentProofImageDialog v-model="showPaymentProof" :src="eCommerce2" />
     
-    <DialogHistoryPaymentWargaLaporan :is-show="showHistoryPayment" @close="handleCloseShowHistoryPaymentWarga" @show-bukti-bayar="handleShowBuktiBayarHistoryPayment" @send-notif="handleSendNotif('data-table-history-payment-warga')" />
-
-    <!-- <SuccessDialog v-model="showSuccessConfirm" title="Kirim Notif Berhasil" message="Anda telah mengirim notifikasi terkait Iuran A, Iuran B, dan Iuran C ke warga atas nama I Nyoman Ari" /> -->
-    <!-- <SuccessDialog v-model="showSuccessConfirm" title="Kirim Notif Berhasil" message="Anda telah mengirim notifikasi terkait Iuran A ke warga atas nama I Nyoman Ari" /> -->
-
-    <!-- <SuccessDialog v-model="showSuccessConfirm" title="Kirim Notif Berhasil" message="Anda telah mengirim notifikasi ke semua warga yang belum membayar Iuran A" /> -->
-    <SuccessDialog v-model="showSuccessConfirm" title="Kirim Notif Berhasil" message="Anda telah mengirim notifikasi ke warga atas nama A, karena belum membayar Iuran A" />
-
-    <DialogNoPaymentLaporan :is-show="showNoPaymentList" @close="showNoPaymentList = false" @send-notif="handleSendNotif('data-check-no-payment')" />
+    <SuccessDialog v-model="showSuccessConfirm" title="Export Data Berhasil" message="File berupa Excel berhasil diunduh dan tersimpan di penyimpanan lokal Anda" />
   </div>
 </template>

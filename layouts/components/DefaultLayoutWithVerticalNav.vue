@@ -104,6 +104,6 @@ const { isScrolled } = useScrollStatus(20)
 }
 
 .transition {
-  transition: all 0.1s ease-in !important;
+  transition: all 0.2s ease-in !important;
 }
 </style>

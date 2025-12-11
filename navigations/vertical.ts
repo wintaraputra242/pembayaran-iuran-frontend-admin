@@ -13,7 +13,7 @@ export default [
         ],
     },
     { type: 'link', title: 'Pembayaran', icon: 'ri-cash-line', to: '/pembayaran' },
-    { type: 'link', title: 'Laporan', icon: 'ri-table-line', to: '/tables' },
+    { type: 'link', title: 'Laporan', icon: 'ri-table-line', to: '/laporan' },
     { type: 'link', title: 'Aktivitas', icon: 'ri-time-line', to: '/cards' },
 
 // OLD
