@@ -55,30 +55,30 @@ import avatar1 from '@images/avatars/avatar-1.png';
           <VDivider class="my-2" />
 
           <!-- 👉 Profile -->
-          <!-- <VListItem link>
+          <VListItem link to="/regu-list">
             <template #prepend>
               <VIcon
                 class="me-2"
-                icon="ri-user-line"
+                icon="ri-team-line"
                 size="22"
               />
             </template>
 
-            <VListItemTitle>Profile</VListItemTitle>
-          </VListItem> -->
+            <VListItemTitle>Regu Saya</VListItemTitle>
+          </VListItem>
 
           <!-- 👉 Settings -->
-          <!-- <VListItem link>
+          <VListItem link>
             <template #prepend>
               <VIcon
                 class="me-2"
-                icon="ri-settings-4-line"
+                icon="ri-time-line"
                 size="22"
               />
             </template>
 
-            <VListItemTitle>Settings</VListItemTitle>
-          </VListItem> -->
+            <VListItemTitle>Aktivitas Saya</VListItemTitle>
+          </VListItem>
 
           <!-- 👉 Pricing -->
           <!-- <VListItem link>
@@ -107,7 +107,7 @@ import avatar1 from '@images/avatars/avatar-1.png';
           </VListItem> -->
 
           <!-- Divider -->
-          <!-- <VDivider class="my-2" /> -->
+          <VDivider class="my-2" />
 
           <!-- 👉 Logout -->
           <VListItem to="/login">

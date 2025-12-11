@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import DataTableLaporan from '@/views/laporan/DataTable.vue';
-import FormFilterLaporan from '@/views/laporan/FormFilter.vue';
+import DataTableActivity from '@/views/activity/DataTable.vue';
+import FormFilterActivity from '@/views/activity/FormFilter.vue';
 import eCommerce2 from '@images/eCommerce/2.png';
 
 const router = useRouter()
@@ -64,19 +64,19 @@ const showSuccessConfirm = ref(false)
 
 <template>
   <div>
-    <h2 class="mb-3">Laporan</h2>
+    <h2 class="mb-3">Aktivitas</h2>
     <VRow class="match-height">
       <VCol
         cols="12"
       >
-        <FormFilterLaporan @export-excel="handleExportExcel" />
+        <FormFilterActivity @export-excel="handleExportExcel" />
       </VCol>
   
       <VCol
         cols="12"
         md="4"
       >
-        <DataTableLaporan @show-bukti-bayar="showPaymentProof = true" />
+        <DataTableActivity @show-bukti-bayar="showPaymentProof = true" />
       </VCol>
     </VRow>
 
