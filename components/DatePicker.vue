@@ -14,6 +14,9 @@ const props = defineProps({
   disabled: { type: Boolean, default: false },
   clearable: { type: Boolean, default: true },
   rules: { type: Array, default: () => [] },
+  monthPicker: { type: Boolean, default: false },
+  disabledDates: { type: Array, default: () => [] },
+  showDatePicker: { type: Boolean, default: true },
 })
 
 const emit = defineEmits(["update:modelValue"])
@@ -56,14 +59,20 @@ watch(() => props.modelValue, () => validate())
       :time-config="{
         enableTimePicker: enableTime
       }"
+      :disabled-dates="disabledDates"
       :dark="false"
       :teleport="true"
       :disabled="disabled"
       :locale="id"
       :clearable="clearable"
+      :month-picker="monthPicker"
       :rules="rules"
       class="bdp-input"
-      :action-row="{ showSelect: false }"
+      :class="{ 'disabled-field': disabled }"
+      :ui="{
+        menu: showDatePicker ? '' : 'hide-year-picker'
+      }"
+      :action-row="{ showSelect: false,  }"
       auto-apply
       @blur="validate()"
     />
@@ -139,5 +148,14 @@ $font-family-custom: "Inter", sans-serif, -apple-system, blinkmacsystemfont, "Se
   border-color: #1E3A8A !important; /* Materio primary */
   outline: none;
   box-shadow: none !important;
+}
+
+/* Hilangkan select tahun pada month picker */
+.hide-year-picker .dp--year-mode-picker {
+  display: none !important;
+}
+
+.bdp-input.disabled-field {
+  opacity: var(--v-disabled-opacity);
 }
 </style>

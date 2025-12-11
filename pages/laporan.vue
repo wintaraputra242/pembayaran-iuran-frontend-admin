@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import DataTablePembayaran from '@/views/pembayaran/DataTable.vue';
-import DialogFormDataPembayaran from '@/views/pembayaran/DialogFormData.vue';
-import DialogHistoryPaymentWargaPembayaran from '@/views/pembayaran/DialogHistoryPaymentWarga.vue';
-import DialogNoPaymentPembayaran from '@/views/pembayaran/DialogNoPayment.vue';
-import FormFilterPembayaran from '@/views/pembayaran/FormFilter.vue';
+import DataTableLaporan from '@/views/laporan/DataTable.vue';
+import DialogFormDataLaporan from '@/views/laporan/DialogFormData.vue';
+import DialogHistoryPaymentWargaLaporan from '@/views/laporan/DialogHistoryPaymentWarga.vue';
+import DialogNoPaymentLaporan from '@/views/laporan/DialogNoPayment.vue';
+import FormFilterLaporan from '@/views/laporan/FormFilter.vue';
 import eCommerce2 from '@images/eCommerce/2.png';
 
 const router = useRouter()
@@ -217,23 +217,23 @@ const handleShowNoPayment = () => {
 
 <template>
   <div>
-    <h2 class="mb-3">Pembayaran</h2>
+    <h2 class="mb-3">Laporan</h2>
     <VRow class="match-height">
       <VCol
         cols="12"
       >
-        <FormFilterPembayaran @show-form-data="router.push('/create-pembayaran')" @reset-all-anggota="handleResetAllAnggota" @show-no-payment="handleShowNoPayment" />
+        <FormFilterLaporan @show-form-data="router.push('/create-pembayaran')" @reset-all-anggota="handleResetAllAnggota" @show-no-payment="handleShowNoPayment" />
       </VCol>
   
       <VCol
         cols="12"
         md="4"
       >
-        <DataTablePembayaran @edit="handleEditData" @delete="handleDeleteData" @show-anggota="handleShowAnggota" @show-bukti-bayar="handleShowBuktiBayar" @show-history-payment="handleHistoryPayment" />
+        <DataTableLaporan @edit="handleEditData" @delete="handleDeleteData" @show-anggota="handleShowAnggota" @show-bukti-bayar="handleShowBuktiBayar" @show-history-payment="handleHistoryPayment" />
       </VCol>
     </VRow>
 
-    <DialogFormDataPembayaran :is-show="showFormData" :is-edit="isEdit" :item="itemSelected" @close="handleCloseFormData" />
+    <DialogFormDataLaporan :is-show="showFormData" :is-edit="isEdit" :item="itemSelected" @close="handleCloseFormData" />
 
     <ConfirmDialog
       v-model="showConfirmation"
@@ -249,7 +249,7 @@ const handleShowNoPayment = () => {
 
     <PaymentProofImageDialog v-model="showPaymentProof" :src="eCommerce2" />
     
-    <DialogHistoryPaymentWargaPembayaran :is-show="showHistoryPayment" @close="handleCloseShowHistoryPaymentWarga" @show-bukti-bayar="handleShowBuktiBayarHistoryPayment" @send-notif="handleSendNotif('data-table-history-payment-warga')" />
+    <DialogHistoryPaymentWargaLaporan :is-show="showHistoryPayment" @close="handleCloseShowHistoryPaymentWarga" @show-bukti-bayar="handleShowBuktiBayarHistoryPayment" @send-notif="handleSendNotif('data-table-history-payment-warga')" />
 
     <!-- <SuccessDialog v-model="showSuccessConfirm" title="Kirim Notif Berhasil" message="Anda telah mengirim notifikasi terkait Iuran A, Iuran B, dan Iuran C ke warga atas nama I Nyoman Ari" /> -->
     <!-- <SuccessDialog v-model="showSuccessConfirm" title="Kirim Notif Berhasil" message="Anda telah mengirim notifikasi terkait Iuran A ke warga atas nama I Nyoman Ari" /> -->
@@ -257,6 +257,6 @@ const handleShowNoPayment = () => {
     <!-- <SuccessDialog v-model="showSuccessConfirm" title="Kirim Notif Berhasil" message="Anda telah mengirim notifikasi ke semua warga yang belum membayar Iuran A" /> -->
     <SuccessDialog v-model="showSuccessConfirm" title="Kirim Notif Berhasil" message="Anda telah mengirim notifikasi ke warga atas nama A, karena belum membayar Iuran A" />
 
-    <DialogNoPaymentPembayaran :is-show="showNoPaymentList" @close="showNoPaymentList = false" @send-notif="handleSendNotif('data-check-no-payment')" />
+    <DialogNoPaymentLaporan :is-show="showNoPaymentList" @close="showNoPaymentList = false" @send-notif="handleSendNotif('data-check-no-payment')" />
   </div>
 </template>

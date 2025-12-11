@@ -17,7 +17,7 @@ const { isScrolled } = useScrollStatus(20)
   <VerticalNavLayout>
     <!-- 👉 navbar -->
     <template #navbar="{ toggleVerticalOverlayNavActive }">
-      <div class="transition" :class="{ 'position-fixed w-100 top-0 left-0 py-3 px-5': isMobile, 'h-100': !isMobile, 'bg-surface elevation-1': isScrolled }">
+      <div class="transition" :class="{ 'position-fixed w-100 top-0 left-0 py-3 px-5': isMobile, 'h-100': !isMobile, 'bg-surface elevation-1': isScrolled && isMobile }">
         <div class="d-flex h-100 align-center">
           <!-- 👉 Vertical nav toggle in overlay mode -->
           <IconBtn
