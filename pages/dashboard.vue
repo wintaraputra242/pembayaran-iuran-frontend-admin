@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import FormFilterDashboard from '@/views/dashboard-new/FormFilter.vue';
 import NotifcationTableDashboard from '@/views/dashboard-new/NotifcationTable.vue';
+
+definePageMeta({
+  middleware: ['auth', 'admin']
+})
 </script>
 
 <template>
