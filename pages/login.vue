@@ -20,7 +20,7 @@ const authThemeMask = computed(() => {
 
 const isPasswordVisible = ref(false)
 
-definePageMeta({ layout: 'blank' })
+definePageMeta({ layout: 'blank', middleware: 'after-auth' })
 </script>
 
 <template>

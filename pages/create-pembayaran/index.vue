@@ -7,6 +7,10 @@ const filters = reactive({
   kematian: '',
   bulanan: '',
 })
+
+definePageMeta({
+  middleware: ['auth', 'ketua-regu']
+})
 </script>
 
 <template>
