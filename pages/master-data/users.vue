@@ -3,6 +3,10 @@ import DataTableUsers from '@/views/users/DataTable.vue';
 import DialogFormDataUsers from '@/views/users/DialogFormData.vue';
 import FormFilterUsers from '@/views/users/FormFilter.vue';
 
+definePageMeta({
+  middleware: ['auth', 'admin']
+})
+
 const showFormData = ref(false)
 const isEdit = ref(false)
 

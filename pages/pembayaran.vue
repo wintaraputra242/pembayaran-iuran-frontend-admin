@@ -6,6 +6,11 @@ import DialogNoPaymentPembayaran from '@/views/pembayaran/DialogNoPayment.vue';
 import FormFilterPembayaran from '@/views/pembayaran/FormFilter.vue';
 import eCommerce2 from '@images/eCommerce/2.png';
 
+
+definePageMeta({
+  middleware: ['auth', 'admin']
+})
+
 const router = useRouter()
 
 const showFormData = ref(false)

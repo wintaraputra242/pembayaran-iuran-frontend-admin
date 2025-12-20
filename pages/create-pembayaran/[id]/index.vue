@@ -2,6 +2,10 @@
 import DialogTakeFotoBuktiPembayaran from '@/views/create-pembayaran/DialogTakeFotoBuktiPembayaran.vue';
 import FormCreatePembayaran from '@/views/create-pembayaran/FormCreatePembayaran.vue';
 
+definePageMeta({
+  middleware: ['auth', 'ketua-regu']
+})
+
 const tab = ref('kematian')
 
 const filters = reactive({

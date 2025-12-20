@@ -3,6 +3,11 @@ import DataTableActivity from '@/views/activity/DataTable.vue';
 import FormFilterActivity from '@/views/activity/FormFilter.vue';
 import eCommerce2 from '@images/eCommerce/2.png';
 
+
+definePageMeta({
+  middleware: ['auth', 'admin']
+})
+
 const router = useRouter()
 
 const showFormData = ref(false)

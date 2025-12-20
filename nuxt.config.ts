@@ -46,6 +46,10 @@ export default defineNuxtConfig({
     },
   },
 
+  // ssr: false,
+
+  // debug: true,
+
   devtools: {
     enabled: true,
   },
@@ -149,13 +153,18 @@ export default defineNuxtConfig({
     transpile: ['vuetify'],
   },
 
-  modules: ['@vueuse/nuxt', '@nuxtjs/device', '@pinia/nuxt', '@vite-pwa/nuxt'],
+  modules: [
+    '@vueuse/nuxt', 
+    '@nuxtjs/device', 
+    '@pinia/nuxt', 
+    '@vite-pwa/nuxt'
+  ],
   compatibilityDate: '2025-01-01',
 
   pwa: {
     registerType: 'autoUpdate',
     devOptions: {
-      enabled: true
+      enabled: false
     },
 
     manifest: {

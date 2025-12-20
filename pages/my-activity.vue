@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import DataTableActivity from '@/views/activity/DataTable.vue'
 
+definePageMeta({
+  middleware: ['auth', 'ketua-regu']
+})
+
 const router = useRouter()
 
 const showFormData = ref(false)

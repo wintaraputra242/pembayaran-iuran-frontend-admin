@@ -2,6 +2,10 @@
 import DataTableAnggotaReguList from '@/views/regu-list/DataTableAnggota.vue';
 import DataTableNoPaymentReguList from '@/views/regu-list/DataTableNoPayment.vue';
 
+definePageMeta({
+  middleware: ['auth', 'admin']
+})
+
 const tab = ref('anggota')
 
 const filters = reactive({

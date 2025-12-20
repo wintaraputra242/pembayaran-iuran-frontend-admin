@@ -3,13 +3,13 @@ import { defineStore } from 'pinia'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
-    // user: null,
-    // token: null
+    user: null,
+    token: null
   }),
 
   getters: {
-    isLoggedIn: (state) => true,
-    role: (state) => 'admin'
+    isLoggedIn: () => true,
+    role: () => 'admin'
   },
 
   actions: {
@@ -26,9 +26,9 @@ export const useAuthStore = defineStore('auth', {
     //   this.user = await api.me()
     // },
 
-    // logout() {
-    //   this.user = null
-    //   this.token = null
-    // }
+    logout() {
+      this.user = null
+      this.token = null
+    }
   }
 })

@@ -4,6 +4,11 @@ import DialogDataTableAnggotaRegu from '@/views/regu/DialogDataTableAnggota.vue'
 import DialogFormDataRegu from '@/views/regu/DialogFormData.vue';
 import FormFilterRegu from '@/views/regu/FormFilter.vue';
 
+
+definePageMeta({
+  middleware: ['auth', 'admin']
+})
+
 const showFormData = ref(false)
 const isEdit = ref(false)
 

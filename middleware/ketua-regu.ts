@@ -4,7 +4,7 @@ export default defineNuxtRouteMiddleware(() => {
   if (auth.role !== 'ketua_regu') {
     throw createError({
       statusCode: 404,
-      statusMessage: 'Halaman tidak ditemukan'
+      // statusMessage: 'Halaman tidak ditemukan'
     })
   }
 })
