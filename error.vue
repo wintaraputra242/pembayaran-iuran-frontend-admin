@@ -15,6 +15,7 @@ const props = defineProps<{
 }>()
 
 const vuetifyTheme = useTheme()
+const authStore = useAuthStore()
 
 const authThemeMask = computed(() => {
   return vuetifyTheme.global.name.value === 'light'
@@ -47,7 +48,12 @@ const errToShow = computed(() => {
   }
 })
 
-const handleError = () => clearError({ redirect: '/login' })
+const roles: Record<'admin' | 'ketua_regu', string> = {
+  'admin': '/',
+  'ketua_regu': '/create-pembayaran',
+}
+
+const handleError = () => clearError({ redirect: authStore.isLoggedIn ? roles[authStore.role] : '/login' })
 </script>
 
 <template>

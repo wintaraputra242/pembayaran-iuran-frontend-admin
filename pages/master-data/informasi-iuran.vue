@@ -5,7 +5,7 @@ import FormFilterInformasiIuran from '@/views/informasi-iuran/FormFilter.vue';
 
 
 definePageMeta({
-  middleware: ['auth', 'admin']
+  middleware: ['admin']
 })
 
 const showFormData = ref(false)

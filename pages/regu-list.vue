@@ -3,7 +3,7 @@ import DataTableAnggotaReguList from '@/views/regu-list/DataTableAnggota.vue';
 import DataTableNoPaymentReguList from '@/views/regu-list/DataTableNoPayment.vue';
 
 definePageMeta({
-  middleware: ['auth', 'admin']
+  middleware: ['admin']
 })
 
 const tab = ref('anggota')

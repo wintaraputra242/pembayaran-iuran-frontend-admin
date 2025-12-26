@@ -1,26 +1,50 @@
 <script setup lang="ts">
-import { useTheme } from 'vuetify'
+import { useAuth } from '@/composables/api/useAuth'
 
-import authV1MaskDark from '@images/pages/auth-v1-mask-dark.png'
-import authV1MaskLight from '@images/pages/auth-v1-mask-light.png'
+const router = useRouter()
+
+const { login } = useAuth()
+const ui = useUiStore()
 
 const form = ref({
-  email: '',
+  username: '',
   password: '',
-  remember: false,
+  // remember: false,
 })
 
-const vuetifyTheme = useTheme()
+// const vuetifyTheme = useTheme()
 
-const authThemeMask = computed(() => {
-  return vuetifyTheme.global.name.value === 'light'
-    ? authV1MaskLight
-    : authV1MaskDark
-})
+// const authThemeMask = computed(() => {
+//   return vuetifyTheme.global.name.value === 'light'
+//     ? authV1MaskLight
+//     : authV1MaskDark
+// })
 
 const isPasswordVisible = ref(false)
 
-definePageMeta({ layout: 'blank', middleware: 'after-auth' })
+const isLoadingSubmit = ref(false)
+const onSubmit = async () => {
+  isLoadingSubmit.value = true
+  
+  try {
+    const res = await login({
+      username: form.value.username,
+      password: form.value.password,
+    })
+
+    router.push(
+      res.data.role === 'admin'
+        ? '/'
+        : '/create-pembayaran'
+    )
+  } catch (e: any) {
+    ui.showError(e.errors ?? 'Terjadi kesalahan saat login', 'Gagal Login')
+  } finally {
+    isLoadingSubmit.value = false
+  }
+}
+
+definePageMeta({ layout: 'blank', middleware: 'guest', public: true })
 </script>
 
 <template>
@@ -34,7 +58,7 @@ definePageMeta({ layout: 'blank', middleware: 'after-auth' })
           v-html="logo"
         /> -->
         <VImg src="/logo.png" width="3rem" />
-        <h2 class="font-weight-medium text-xl text-uppercase ">
+        <h2 class="text-center font-weight-medium text-xl text-uppercase ">
           Pembayaran Iuran Banjar Trijata
         </h2>
       </div>
@@ -50,22 +74,20 @@ definePageMeta({ layout: 'blank', middleware: 'after-auth' })
         </VCardItem>
   
         <VCardText>
-          <VForm @submit.prevent="() => {}">
+          <VForm @submit.prevent="onSubmit">
             <VRow>
-              <!-- email -->
+              <!-- username -->
               <VCol cols="12">
                 <VTextField
-                  :id="useId()"
-                  v-model="form.email"
-                  label="Email"
-                  type="email"
+                  v-model="form.username"
+                  label="Username"
+                  type="username"
                 />
               </VCol>
   
               <!-- password -->
               <VCol cols="12">
                 <VTextField
-                  :id="useId()"
                   v-model="form.password"
                   label="Password"
                   placeholder="············"
@@ -78,7 +100,6 @@ definePageMeta({ layout: 'blank', middleware: 'after-auth' })
                 <!-- remember me checkbox -->
                 <!-- <div class="d-flex align-center justify-space-between flex-wrap my-6">
                   <VCheckbox
-                    :id="useId()"
                     v-model="form.remember"
                     label="Remember me"
                   />
@@ -95,8 +116,8 @@ definePageMeta({ layout: 'blank', middleware: 'after-auth' })
                 <VBtn
                   block
                   type="submit"
-                  to="/"
                   class="mt-6"
+                  :loading="isLoadingSubmit"
                 >
                   Login
                 </VBtn>

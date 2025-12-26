@@ -4,7 +4,7 @@ import DialogFormDataUsers from '@/views/users/DialogFormData.vue';
 import FormFilterUsers from '@/views/users/FormFilter.vue';
 
 definePageMeta({
-  middleware: ['auth', 'admin']
+  middleware: ['admin']
 })
 
 const showFormData = ref(false)

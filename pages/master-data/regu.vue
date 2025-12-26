@@ -6,7 +6,7 @@ import FormFilterRegu from '@/views/regu/FormFilter.vue';
 
 
 definePageMeta({
-  middleware: ['auth', 'admin']
+  middleware: ['admin']
 })
 
 const showFormData = ref(false)

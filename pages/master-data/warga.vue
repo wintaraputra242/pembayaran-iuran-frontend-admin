@@ -4,7 +4,7 @@ import DialogFormData from '@/views/warga/DialogFormData.vue';
 import FormFilterWarga from '@/views/warga/FormFilter.vue';
 
 definePageMeta({
-  middleware: ['auth', 'admin']
+  middleware: ['admin']
 })
 
 const showFormData = ref(false)

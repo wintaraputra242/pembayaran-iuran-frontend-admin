@@ -2,7 +2,7 @@
 import DataTableActivity from '@/views/activity/DataTable.vue'
 
 definePageMeta({
-  middleware: ['auth', 'ketua-regu']
+  middleware: ['admin']
 })
 
 const router = useRouter()

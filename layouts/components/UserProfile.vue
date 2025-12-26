@@ -1,5 +1,27 @@
 <script setup lang="ts">
+import { useAuth } from '@/composables/api/useAuth';
 import avatar1 from '@images/avatars/avatar-1.png';
+
+const router = useRouter()
+const { logout } = useAuth()
+
+const uiStore = useUiStore()
+
+const isLoadingLogout = ref(false)
+const logoutUser = async () => {
+  isLoadingLogout.value = true
+  
+  try {
+    await logout()
+    
+    router.push('/login')
+  } catch (e: any) {
+    uiStore.showError(e.errors ?? 'Terjadi kesalahan saat login', 'Gagal Login')
+  } finally {
+    isLoadingLogout.value = false
+  }
+}
+
 </script>
 
 <template>
@@ -110,7 +132,7 @@ import avatar1 from '@images/avatars/avatar-1.png';
           <VDivider class="my-2" />
 
           <!-- 👉 Logout -->
-          <VListItem to="/login">
+          <VListItem @click="logoutUser">
             <template #prepend>
               <VIcon
                 class="me-2"

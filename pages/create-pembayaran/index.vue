@@ -1,16 +1,17 @@
 <script setup lang="ts">
 import ListInformasiIuranCreatePembayaran from '@/views/create-pembayaran/ListInformasiIuran.vue';
 
-definePageMeta({
-  middleware: ['auth', 'ketua-regu']
-})
-
 const tab = ref('kematian')
 
 const filters = reactive({
   kematian: '',
   bulanan: '',
 })
+
+definePageMeta({
+  middleware: ['ketua-regu']
+})
+
 </script>
 
 <template>

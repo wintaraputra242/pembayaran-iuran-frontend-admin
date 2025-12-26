@@ -159,7 +159,14 @@ export default defineNuxtConfig({
     '@pinia/nuxt', 
     '@vite-pwa/nuxt'
   ],
+
   compatibilityDate: '2025-01-01',
+
+  runtimeConfig: {
+    public: {
+      apiBase: process.env.NUXT_PUBLIC_API_BASE,
+    },
+  },
 
   pwa: {
     registerType: 'autoUpdate',

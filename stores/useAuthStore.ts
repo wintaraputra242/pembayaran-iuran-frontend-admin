@@ -1,34 +1,25 @@
-import { defineStore } from 'pinia'
-// import { useAuthApi } from '@/composables/api/useAuthApi'
+import type { AuthUser } from "@/types/api/auth"
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
-    user: null,
-    token: null
+    user: null as AuthUser | null,
+    fetched: false
   }),
 
   getters: {
-    isLoggedIn: () => true,
-    role: () => 'admin'
+    isLoggedIn: (state) => !!state.user,
+    role: (state) => state.user?.role,
   },
 
   actions: {
-    // async login(payload) {
-    //   const api = useAuthApi()
-    //   const res = await api.login(payload)
-
-    //   this.token = res.token
-    //   this.user = res.user
-    // },
-
-    // async fetchMe() {
-    //   const api = useAuthApi()
-    //   this.user = await api.me()
-    // },
+    setUser(user: AuthUser) {
+      this.user = user
+      this.fetched = true
+    },
 
     logout() {
       this.user = null
-      this.token = null
-    }
-  }
+      this.fetched = true
+    },
+  },
 })

@@ -5,7 +5,7 @@ import eCommerce2 from '@images/eCommerce/2.png';
 
 
 definePageMeta({
-  middleware: ['auth', 'admin']
+  middleware: ['admin']
 })
 
 const router = useRouter()

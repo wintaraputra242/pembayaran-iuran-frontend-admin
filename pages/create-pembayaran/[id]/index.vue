@@ -3,7 +3,7 @@ import DialogTakeFotoBuktiPembayaran from '@/views/create-pembayaran/DialogTakeF
 import FormCreatePembayaran from '@/views/create-pembayaran/FormCreatePembayaran.vue';
 
 definePageMeta({
-  middleware: ['auth', 'ketua-regu']
+  middleware: ['admin']
 })
 
 const tab = ref('kematian')

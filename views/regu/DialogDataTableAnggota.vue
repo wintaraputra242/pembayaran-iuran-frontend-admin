@@ -264,30 +264,32 @@ const btnTabStyle: any = {
               </div>
               <div class="mt-2">
                 <table>
-                  <tr>
-                    <td class="font-weight">
-                      <p class="ma-0 font-weight-bold">NIK :</p>
-                      <p class="ma-0">3201000000000003</p>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="font-weight">
-                      <p class="ma-0 font-weight-bold">Alamat :</p>
-                      <p class="ma-0">Jl. Raya Mambal</p>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="font-weight">
-                      <p class="ma-0 font-weight-bold">No. HP :</p>
-                      <p class="ma-0">081123123123</p>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="font-weight">
-                      <p class="ma-0 font-weight-bold">Status Warga :</p>
-                      <p class="ma-0 text-success">Aktif</p>
-                    </td>
-                  </tr>
+                  <tbody>
+                    <tr>
+                      <td class="font-weight">
+                        <p class="ma-0 font-weight-bold">NIK :</p>
+                        <p class="ma-0">3201000000000003</p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="font-weight">
+                        <p class="ma-0 font-weight-bold">Alamat :</p>
+                        <p class="ma-0">Jl. Raya Mambal</p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="font-weight">
+                        <p class="ma-0 font-weight-bold">No. HP :</p>
+                        <p class="ma-0">081123123123</p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="font-weight">
+                        <p class="ma-0 font-weight-bold">Status Warga :</p>
+                        <p class="ma-0 text-success">Aktif</p>
+                      </td>
+                    </tr>
+                  </tbody>
                 </table>
               </div>
             </div>

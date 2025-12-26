@@ -1,10 +1,7 @@
 export default defineNuxtRouteMiddleware(() => {
-  const auth = useAuthStore()
+  const authStore = useAuthStore()
 
-  if (auth.role !== 'admin') {
-    throw createError({
-      statusCode: 404,
-      // statusMessage: 'Halaman tidak ditemukan'
-    })
+  if (authStore.role !== 'admin') {
+    throw createError({ statusCode: 404 })
   }
 })

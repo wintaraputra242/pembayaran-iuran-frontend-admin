@@ -1,5 +1,5 @@
 export default [
-    { type: 'link', title: 'Dashboard', icon: 'ri-home-smile-line', to: '/dashboard' },
+    { type: 'link', title: 'Dashboard', icon: 'ri-home-smile-line', to: '/' },
     {
         type: 'group',
         title: 'Master Data',
