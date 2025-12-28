@@ -44,6 +44,14 @@ const loadData = async () => {
 
 let observer: IntersectionObserver
 
+const headers = [
+  { key: 'no', label: 'No.' },
+  { key: 'info', label: 'Nama', width: '400px' },
+  { key: 'nama', label: 'Username', width: '200px' },
+  { key: 'role', label: 'Role', align: 'center' },
+  { key: 'actions' },
+]
+
 onMounted(() => {
   const sentinelWarga = document.getElementById('sentinelWarga')
   observer = new IntersectionObserver(entries => {
@@ -65,57 +73,39 @@ onMounted(() => {
       <div
         class="table-scroll-wrapper"
       >
-        <VTable fixed-header height="400px" class="my-table">
-          <thead>
-            <tr>
-              <th style="width: 70px">No.</th>
-              <th style="width: 400px">Nama</th>
-              <th style="width: 200px">Username</th>
-              <th class="text-center" style="width: 200px">Role</th>
-              <th style="width: 100px"></th>
-            </tr>
-          </thead>
-  
-          <tbody>
-            <tr v-for="(item, i) in items" :key="item.id">
-              <td>{{ i + 1 }}</td>
-              <td>{{ item.info }}</td>
-              <td>{{ item.nama }}</td>
-              <td align="center">
-                <!-- <v-chip :color="'success'">
-                  Admin
-                </v-chip> -->
-                <v-chip :color="'info'">
-                  Ketua Regu
-                </v-chip>
-              </td>
-              <td>
-                <div class="d-flex gap-2">
-                  <IconBtn variant="outlined" class="rounded-lg" size="small" color="secondary" @click="emit('editPassword', item)">
-                    <VIcon icon="ri-lock-2-line" />
-                  </IconBtn>
-                  <IconBtn variant="outlined" class="rounded-lg" size="small" color="secondary" @click="emit('edit', item)">
-                    <VIcon icon="ri-edit-line" />
-                  </IconBtn>
-                  <!-- <IconBtn variant="outlined" class="rounded-lg" size="small" color="error" @click="emit('delete', item)">
-                    <VIcon icon="ri-delete-bin-line" />
-                  </IconBtn> -->
-                </div>
-              </td>
-            </tr>
-  
-            <!-- Loading -->
-            <tr v-if="isLoading">
-              <td colspan="7" rowspan="2" class="text-center py-3">
-                <VProgressCircular indeterminate size="26" />
-              </td>
-            </tr>
-  
-            <tr v-if="hasMore">
-              <td colspan="7"><div id="sentinelWarga" style="height: 1px; width: 100%;"></div></td>
-            </tr>
-          </tbody>
-        </VTable>
+        <AppDataTable
+          :headers="headers"
+          :items="items"
+          :loading="isLoading"
+          :has-more="hasMore"
+          @loadMore="loadData"
+        >
+          <template #cell-role="{ item }">
+            <VChip color="info">
+              Ketua Regu
+            </VChip>
+          </template>
+
+          <template #cell-actions="{ item }">
+            <IconBtn
+              size="small"
+              variant="outlined"
+              color="secondary"
+              @click="emit('editPassword', item)"
+            >
+              <VIcon icon="ri-lock-2-line" />
+            </IconBtn>
+
+            <IconBtn
+              size="small"
+              variant="outlined"
+              color="secondary"
+              @click="emit('edit', item)"
+            >
+              <VIcon icon="ri-edit-line" />
+            </IconBtn>
+          </template>
+        </AppDataTable>
       </div>
     </VCardItem>
   </VCard>

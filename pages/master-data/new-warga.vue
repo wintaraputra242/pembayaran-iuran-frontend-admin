@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import DataTableInformasiIuran from '@/views/informasi-iuran/DataTable.vue';
-import DialogFormDataInformasiIuran from '@/views/informasi-iuran/DialogFormData.vue';
-import FormFilterInformasiIuran from '@/views/informasi-iuran/FormFilter.vue';
+import DataTableWarga from '@/views/warga/DataTable.vue';
+import DialogFormDataWarga from '@/views/warga/DialogFormData.vue';
+import FormFilterWarga from '@/views/warga/FormFilter.vue';
 
 definePageMeta({
   middleware: ['admin']
@@ -30,7 +30,6 @@ const isLoadingConfirm = ref(false)
 async function deleteItem() {
   isLoadingConfirm.value = true
 
-  // contoh request
   await new Promise(res => setTimeout(res, 1000))
 
   isLoadingConfirm.value = false
@@ -60,23 +59,9 @@ const handleDeleteData = (item: object) => {
   itemSelected.value = item
 }
 
-const showAnggota = ref(false)
-const isLoadingGetAnggota = ref(false)
-
-const handleShowAnggota = (item: object) => {
-  isLoadingGetAnggota.value = true
-
-  setTimeout(() => {
-    isLoadingGetAnggota.value = false
-  }, 5000)
-  
-  showAnggota.value = true 
-  itemSelected.value = item
-}
-
 const handleUpdateStatus = (item: object) => {
   confirmOptions.title = 'Nonaktif Warga?'
-  confirmOptions.message = `Apakah Anda yakin ingin mengnonaktifkan data informasi iuran ${item?.nama}?.`
+  confirmOptions.message = `Apakah Anda yakin ingin mengnonaktifkan data warga atas nama ${item?.nama}?.`
   confirmOptions.confirmText = 'Nonaktif'
   confirmOptions.cancelText = 'Batal'
   confirmOptions.confirmColor = 'error'
@@ -89,25 +74,25 @@ const handleUpdateStatus = (item: object) => {
 
 <template>
   <div>
-    <h2 class="mb-3">Data Informasi Iuran</h2>
+    <h2 class="mb-3">Data Warga</h2>
     <VRow class="match-height">
       <VCol
         cols="12"
       >
-        <FormFilterInformasiIuran @show-form-data="showFormData = true" />
+        <FormFilterWarga @show-form-data="showFormData = true" />
       </VCol>
   
       <VCol
         cols="12"
         md="4"
       >
-        <DataTableInformasiIuran @edit="handleEditData" @delete="handleDeleteData" @update-status="handleUpdateStatus" />
+        <DataTableWarga @edit="handleEditData" @delete="handleDeleteData" @update-status="handleUpdateStatus" />
       </VCol>
     </VRow>
 
-    <DialogFormDataInformasiIuran :is-show="showFormData" :is-edit="isEdit" :item="itemSelected" @close="handleCloseFormData" />
+    <DialogFormDataWarga :is-show="showFormData" :is-edit="isEdit" :item="itemSelected" @close="handleCloseFormData" />
 
-    <ConfirmDialog
+    <!-- <ConfirmDialog
       v-model="showConfirmation"
       :title="confirmOptions.title"
       :message="confirmOptions.message"
@@ -117,6 +102,6 @@ const handleUpdateStatus = (item: object) => {
       :confirm-icon="confirmOptions.confirmIcon"
       :loading="isLoadingConfirm"
       @confirm="deleteItem"
-    />
+    /> -->
   </div>
 </template>

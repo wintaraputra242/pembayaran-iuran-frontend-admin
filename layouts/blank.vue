@@ -28,10 +28,9 @@ const ui = useUiStore()
     class="layout-wrapper layout-blank"
     data-allow-mismatch
   >
-    <!-- <GetUser /> -->
     <slot />
-    <ErrorDialog :show="ui.errorDialog.show" :title="ui.errorDialog.title" :message="ui.errorDialog.message" @close="ui.closeError" />
   </div>
+  <ErrorDialog :show="ui.errorDialog.show" :title="ui.errorDialog.title" :message="ui.errorDialog.message" @close="ui.closeError" />
 </template>
 
 <style>

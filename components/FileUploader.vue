@@ -1,4 +1,5 @@
 <script setup lang="ts">
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import VueDropzone from 'dropzone-vue3';
 import { computed, ref } from 'vue';
 
@@ -163,19 +164,21 @@ function getFileIcon(file: any) {
 
 <template>
   <div>
-    <VueDropzone
-      ref="dzRef"
-      id="my-dropzone"
-      class="my-dropzone"
-      :options="mergedOptions"
-
-      @vdropzone-file-added="handleFileAdded"
-      @vdropzone-file-removed="handleRemoved"
-
-      @vdropzone-success="onEvents.success?.($event)"
-      @vdropzone-error="handleFileError"
-      @vdropzone-complete="onEvents.complete?.($event)"
-    />
+    <ClientOnly>
+      <VueDropzone
+        ref="dzRef"
+        id="my-dropzone"
+        class="my-dropzone"
+        :options="mergedOptions"
+  
+        @vdropzone-file-added="handleFileAdded"
+        @vdropzone-file-removed="handleRemoved"
+  
+        @vdropzone-success="onEvents.success?.($event)"
+        @vdropzone-error="handleFileError"
+        @vdropzone-complete="onEvents.complete?.($event)"
+      />
+    </ClientOnly>
 
     <!-- ERROR MESSAGE mirip Vuetify -->
     <div

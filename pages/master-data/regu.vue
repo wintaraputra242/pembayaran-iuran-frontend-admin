@@ -4,7 +4,6 @@ import DialogDataTableAnggotaRegu from '@/views/regu/DialogDataTableAnggota.vue'
 import DialogFormDataRegu from '@/views/regu/DialogFormData.vue';
 import FormFilterRegu from '@/views/regu/FormFilter.vue';
 
-
 definePageMeta({
   middleware: ['admin']
 })

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import DataTableWarga from '@/views/warga/DataTable.vue';
-import DialogFormData from '@/views/warga/DialogFormData.vue';
+import DialogFormDataWarga from '@/views/warga/DialogFormData.vue';
 import FormFilterWarga from '@/views/warga/FormFilter.vue';
 
 definePageMeta({
@@ -30,7 +30,6 @@ const isLoadingConfirm = ref(false)
 async function deleteItem() {
   isLoadingConfirm.value = true
 
-  // contoh request
   await new Promise(res => setTimeout(res, 1000))
 
   isLoadingConfirm.value = false
@@ -91,7 +90,7 @@ const handleUpdateStatus = (item: object) => {
       </VCol>
     </VRow>
 
-    <DialogFormData :is-show="showFormData" :is-edit="isEdit" :item="itemSelected" @close="handleCloseFormData" />
+    <DialogFormDataWarga :is-show="showFormData" :is-edit="isEdit" :item="itemSelected" @close="handleCloseFormData" />
 
     <ConfirmDialog
       v-model="showConfirmation"
