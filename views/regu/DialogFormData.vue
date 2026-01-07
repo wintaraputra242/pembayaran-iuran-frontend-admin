@@ -1,19 +1,22 @@
 <script lang="ts" setup>
+import type { CreateReguPayload } from '@/types/api/master-regu';
+
 const emit = defineEmits<{
-  (e: 'reload'): void;
+  (e: 'submit', params: CreateReguPayload): void;
   (e: 'close'): void;
 }>();
 
 const props = withDefaults(defineProps<{
   isShow: boolean
   isEdit: boolean
+  loading: boolean
   item?: object | null
 }>(), {
   isShow: false,
   isEdit: false,
 })
 
-const form = ref(null)
+const form = ref()
 
 const defaultParams = {
   nama_regu: '',
@@ -52,6 +55,15 @@ watch(
     params.nama_regu = props.item?.nama
   }
 )
+
+const handleSubmit = async () => {
+  const { valid } = await form.value?.validate()
+
+  if (valid) {    
+    emit('submit', params)
+  }
+
+}
 </script>
 
 <template>
@@ -60,13 +72,13 @@ watch(
       <VCardTitle class="pt-3">
         <div class="d-flex align-center justify-space-between">
           <h3>{{ props.isEdit ? 'Edit' : 'Tambah' }}</h3>
-          <IconBtn variant="text" color="secondary" size="small" @click="handleClose">
+          <IconBtn variant="text" :disabled="props.loading" color="secondary" size="small" @click="handleClose">
             <VIcon icon="ri-close-line" />
           </IconBtn>
         </div>
       </VCardTitle>
       <VCardItem>
-        <VForm ref="form" @submit.prevent="() => {}">
+        <VForm ref="form" @submit.prevent="handleSubmit">
           <VRow align="center" class="pt-1">
             <VCol cols="12">
               <VTextField
@@ -78,11 +90,11 @@ watch(
             </VCol>
             <VCol cols="12">
               <div class="d-flex justify-end flex-wrap gap-2">
-                <VBtn variant="text" color="secondary" size="small" @click="handleClose">
+                <VBtn variant="text" :disabled="props.loading" color="secondary" size="small" @click="handleClose">
                   <VIcon icon="ri-close-line" class="me-1" />
                   Batal
                 </VBtn>
-                <VBtn variant="flat" :color="props.isEdit ? 'info' : 'success'" size="small" type="submit">
+                <VBtn variant="flat" :loading="props.loading" :color="props.isEdit ? 'info' : 'success'" size="small" type="submit">
                   <VIcon :icon="props.isEdit ? 'ri-save-2-line' : 'ri-add-line'" class="me-1" />
                   {{ props.isEdit ? 'Simpan' : 'Tambah'}}
                 </VBtn>

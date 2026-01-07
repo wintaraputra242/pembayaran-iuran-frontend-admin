@@ -7,11 +7,16 @@ export const useUiStore = defineStore('ui', {
       title: '',
       message: '',
     },
+    successDialog: {
+      show: false,
+      title: '',
+      message: '',
+    },
     isLoading: true
   }),
 
   actions: {
-    showError(message: string, title = 'Terjadi Kesalahan') {
+    showError(message: string, title = 'Gagal') {
       this.errorDialog = {
         show: true,
         title,
@@ -21,6 +26,18 @@ export const useUiStore = defineStore('ui', {
 
     closeError() {
       this.errorDialog.show = false
+    },
+
+    showSuccess(message: string, title = 'Berhasil') {
+      this.successDialog = {
+        show: true,
+        title,
+        message,
+      }
+    },
+
+    closeSuccess() {
+      this.successDialog.show = false
     },
 
     startLoading() {

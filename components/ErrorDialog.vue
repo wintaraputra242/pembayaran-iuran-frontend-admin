@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import errorImg from '@images/pages/error.png';
+import error from '@images/pages/error.png';
   
 const props = withDefaults(defineProps<{
   show: boolean,
@@ -19,14 +19,32 @@ const emits = defineEmits<{
 <template>
   <VDialog v-model="props.show" max-width="420">
     <VCard>
-      <VCardItem class="text-center">
-        <VImg :src="errorImg" class="mx-auto" width="70%" />
-        <p class="ma-0 text-h5 mb-1">{{ props.title }}</p>
-        <p class="ma-0">{{ props.message }}</p>
+      <VCardTitle class="text-h6 px-0">
+        <div class="d-flex align-center justify-end">
+          <div class="px-2">
+            <IconBtn variant="text" color="secondary" size="x-small"  @click="emits('close')">
+              <VIcon icon="ri-close-line" />
+            </IconBtn>
+          </div>
+        </div>
+      </VCardTitle>
+
+      <VCardItem class="text-body-2">
+        <VImg :src="error" width="10rem" class="mx-auto" />
       </VCardItem>
 
-      <VCardActions>
-        <VBtn block @click="emits('close')">
+      <VCardText>
+        <h3 class="text-center mb-3">{{ title }}</h3>
+        <p class="text-center text-body-2 ma-0">{{ message }}</p>
+      </VCardText>
+
+      <VCardActions class="justify-end gap-2">
+        <VBtn
+          color="secondary"
+          variant="text"
+          size="small"
+          @click="emits('close')"
+        >
           OK
         </VBtn>
       </VCardActions>

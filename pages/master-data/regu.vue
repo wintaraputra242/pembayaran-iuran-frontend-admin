@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { CreateReguPayload } from '@/types/api/master-regu';
 import DataTableRegu from '@/views/regu/DataTable.vue';
 import DialogDataTableAnggotaRegu from '@/views/regu/DialogDataTableAnggota.vue';
 import DialogFormDataRegu from '@/views/regu/DialogFormData.vue';
@@ -7,6 +8,10 @@ import FormFilterRegu from '@/views/regu/FormFilter.vue';
 definePageMeta({
   middleware: ['admin']
 })
+
+const masterReguStore = useMasterReguStore()
+const masterUsersStore = useMasterUsersStore()
+const uiStore = useUiStore()
 
 const showFormData = ref(false)
 const isEdit = ref(false)
@@ -170,11 +175,30 @@ const handleResetAnggota = (item: object[]) => {
   itemSelected.value = item
 }
 
+const handleSubmit = async (params: CreateReguPayload) => {
+  const res = await masterReguStore.createRegu(params)
+  
+  if (localStorage.getItem('from') && localStorage.getItem('from') === 'create-user') {
+    handleCloseFormData()
+    masterUsersStore.reload = true
+    navigateTo('/master-data/users')
+    return
+  }
+
+  showFormData.value = false
+  uiStore.showSuccess(res.message)
+}
+
+watch(() => showFormData.value, (newVal) => {
+  if (!newVal) {
+    localStorage.removeItem('from')
+  }
+})
+
 onMounted(() => {
   if(localStorage.getItem('from') && localStorage.getItem('from') === 'create-user') {
     showAnnouncement.value = true
-    localStorage.removeItem('from')
-  } 
+  }
 })
 </script>
 
@@ -196,7 +220,7 @@ onMounted(() => {
       </VCol>
     </VRow>
 
-    <DialogFormDataRegu :is-show="showFormData" :is-edit="isEdit" :item="itemSelected" @close="handleCloseFormData" />
+    <DialogFormDataRegu :is-show="showFormData" :is-edit="isEdit" :item="itemSelected" :loading="masterReguStore.loading" @close="handleCloseFormData" @submit="handleSubmit" />
 
     <DialogDataTableAnggotaRegu :is-show="showAnggota" :data="[]" :item="itemSelected" :is-loading="isLoadingGetAnggota" @close="handleCloseShowAnggota" @change-leader="handleChangeLeaderAnggota" @delete="handleDeleteDataAnggota" @set-leader="handleSetLeaderAnggota" @reset-anggota="handleResetAnggota" />
 
@@ -214,7 +238,7 @@ onMounted(() => {
 
     <AnnouncementDialog
       v-model="showAnnouncement"
-      message="Pembuatan akun Ketua Regu hanya dapat dilakukan setelah Regu dibuat terlebih dahulu. Setelah Regu berhasil ditambahkan, sistem akan otomatis membuatkan akun Ketua Regu terkait."
+      message="Pembuatan akun Ketua Regu hanya dapat dilakukan setelah data Regu baru berhasil dibuat. Ketika data Regu berhasil ditambahkan, sistem akan otomatis membuatkan akun Ketua Regu terkait."
       @close="showAnnouncement = false; showFormData = true"
     />
   </div>

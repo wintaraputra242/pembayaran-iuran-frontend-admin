@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import ListInformasiIuranCreatePembayaran from '@/views/create-pembayaran/ListInformasiIuran.vue';
 
+definePageMeta({
+  middleware: ['ketua-regu']
+})
+
+const uiStore = useUiStore()
+
 const tab = ref('kematian')
 
 const filters = reactive({
@@ -8,10 +14,14 @@ const filters = reactive({
   bulanan: '',
 })
 
-definePageMeta({
-  middleware: ['ketua-regu']
-})
+onMounted(() => {
+  const fromPath = useCookie('from-path')
 
+  if (uiStore.isLoading && fromPath.value === '/login') {
+      uiStore.endLoading()
+      fromPath.value = null
+  }
+})
 </script>
 
 <template>

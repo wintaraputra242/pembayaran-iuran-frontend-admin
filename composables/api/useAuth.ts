@@ -2,16 +2,10 @@ import type { AuthUser, LoginResponse, MeResponse } from "@/types/api/auth"
 import { useApi } from "./useApi"
 
 export const useAuth = () => {
-  const api = useApi()
+  const { api, fetchCsrf } = useApi()
   const authStore = useAuthStore()
   const uiStore = useUiStore()
   const router = useRouter()
-
-  const fetchCsrf = async () => {
-    await  $fetch('http://localhost:8000/sanctum/csrf-cookie', {
-      credentials: 'include'
-    })
-  }
 
   const login = async (payload: { username: string; password: string }): Promise<LoginResponse> => {
     await fetchCsrf()

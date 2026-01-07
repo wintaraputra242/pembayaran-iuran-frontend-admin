@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import Toast from '@/components/Toast.vue';
+
 
 
 // const { isMobile } = useDevice()
@@ -15,5 +17,6 @@ const uiStore = useUiStore()
       <LoadingFirstLoad v-if="uiStore.isLoading" />
     </NuxtLayout>
 
+    <Toast />
   </VApp>
 </template>

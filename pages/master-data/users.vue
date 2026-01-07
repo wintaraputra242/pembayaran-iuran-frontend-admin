@@ -1,11 +1,15 @@
 <script setup lang="ts">
+import type { MasterUser } from '@/types/api/master-users';
 import DataTableUsers from '@/views/users/DataTable.vue';
-import DialogFormDataUsers from '@/views/users/DialogFormData.vue';
 import FormFilterUsers from '@/views/users/FormFilter.vue';
 
 definePageMeta({
   middleware: ['admin']
 })
+
+const config = useRuntimeConfig()
+
+const masterUsersStore = useMasterUsersStore()
 
 const showFormData = ref(false)
 const isEdit = ref(false)
@@ -13,7 +17,6 @@ const isEdit = ref(false)
 const handleCloseFormData = () => {
   if (isCreate.value) isCreate.value = false
   if (isEdit.value) isEdit.value = false
-  if (isEditPassword.value) isEditPassword.value = false
 
   showFormData.value = false
 }
@@ -50,59 +53,45 @@ const confirmOptions = {
   confirmIcon: '',
 }
 
-const handleDeleteData = (item: object) => {
-  confirmOptions.title = 'Hapus Data?'
-  confirmOptions.message = 'Apakah Anda yakin ingin menghapus data ini? Tindakan ini tidak dapat dibatalkan.'
-  confirmOptions.confirmText = 'Hapus'
-  confirmOptions.cancelText = 'Batal'
-  confirmOptions.confirmColor = 'error'
-  confirmOptions.confirmIcon = 'ri-delete-bin-line'
-
-  showConfirmation.value = true 
-  itemSelected.value = item
-}
-
-const showAnggota = ref(false)
-const isLoadingGetAnggota = ref(false)
-
-const handleShowAnggota = (item: object) => {
-  isLoadingGetAnggota.value = true
-
-  setTimeout(() => {
-    isLoadingGetAnggota.value = false
-  }, 5000)
-  
-  showAnggota.value = true 
-  itemSelected.value = item
-}
-
-const handleUpdateStatus = (item: object) => {
-  confirmOptions.title = 'Nonaktif Warga?'
-  confirmOptions.message = `Apakah Anda yakin ingin mengnonaktifkan data informasi iuran ${item?.nama}?.`
-  confirmOptions.confirmText = 'Nonaktif'
-  confirmOptions.cancelText = 'Batal'
-  confirmOptions.confirmColor = 'error'
-  confirmOptions.confirmIcon = 'ri-eye-off-line'
-
-  showConfirmation.value = true 
-  itemSelected.value = item
-}
-
 const isCreate = ref(false)
 
-const handleCreate = () => {
-  showFormData.value = true 
-  isCreate.value = true
+const page = ref(1)
+
+const handleLoadMore = () => {
+  page.value += 1
+  masterUsersStore.fetchUsers({ limit: 10, page: page.value })
 }
 
-const isEditPassword = ref(false)
+const handleFilter = (filters: { keyword: string, role: null | string }) => {
+  page.value = 1
+  masterUsersStore.reload = true
+  Object.entries(filters).forEach(([key, value]) => {
+    masterUsersStore.setFilter(key as 'role' | 'keyword', value as string)
+  })
+  masterUsersStore.fetchUsers({ limit: 10, page: page.value })
+}
 
-const handleEditPassword = (item: object) => {
-  showFormData.value = true 
-  isEditPassword.value = true
+const handleReload = () => {
+  page.value = 1
+  masterUsersStore.reload = true
+  masterUsersStore.resetFilter()
+  masterUsersStore.fetchUsers({ limit: 10, page: page.value })
+}
+
+const handleGetPassword = (item: MasterUser) => {
+  showCredential.value = true
   itemSelected.value = item
 }
 
+const showCredential = ref(false)
+
+const handleDownloadCredentials = async () => {
+  window.open(config.public.backendUrl + '/regu/credential/download', '_blank')
+}
+
+onMounted(async () => {
+  await masterUsersStore.fetchUsers({ limit: 10, page: page.value })
+})
 </script>
 
 <template>
@@ -112,18 +101,15 @@ const handleEditPassword = (item: object) => {
       <VCol
         cols="12"
       >
-        <FormFilterUsers @show-form-data="handleCreate" />
+        <FormFilterUsers :loading-download="masterUsersStore.loadingDownload" @download-credentials="handleDownloadCredentials" @filter="handleFilter" @reload="handleReload" />
       </VCol>
   
       <VCol
         cols="12"
-        md="4"
       >
-        <DataTableUsers @edit="handleEditData" @delete="handleDeleteData" @edit-password="handleEditPassword" />
+        <DataTableUsers :data="masterUsersStore.users" :meta="masterUsersStore.meta" :loading="masterUsersStore.loading" :has-more="masterUsersStore.hasMore" :has-filter="masterUsersStore.hasFilter" @get-password="handleGetPassword" @load-more="handleLoadMore" />
       </VCol>
     </VRow>
-
-    <DialogFormDataUsers :is-show="showFormData" :is-create="isCreate" :is-edit="isEdit" :is-edit-password="isEditPassword" :item="itemSelected" @close="handleCloseFormData" />
 
     <ConfirmDialog
       v-model="showConfirmation"

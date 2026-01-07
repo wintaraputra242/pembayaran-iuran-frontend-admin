@@ -17,6 +17,15 @@ export function useScrollStatus(offset: number = 10) {
     isScrolled.value = window.scrollY > offset
   }
 
+  const scrollToTop = (behavior: ScrollBehavior = 'smooth') => {
+    if (isOverlayActive.value) return
+
+    window.scrollTo({
+      top: 0,
+      behavior,
+    })
+  }
+
   onMounted(() => {
     isScrolled.value = window.scrollY > offset
     checkOverlay()
@@ -34,6 +43,7 @@ export function useScrollStatus(offset: number = 10) {
   })
 
   return {
-    isScrolled
+    isScrolled,
+    scrollToTop
   }
 }

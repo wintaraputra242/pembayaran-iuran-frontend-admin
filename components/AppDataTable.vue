@@ -4,9 +4,9 @@ import { useDisplay } from 'vuetify'
 
 interface Header {
   key: string
-  label: string
+  label?: string
   width?: string
-  align?: 'start' | 'center' | 'end'
+  align?: 'start' | 'center' | 'end' | string
 }
 
 const props = defineProps<{
@@ -14,6 +14,7 @@ const props = defineProps<{
   items: any[]
   loading?: boolean
   hasMore?: boolean
+  hasFilter?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -141,14 +142,14 @@ watch(
   </VTable>
 
   <!-- ================= MOBILE ================= -->
-  <VList v-else lines="two">
+  <div v-else class="list-data">
     <VCard
       v-for="(item, i) in items"
       :key="item.id"
-      class="mb-3"
+      class="mb-4"
       rounded="lg"
       border="sm"
-      elevation="0"
+      position="relative"
     >
       <VCardText class="d-flex flex-column gap-2">
         <div class="text-caption text-medium-emphasis">
@@ -185,5 +186,15 @@ watch(
     <div v-if="loading" class="text-center py-4">
       <VProgressCircular indeterminate size="26" />
     </div>
-  </VList>
+
+    <div v-if="props.items.length === 0 && !props.loading" class="text-center py-4">
+      <p class="text-center ma-0">{{ props.hasFilter ? 'Data tidak ditemukan' : 'Tidak ada data' }}</p>
+    </div>
+  </div>
 </template>
+
+<style lang="scss">
+.list-data {
+  background-color: transparent !important;
+}
+</style>

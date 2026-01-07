@@ -4,7 +4,6 @@ import logo from '@images/logo.svg?raw';
 import VerticalNavLayout from '@layouts/components/VerticalNavLayout.vue';
 
 // Components
-import Footer from '@/layouts/components/Footer.vue';
 import UserProfile from '@/layouts/components/UserProfile.vue';
 
 import { useScrollStatus } from '@/composables/useScrollNavbar';
@@ -75,8 +74,10 @@ const { isScrolled } = useScrollStatus(20)
 
     <!-- 👉 Footer -->
     <template #footer>
-      <Footer />
+      <!-- <Footer /> -->
     </template>
+
+    
   </VerticalNavLayout>
 </template>
 

@@ -3,23 +3,7 @@ import DefaultLayoutWithVerticalNav from './components/DefaultLayoutWithVertical
 
 const uiStore = useUiStore()
 
-// import { useAuth } from '@/composables/api/useAuth';
-
-// const router = useRouter()
-
-// const authStore = useAuthStore()
-// const { fetchUser } = useAuth()
-
-// const getUser = async () => {
-//   const ok = await fetchUser()
-//   // if (ok) {
-//   //   router.push(authStore.role === 'admin' ? '/' : '/create-pembayaran')
-//   // }
-// }
-
-// if (authStore.isLoggedIn && !authStore.user) {
-//   getUser()
-// }
+const { isScrolled, scrollToTop } = useScrollStatus(20)
 </script>
 
 <template>
@@ -29,6 +13,16 @@ const uiStore = useUiStore()
       <slot />
     </DefaultLayoutWithVerticalNav>
     <ErrorDialog :show="uiStore.errorDialog.show" :title="uiStore.errorDialog.title" :message="uiStore.errorDialog.message" @close="uiStore.closeError" />
+
+    <SuccessDialog v-model="uiStore.successDialog.show" :title="uiStore.successDialog.title" :message="uiStore.successDialog.message" @close="uiStore.closeSuccess" />
+  
+    <VFab
+      :active="isScrolled"
+      icon="ri-arrow-up-s-line"
+      size="large"
+      style="z-index: 10; position: fixed; bottom: 30px; right: 50px;"
+      @click="scrollToTop()"
+    ></VFab>
   </div>
 </template>
 

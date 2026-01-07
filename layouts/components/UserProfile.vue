@@ -3,6 +3,8 @@ import { useAuth } from '@/composables/api/useAuth';
 import avatar1 from '@images/avatars/avatar-1.png';
 
 const router = useRouter()
+const route = useRoute()
+
 const { logout } = useAuth()
 
 const uiStore = useUiStore()
@@ -13,10 +15,14 @@ const logoutUser = async () => {
   
   try {
     await logout()
+
+    uiStore.startLoading()
+    const fromPath = useCookie('from-path')
+    fromPath.value = route.path
     
     router.push('/login')
   } catch (e: any) {
-    uiStore.showError(e.errors ?? 'Terjadi kesalahan saat login', 'Gagal Login')
+    uiStore.showError(e.errors ?? 'Terjadi kesalahan saat logout', 'Gagal Logout')
   } finally {
     isLoadingLogout.value = false
   }

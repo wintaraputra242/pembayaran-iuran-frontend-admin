@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import success from '@images/pages/success.png'
+import success from '@images/pages/success_new.png'
 import { ref, watch } from "vue"
 
 const props = defineProps({
@@ -50,7 +50,7 @@ const handleClose = () => {
 
       <VCardText>
         <h3 class="text-center mb-3">{{ title }}</h3>
-        <p class="text-body-2 ma-0">{{ message }}</p>
+        <p class="text-center text-body-2 ma-0">{{ message }}</p>
       </VCardText>
 
       <VCardActions class="justify-end gap-2">

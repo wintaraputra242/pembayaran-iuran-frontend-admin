@@ -1,7 +1,8 @@
 export const useApi = () => {
   const config = useRuntimeConfig()
-  const authStore = useAuthStore()
   const router = useRouter()
+  const authStore = useAuthStore()
+  const uiStore = useUiStore()
 
   const api = $fetch.create({
     baseURL: config.public.apiBase,
@@ -13,6 +14,25 @@ export const useApi = () => {
         options.headers = new Headers(options.headers)
         options.headers.set('X-XSRF-TOKEN', csrf)
       }
+    },
+
+    onRequestError({ error }) {
+      // Tidak ada internet / network error
+      if (
+        (
+          error.message?.includes('Failed to fetch') ||
+          error.message?.includes('NetworkError') ||
+          error.message?.includes('fetch')
+        )
+      ) {
+        uiStore.showError('Coba cek internet Anda.', 'Tidak Ada Internet')
+
+        return
+      }
+
+      // Error lain
+      console.error('Request error lainnya:', error)
+      uiStore.showError(error.message, 'Terjadi Kesalahan')
     },
 
     async onResponseError({ response }) {
@@ -33,6 +53,8 @@ export const useApi = () => {
         router.push('/login')
       }
 
+      uiStore.showError(data?.errors ?? data?.message, 'Gagal')
+
       throw {
         status,
         message: data?.message || 'Terjadi kesalahan',
@@ -42,5 +64,15 @@ export const useApi = () => {
     },
   })
 
-  return api
+  const fetchCsrf = async () => {
+    await  $fetch('http://localhost:8000/sanctum/csrf-cookie', {
+      credentials: 'include'
+    })
+  }
+  
+
+  return {
+    api,
+    fetchCsrf
+  }
 }

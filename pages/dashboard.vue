@@ -5,6 +5,17 @@ import NotifcationTableDashboard from '@/views/dashboard-new/NotifcationTable.vu
 definePageMeta({
   middleware: ['admin']
 })
+
+const uiStore = useUiStore()
+
+onMounted(() => {
+  const fromPath = useCookie('from-path')
+
+  if (uiStore.isLoading && fromPath.value === '/login') {
+      uiStore.endLoading()
+      fromPath.value = null
+  }
+})
 </script>
 
 <template>

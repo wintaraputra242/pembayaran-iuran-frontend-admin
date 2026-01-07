@@ -8,7 +8,7 @@ export default defineNuxtPlugin(async () => {
   if (authStore.fetched) return
 
   try {
-    const api = useApi()
+    const { api } = useApi()
     const res: MeResponse = await api('/auth/me')
 
     authStore.setUser(res.data)

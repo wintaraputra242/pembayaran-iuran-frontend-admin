@@ -1,4 +1,7 @@
 export default defineNuxtRouteMiddleware((to) => {
+  const authStore = useAuthStore()
+  const uiStore = useUiStore()
+
   if (to.meta.public) return
 
   const ignoredPaths = [
@@ -12,14 +15,9 @@ export default defineNuxtRouteMiddleware((to) => {
     return
   }
 
-  const authStore = useAuthStore()
-
   if (!authStore.isLoggedIn) {
     const redirect = useCookie('redirect_after_login')
     redirect.value = to.path
-
-    const test = useCookie('test')
-    test.value = to.path
 
     return navigateTo('/login')
   }

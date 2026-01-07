@@ -1,24 +1,19 @@
 <script setup lang="ts">
 import { useAuth } from '@/composables/api/useAuth'
 
+definePageMeta({ layout: 'blank', middleware: 'guest', public: true })
+
 const router = useRouter()
+const route = useRoute()
 
 const { login } = useAuth()
-const ui = useUiStore()
+const uiStore = useUiStore()
 
 const form = ref({
   username: '',
   password: '',
-  // remember: false,
 })
 
-// const vuetifyTheme = useTheme()
-
-// const authThemeMask = computed(() => {
-//   return vuetifyTheme.global.name.value === 'light'
-//     ? authV1MaskLight
-//     : authV1MaskDark
-// })
 
 const isPasswordVisible = ref(false)
 
@@ -32,19 +27,31 @@ const onSubmit = async () => {
       password: form.value.password,
     })
 
+    uiStore.startLoading()
+    const fromPath = useCookie('from-path')
+    fromPath.value = route.path
+
     router.push(
       res.data.role === 'admin'
         ? '/'
         : '/create-pembayaran'
     )
+    
   } catch (e: any) {
-    ui.showError(e.errors ?? 'Terjadi kesalahan saat login', 'Gagal Login')
+    uiStore.showError(e.errors ?? 'Terjadi kesalahan saat login', 'Gagal Login')
   } finally {
     isLoadingSubmit.value = false
   }
 }
 
-definePageMeta({ layout: 'blank', middleware: 'guest', public: true })
+onMounted(() => {
+  const fromPath = useCookie('from-path')
+
+  if (uiStore.isLoading && (fromPath.value === '/' || fromPath.value === '/dashboard' || fromPath.value === '/create-pembayaran')) {
+    uiStore.endLoading()
+    fromPath.value = null
+  }
+})
 </script>
 
 <template>
