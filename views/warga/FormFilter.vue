@@ -1,12 +1,13 @@
 <script lang="ts" setup>
 const emit = defineEmits<{
+  (e: 'filter', item: { keyword: string, status_keaktifan: null | string }): void;
   (e: 'reload'): void;
   (e: 'showFormData'): void;
 }>();
 
-const filter = reactive({
-  nama_warga: '',
-  status: null,
+const filters = reactive({
+  keyword: '',
+  status_keaktifan: null,
 })
 </script>
 
@@ -17,15 +18,20 @@ const filter = reactive({
         <VRow align="center">
           <VCol cols="12">
             <VTextField
-              v-model="filter.nama_warga"
-              placeholder="Masukkan nama warga"
+              v-model="filters.keyword"
+              placeholder="Cari warga"
             />
           </VCol>
           <VCol cols="12">
             <VSelect
-              v-model="filter.status"
-              :items="['Aktif', 'Tidak Aktif']"
-              placeholder="Pilih status"
+              v-model="filters.status_keaktifan"
+              placeholder="Pilih status keaktifan"
+              item-title="label"
+              item-value="value"
+              :items="[
+                {label: 'Aktif', value: 'aktif'},
+                {label: 'Tidak Aktif', value: 'tidak aktif'},
+              ]"
             />
           </VCol>
           <VCol cols="12">
