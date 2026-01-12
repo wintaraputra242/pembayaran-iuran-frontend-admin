@@ -7,6 +7,8 @@ definePageMeta({
   middleware: ['admin']
 })
 
+const masterWargaStore = useMasterWargaStore()
+
 const showFormData = ref(false)
 const isEdit = ref(false)
 
@@ -70,6 +72,29 @@ const handleUpdateStatus = (item: object) => {
   showConfirmation.value = true 
   itemSelected.value = item
 }
+
+const page = ref(1)
+
+const handleFilter = (filters: { keyword: string, status_keaktifan: null | string }) => {
+  page.value = 1
+  masterWargaStore.reload = true
+  Object.entries(filters).forEach(([key, value]) => {
+    masterWargaStore.setFilter(key as 'status_keaktifan' | 'keyword', value as string)
+  })
+  masterWargaStore.fetchUsers({ limit: 10, page: page.value })
+}
+
+const handleReload = () => {
+  page.value = 1
+  masterWargaStore.reload = true
+  masterWargaStore.resetFilter()
+  masterWargaStore.fetchUsers({ limit: 10, page: page.value })
+}
+
+const handleLoadMore = () => {
+  page.value += 1
+  masterWargaStore.fetchUsers({ limit: 10, page: page.value })
+}
 </script>
 
 <template>
@@ -79,14 +104,14 @@ const handleUpdateStatus = (item: object) => {
       <VCol
         cols="12"
       >
-        <FormFilterWarga @show-form-data="showFormData = true" />
+        <FormFilterWarga @show-form-data="showFormData = true" @filter="handleFilter" @reload="handleReload" />
       </VCol>
   
       <VCol
         cols="12"
         md="4"
       >
-        <DataTableWarga @edit="handleEditData" @delete="handleDeleteData" @update-status="handleUpdateStatus" />
+        <DataTableWarga :data="masterWargaStore.users" :meta="masterWargaStore.meta" :loading="masterWargaStore.loading" :has-more="masterWargaStore.hasMore" :has-filter="masterWargaStore.hasFilter" @edit="handleEditData" @delete="handleDeleteData" @update-status="handleUpdateStatus" @load-more="handleLoadMore" />
       </VCol>
     </VRow>
 
