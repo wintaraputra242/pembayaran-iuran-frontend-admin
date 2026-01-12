@@ -53,7 +53,10 @@ export const useApi = () => {
         router.push('/login')
       }
 
-      uiStore.showError(data?.errors ?? data?.message, 'Gagal')
+      if (data?.code !== 401) {
+        uiStore.showError(data?.errors ?? data?.message, 'Gagal')
+      }
+
 
       throw {
         status,

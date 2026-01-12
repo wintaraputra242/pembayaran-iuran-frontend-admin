@@ -17,8 +17,14 @@ const form = ref({
 
 const isPasswordVisible = ref(false)
 
+const formComp = ref()
+
 const isLoadingSubmit = ref(false)
 const onSubmit = async () => {
+  const { valid } = await formComp.value.validate() 
+
+  if (!valid) return
+
   isLoadingSubmit.value = true
   
   try {
@@ -81,7 +87,7 @@ onMounted(() => {
         </VCardItem>
   
         <VCardText>
-          <VForm @submit.prevent="onSubmit">
+          <VForm ref="formComp" @submit.prevent="onSubmit">
             <VRow>
               <!-- username -->
               <VCol cols="12">
@@ -89,6 +95,9 @@ onMounted(() => {
                   v-model="form.username"
                   label="Username"
                   type="username"
+                  :rules="[
+                    (v: string) => !!v || 'Username harus diisi'
+                  ]"
                 />
               </VCol>
   
@@ -100,6 +109,9 @@ onMounted(() => {
                   placeholder="············"
                   :type="isPasswordVisible ? 'text' : 'password'"
                   autocomplete="password"
+                  :rules="[
+                    (v: string) => !!v || 'Password harus diisi'
+                  ]"
                   :append-inner-icon="isPasswordVisible ? 'ri-eye-off-line' : 'ri-eye-line'"
                   @click:append-inner="isPasswordVisible = !isPasswordVisible"
                 />

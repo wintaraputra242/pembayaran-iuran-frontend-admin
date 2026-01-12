@@ -12,7 +12,8 @@ export const useUiStore = defineStore('ui', {
       title: '',
       message: '',
     },
-    isLoading: true
+    isLoading: true,
+    firstLoadWeb: true,
   }),
 
   actions: {
@@ -46,6 +47,10 @@ export const useUiStore = defineStore('ui', {
 
     endLoading() {
       this.isLoading = false
+    },
+
+    changeStatusFirstLoadWebToFalse() {
+      this.firstLoadWeb = false
     }
   },
 })
