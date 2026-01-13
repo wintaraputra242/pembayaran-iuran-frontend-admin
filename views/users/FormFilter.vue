@@ -5,7 +5,6 @@ const emit = defineEmits<{
   (e: 'downloadCredentials'): void;
 }>();
 
-
 const props = withDefaults(defineProps<{
   loadingDownload: boolean
 }>(), {})

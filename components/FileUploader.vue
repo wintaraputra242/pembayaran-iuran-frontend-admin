@@ -5,6 +5,11 @@ import { computed, ref } from 'vue';
 
 // Props fleksibel
 const props = defineProps({
+  modelValue: {
+    type: [File, Array, Object, null],
+    default: null,
+  },
+
   options: {
     type: Object,
     default: () => ({}),
@@ -23,66 +28,77 @@ const props = defineProps({
   },
 })
 
+const emit = defineEmits(['update:modelValue'])
+
+defineExpose({
+  validate: () => validateFile(files.value),
+  reset: () => {
+    handleRemoved(files.value)
+  },
+})
+
 const dzRef = ref<any>(null)
-
-// files dari Dropzone
-const files = ref<any>(null)
-
-// error message
-const errorMessage = ref("")
+const files = ref<any>(props.modelValue)
+const errorMessage = ref('')
 
 // merged options
 const mergedOptions = computed(() => ({
   url: '/api/upload',
   maxFilesize: 2,
   maxFiles: 5,
-  acceptedFiles: 'image/*,.pdf',
   previewsContainer: false,
   autoProcessQueue: false, // penting agar tidak upload otomatis
   ...props.options,
 }))
 
 // VALIDATOR ala Vuetify
-function validateFile(file: any) {
+function validateFile(value: any) {
   for (const rule of props.rules) {
-    const result = rule(file)
+    const result = rule(value)
     if (result !== true) {
       errorMessage.value = result
       return false
     }
   }
-  errorMessage.value = ""
+  errorMessage.value = ''
   return true
 }
 
-let oldFile = {} as File
+let oldFile: File | null = null
 
 // WATCH ketika file ditambahkan
-function handleFileAdded(event: any) {
-  const file = event
-
-  if (dzRef.value.dropzone.options.maxFiles === 1) {
-    dzRef.value.dropzone.removeFile(oldFile)
+function handleFileAdded(file: File) {
+  if (mergedOptions.value.maxFiles === 1) {
+    if (oldFile) dzRef.value.dropzone.removeFile(oldFile)
     files.value = file
   }
-  if (dzRef.value.dropzone.options.maxFiles > 1) files.value.push(file)
 
-  if(!validateFile(file)) return
+  if (!validateFile(files.value)) {
+    dzRef.value.dropzone.removeFile(file)
+    return
+  }
 
-  oldFile = event
-  props.onEvents.addedFile?.(event)
+  oldFile = file
+  emit('update:modelValue', files.value)
+  props.onEvents.addedFile?.(file)
 }
 
 // WATCH ketika file dihapus
-function handleRemoved(event: any) {
-  if (dzRef.value.dropzone.options.maxFiles === 1) {
-    dzRef.value.dropzone.removeFile(event)
-    files.value = {}
-  }
-  if (dzRef.value.dropzone.options.maxFiles > 1) files.value = files.value?.filter(f => f.name !== event.file.name)
-
-  props.onEvents.removedFile?.(event)
+function handleRemoved(file: File) {
+  dzRef.value.dropzone.removeFile(file)
+  files.value = null
+  emit('update:modelValue', null)
+  errorMessage.value = ''
+  props.onEvents.removedFile?.(file)
 }
+
+watch(
+  () => props.modelValue,
+  val => {
+    files.value = val
+    validateFile(val)
+  }
+)
 
 const handleFileError = (event: any) => {
   validateFile(event)
@@ -101,8 +117,6 @@ function formatSize(bytes: number) {
 
 // Tentukan icon berdasarkan file mimetype
 function getFileIcon(file: any) {
-  console.log(file)
-
   const name = file.name.toLowerCase()
 
   const iconFileFormats = {
@@ -181,12 +195,14 @@ function getFileIcon(file: any) {
     </ClientOnly>
 
     <!-- ERROR MESSAGE mirip Vuetify -->
-    <div
-      v-if="errorMessage"
-      class="text-red text-caption mt-2"
-    >
-      {{ errorMessage }}
-    </div>
+    <VExpandTransition>
+      <div
+        v-if="errorMessage"
+        class="text-red text-caption mt-2"
+      >
+        {{ errorMessage }}
+      </div>
+    </VExpandTransition>
 
     <!-- PREVIEW FILE CUSTOM -->
     <div class="mt-4">

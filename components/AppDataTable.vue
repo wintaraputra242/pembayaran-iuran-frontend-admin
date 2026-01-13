@@ -161,7 +161,10 @@ watch(
             {{ header.label }}
           </div>
 
-          <div v-if="header.key !== 'actions'" class="font-weight-medium">
+          <div v-if="header.key === 'is_deleted'" class="font-weight-medium">
+          </div>
+
+          <div v-else-if="header.key !== 'actions'" class="font-weight-medium">
             <slot :name="`cell-${header.key}`" :item="item">
               {{ item[header.key] }}
             </slot>
@@ -171,6 +174,12 @@ watch(
             <slot :name="`cell-${header.key}`" :item="item">
               {{ item[header.key] }}
             </slot>
+          </div>
+
+          <div v-if="header.key === 'is_deleted' && item?.is_deleted" class="d-flex justify-end gap-2 mt-2">
+            <VChip class="position-absolute" variant="flat" style="top: 10px; right: 10px;" size="small" color="error">
+              Dihapus
+            </VChip>
           </div>
         </div>
       </VCardText>

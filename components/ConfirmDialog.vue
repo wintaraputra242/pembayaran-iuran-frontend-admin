@@ -46,7 +46,7 @@ const handleConfirm = () => {
         <div class="d-flex align-center justify-space-between">
           <span class="px-4">{{ title }}</span>
           <div class="px-2">
-            <IconBtn variant="text" color="secondary" size="x-small"  @click="handleCancel">
+            <IconBtn :disabled="loading" variant="text" color="secondary" size="x-small"  @click="handleCancel">
               <VIcon icon="ri-close-line" />
             </IconBtn>
           </div>

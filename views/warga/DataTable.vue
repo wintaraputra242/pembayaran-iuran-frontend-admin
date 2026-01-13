@@ -1,11 +1,12 @@
 <script setup lang="ts">
+import type { MasterWarga } from '@/types/api/master-warga';
 import type { PaginationMeta } from '@/types/common';
 
 
 const emit = defineEmits<{
-  (e: 'updateStatus', item: object): void;
-  (e: 'edit', item: object): void;
-  (e: 'delete', item: object): void;
+  (e: 'updateStatus', item: MasterWarga): void;
+  (e: 'edit', item: MasterWarga): void;
+  (e: 'delete', item: MasterWarga): void;
   (e: 'loadMore'): void;
 }>();
 
@@ -20,10 +21,11 @@ const props = withDefaults(defineProps<{
 const headers = [
   { key: 'no', label: 'No.' },
   { key: 'nik', label: 'NIK', width: '400px' },
-  { key: 'nama', label: 'Nama', width: '200px' },
+  { key: 'nama_warga', label: 'Nama', width: '200px' },
   { key: 'alamat', label: 'Alamat', align: 'center' },
   { key: 'no_hp', label: 'No. HP', align: 'center' },
-  { key: 'status', label: 'Status', align: 'center' },
+  { key: 'status_keaktifan', label: 'Status Keaktifan', align: 'center' },
+  { key: 'is_deleted' },
   { key: 'actions' },
 ]
 
@@ -38,20 +40,20 @@ const headers = [
     :has-filter="props.hasFilter"
     @loadMore="emit('loadMore')"
   >
-    <template #cell-role="{ item }">
-      <VChip size="small" :color="item.role === 'admin' ? 'success' : 'info'">
-        {{ item.role === 'admin' ? 'Admin' : 'Ketua Regu' }}
+    <template #cell-status_keaktifan="{ item }">
+      <VChip size="small" :color="item.status_keaktifan === 'aktif' ? 'success' : 'error'">
+        {{ item.status_keaktifan === 'aktif' ? 'Aktif' : 'Tidak Aktif' }}
       </VChip>
     </template>
 
     <template #cell-actions="{ item }">
       <IconBtn variant="outlined" class="rounded-lg" size="small" color="secondary" @click="emit('updateStatus', item)">
-        <VIcon icon="ri-eye-off-line" />
+        <VIcon :icon="item.status_keaktifan === 'aktif' ? 'ri-eye-off-line' : 'ri-eye-line'" />
       </IconBtn>
       <IconBtn variant="outlined" class="rounded-lg" size="small" color="secondary" @click="emit('edit', item)">
         <VIcon icon="ri-edit-line" />
       </IconBtn>
-      <IconBtn variant="outlined" class="rounded-lg" size="small" color="error" @click="emit('delete', item)">
+      <IconBtn v-if="!item.is_deleted" variant="outlined" class="rounded-lg" size="small" color="error" @click="emit('delete', item)">
         <VIcon icon="ri-delete-bin-line" />
       </IconBtn>
     </template>

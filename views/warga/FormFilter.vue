@@ -9,12 +9,19 @@ const filters = reactive({
   keyword: '',
   status_keaktifan: null,
 })
+
+const handleReload = () => {
+  filters.keyword = ''
+  filters.status_keaktifan = null
+
+  emit('reload')
+}
 </script>
 
 <template>
   <VCard>
     <VCardItem>
-      <VForm @submit.prevent="() => {}">
+      <VForm @submit.prevent="emit('filter', filters)">
         <VRow align="center">
           <VCol cols="12">
             <VTextField
@@ -28,19 +35,20 @@ const filters = reactive({
               placeholder="Pilih status keaktifan"
               item-title="label"
               item-value="value"
+              clearable
               :items="[
                 {label: 'Aktif', value: 'aktif'},
-                {label: 'Tidak Aktif', value: 'tidak aktif'},
+                {label: 'Tidak Aktif', value: 'tidak_aktif'},
               ]"
             />
           </VCol>
           <VCol cols="12">
             <div class="d-flex flex-wrap gap-2">
-              <VBtn variant="flat" color="primary">
+              <VBtn type="submit" variant="flat" color="primary">
                 <VIcon icon="ri-search-line" class="me-2" />
                 Filter
               </VBtn>
-              <IconBtn variant="flat" color="primary" @click="emit('reload')">
+              <IconBtn variant="flat" color="primary" @click="handleReload">
                 <VIcon icon="ri-restart-line" />
               </IconBtn>
               <VBtn variant="flat" color="success" @click="emit('showFormData')">
