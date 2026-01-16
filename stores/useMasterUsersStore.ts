@@ -1,6 +1,7 @@
 import { useMasterUsers } from '@/composables/api/useMasterUsers'
 import type { MasterUser } from '@/types/api/master-users'
 import type { PaginationMeta } from '@/types/common'
+import { defineStore } from 'pinia'
 
 export const useMasterUsersStore = defineStore('master-users', {
   state: () => ({

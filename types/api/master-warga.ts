@@ -62,3 +62,10 @@ export interface DeleteWargaResponse {
   message: string
   data: null
 }
+
+export interface GetDetailMasterWargaResponse {
+  code: number
+  success: boolean
+  message: string
+  data: MasterWarga
+}

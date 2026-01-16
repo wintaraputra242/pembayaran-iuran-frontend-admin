@@ -1,4 +1,4 @@
-import type { AddWargaPayload, AddWargaResponse, DeleteWargaResponse, GetMasterWargaResponse, ImportAddWargaResponse, UpdateStatusWargaResponse, UpdateWargaResponse } from '@/types/api/master-warga'
+import type { AddWargaPayload, AddWargaResponse, DeleteWargaResponse, GetDetailMasterWargaResponse, GetMasterWargaResponse, ImportAddWargaResponse, UpdateStatusWargaResponse, UpdateWargaResponse } from '@/types/api/master-warga'
 import { useApi } from './useApi'
 
 export const useMasterWarga = () => {
@@ -75,12 +75,21 @@ export const useMasterWarga = () => {
     return res
   }
 
+  const detailWarga = async (nik: string): Promise<GetDetailMasterWargaResponse> => {
+    const res = await api<GetDetailMasterWargaResponse>(`/warga/${nik}`, {
+      method: 'GET',
+    })
+
+    return res
+  }
+
   return {
     getWarga,
     addWarga,
     importAddDataWarga,
     updateStatusWarga,
     updateWarga,
-    deleteWarga
+    deleteWarga,
+    detailWarga
   }
 }

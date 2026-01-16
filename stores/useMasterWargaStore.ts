@@ -1,11 +1,13 @@
 import { useMasterWarga } from '@/composables/api/useMasterWarga'
 import type { AddWargaPayload, MasterWarga } from '@/types/api/master-warga'
 import type { PaginationMeta } from '@/types/common'
+import { defineStore } from 'pinia'
 
 export const useMasterWargaStore = defineStore('master-warga', {
   state: () => ({
     warga: [] as MasterWarga[],
     meta: null as PaginationMeta | null,
+    detailWarga: null as MasterWarga | null,
     loading: false,
     reload: false,
 
@@ -126,6 +128,22 @@ export const useMasterWargaStore = defineStore('master-warga', {
 
       try {
         const res = await api.deleteWarga(nik)
+
+        return res
+      } finally {
+        this.loading = false
+      }
+    },
+
+    async fetchDetailWarga(nik: string) {
+
+      const api = useMasterWarga()
+      this.loading = true
+
+      try {
+        const res = await api.detailWarga(nik)
+
+        this.detailWarga = res.data
 
         return res
       } finally {

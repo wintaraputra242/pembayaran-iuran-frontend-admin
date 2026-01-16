@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { CreateReguPayload } from '@/types/api/master-regu';
+import type { CreateReguPayload, MasterRegu } from '@/types/api/master-regu';
 
 const emit = defineEmits<{
   (e: 'submit', params: CreateReguPayload): void;
@@ -9,8 +9,9 @@ const emit = defineEmits<{
 const props = withDefaults(defineProps<{
   isShow: boolean
   isEdit: boolean
+  isFetchSuccess: boolean
   loading: boolean
-  item?: object | null
+  item?: MasterRegu | null
 }>(), {
   isShow: false,
   isEdit: false,
@@ -52,7 +53,7 @@ watch(
   newVal => {
     if (!newVal) return
 
-    params.nama_regu = props.item?.nama
+    params.nama_regu = props.item?.nama_regu as string
   }
 )
 
@@ -64,6 +65,12 @@ const handleSubmit = async () => {
   }
 
 }
+
+watch(() => props.isFetchSuccess, (newVal) => {
+  if (newVal) {
+    handleClose()
+  }
+}, {immediate: true})
 </script>
 
 <template>

@@ -9,13 +9,18 @@ interface Header {
   align?: 'start' | 'center' | 'end' | string
 }
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   headers: Header[]
   items: any[]
   loading?: boolean
   hasMore?: boolean
   hasFilter?: boolean
-}>()
+  noDataText?: string
+  variant?: 'text' | 'elevated' | 'flat' | 'outlined' | 'tonal' | 'plain'
+}>(), {
+  noDataText: 'Tidak ada data',
+  variant: 'elevated'
+})
 
 const emit = defineEmits<{
   (e: 'edit', item: any): void
@@ -149,6 +154,7 @@ watch(
       class="mb-4"
       rounded="lg"
       border="sm"
+      :variant="props.variant"
       position="relative"
     >
       <VCardText class="d-flex flex-column gap-2">
@@ -197,7 +203,7 @@ watch(
     </div>
 
     <div v-if="props.items.length === 0 && !props.loading" class="text-center py-4">
-      <p class="text-center ma-0">{{ props.hasFilter ? 'Data tidak ditemukan' : 'Tidak ada data' }}</p>
+      <p class="text-center ma-0">{{ props.hasFilter ? 'Data tidak ditemukan' : props.noDataText }}</p>
     </div>
   </div>
 </template>

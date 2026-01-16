@@ -121,9 +121,9 @@ const handleReload = () => {
   masterWargaStore.fetchWarga({ limit: 10, page: page.value })
 }
 
-const handleLoadMore = () => {
+const handleLoadMore = async () => {
   page.value += 1
-  masterWargaStore.fetchWarga({ limit: 10, page: page.value })
+  await masterWargaStore.fetchWarga({ limit: 10, page: page.value })
 }
 
 const isFetchSuccess = ref(false)

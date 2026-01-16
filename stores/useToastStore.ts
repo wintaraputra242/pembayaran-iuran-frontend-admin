@@ -1,3 +1,5 @@
+import { defineStore } from "pinia"
+
 export type ToastColor =
   | 'success'
   | 'error'
