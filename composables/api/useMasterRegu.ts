@@ -26,6 +26,8 @@ export const useMasterRegu = () => {
   }
 
   const updateRegu = async (body: CreateReguPayload, id: number): Promise<UpdateReguResponse> => {
+    await fetchCsrf()
+    
     return await api<UpdateReguResponse>('/regu/' + id, {
       method: 'PUT',
       body,

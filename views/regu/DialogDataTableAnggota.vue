@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { WargaForDropdownAddAnggota } from '@/types/api/dropdown';
+import type { WargaForDropdown } from '@/types/api/dropdown';
 import type { AnggotaRegu, MasterRegu } from '@/types/api/master-regu';
 
 const emit = defineEmits<{
@@ -19,7 +19,7 @@ const props = withDefaults(defineProps<{
   data: AnggotaRegu[]
   item: MasterRegu | null
   loading: boolean
-  itemDropdownAddAnggota?: WargaForDropdownAddAnggota[]
+  itemDropdownAddAnggota?: WargaForDropdown[]
   loadingDropdownAddAnggota?: boolean
 }>(), {
   isShow: false,

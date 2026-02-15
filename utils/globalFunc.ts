@@ -6,10 +6,10 @@ export const formatDateID = (value: string) => {
   });
 }
 
-export const formatRupiah = (value) => {
+export const formatRupiah = (value: number, noLabel?: boolean) => {
   if (value == null) return 'Rp 0';
 
-  return new Intl.NumberFormat('id-ID', {
+  return new Intl.NumberFormat('id-ID', noLabel ? {} : {
     style: 'currency',
     currency: 'IDR',
     minimumFractionDigits: 0

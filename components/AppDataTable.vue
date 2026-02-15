@@ -164,7 +164,9 @@ watch(
 
         <div v-for="header in headers.slice(1)" :key="header.key">
           <div class="text-caption text-medium-emphasis">
-            {{ header.label }}
+            <slot :name="`label-${header.key}`" :item="item" :label="header.label">
+              {{ header.label }}
+            </slot>
           </div>
 
           <div v-if="header.key === 'is_deleted'" class="font-weight-medium">
@@ -172,7 +174,7 @@ watch(
 
           <div v-else-if="header.key !== 'actions'" class="font-weight-medium">
             <slot :name="`cell-${header.key}`" :item="item">
-              {{ item[header.key] }}
+              {{ item[header.key] || '-' }}
             </slot>
           </div>
 

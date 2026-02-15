@@ -1,17 +1,20 @@
 import { useDropdown } from '@/composables/api/useDropdown'
-import type { WargaForDropdownAddAnggota } from '@/types/api/dropdown'
+import type { WargaForDropdown } from '@/types/api/dropdown'
 import { defineStore } from 'pinia'
 
 export const useDropdownStore = defineStore('dropdown', {
   state: () => ({
-    itemWargaForAddAnggota: [] as WargaForDropdownAddAnggota[],
+    itemWargaForAddAnggota: [] as WargaForDropdown[],
+    itemWargaForDropdown: [] as WargaForDropdown[],
     loading: {
-      wargaForAddAnggota: false
+      wargaForAddAnggota: false,
+      wargaForDropdown: false
     }
   }),
 
   getters: {
     hasDataWargaForAddAnggota: (state) => state.itemWargaForAddAnggota?.length > 0,
+    hasDataWargaForDropdown: (state) => state.itemWargaForAddAnggota?.length > 0,
   },
 
   actions: {
@@ -30,6 +33,26 @@ export const useDropdownStore = defineStore('dropdown', {
         return res
       } finally {
         this.loading.wargaForAddAnggota = false
+      }
+    },
+
+    async fetchWargaForDropdown() {
+
+      const api = useDropdown()
+      this.loading.wargaForDropdown = true
+      this.itemWargaForDropdown = []
+
+      try {
+        const res = await api.getWargaForDropdown()
+
+        this.itemWargaForDropdown = res.data
+
+        console.log(this.itemWargaForDropdown);
+        
+
+        return res
+      } finally {
+        this.loading.wargaForDropdown = false
       }
     },
   },
