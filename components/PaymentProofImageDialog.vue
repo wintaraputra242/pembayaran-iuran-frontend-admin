@@ -58,9 +58,8 @@ const dialog = ref(false)
 
         <VCardText>
           <div>
-            <p class="pa-0 ma-0 text-caption">ID Transaksi: {{ props.item.transaction_id || '-' }}</p>
             <p class="pa-0 ma-0 text-caption">Judul Iuran: {{ props.item.judul_iuran || '-' }}</p>
-            <p class="pa-0 ma-0 text-caption">Nama Warga: {{ props.item.nama_warga || '-' }}</p>
+            <p class="pa-0 ma-0 text-caption">Nama Warga: {{ props.item.warga.nama_warga || '-' }}</p>
           </div>
 
           <VImg

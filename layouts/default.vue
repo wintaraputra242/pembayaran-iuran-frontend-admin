@@ -12,9 +12,10 @@ const { isScrolled, scrollToTop } = useScrollStatus(20)
       <!-- <GetUser /> -->
       <slot />
     </DefaultLayoutWithVerticalNav>
-    <ErrorDialog :show="uiStore.errorDialog.show" :title="uiStore.errorDialog.title" :message="uiStore.errorDialog.message" @close="uiStore.closeError" />
 
+    <ErrorDialog :show="uiStore.errorDialog.show" :title="uiStore.errorDialog.title" :message="uiStore.errorDialog.message" @close="uiStore.closeError" />
     <SuccessDialog v-model="uiStore.successDialog.show" :title="uiStore.successDialog.title" :message="uiStore.successDialog.message" @close="uiStore.closeSuccess" />
+    <InfoDialog v-model="uiStore.infoDialog.show" :title="uiStore.infoDialog.title" :message="uiStore.infoDialog.message" @close="uiStore.closeInfo" />
   
     <VFab
       :active="isScrolled"

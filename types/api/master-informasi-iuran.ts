@@ -2,19 +2,23 @@ import type { PaginatedResponse } from "../common"
 
 export interface MasterInformasiIuran {
   id: number
-  is_deleted: boolean | number
+  is_deleted: number
   judul_iuran: string
-  jenis_iuran: string
-  periode: number | null
-  nik_penanggung_jawab: string | null
   nama_warga_meninggal: string | null
+  nik_penanggung_jawab: string
+  jenis_iuran: 'bulanan' | 'kematian'
+  periode: string
   jumlah_iuran: number
   keterangan: string
-  status_aktif: boolean | number
+  status_aktif: number
   tanggal_nonaktif: string | null
   created_at: string
   updated_at: string
   deleted_at: string | null
+  warga: {
+    nik: string
+    nama_warga: string
+  }
 }
 
 export interface GetMasterInformasiIuranResponse {
@@ -22,6 +26,13 @@ export interface GetMasterInformasiIuranResponse {
   success: boolean
   message: string
   data: PaginatedResponse<MasterInformasiIuran>
+}
+
+export interface GetDetailMasterInformasiIuranResponse {
+  code: number
+  success: boolean
+  message: string
+  data: MasterInformasiIuran
 }
 
 export interface AddInformasiIuranPayload {

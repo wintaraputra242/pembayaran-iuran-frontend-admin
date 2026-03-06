@@ -9,7 +9,7 @@ export default defineNuxtConfig({
       titleTemplate: '%s - Aplikasi Admin Pembayarn Iuran',
       title: 'Pembayaran Iuran',
 
-       meta: [
+      meta: [
         { name: 'apple-mobile-web-app-capable', content: 'yes' },
         { name: 'apple-mobile-web-app-status-bar-style', content: 'default' },
         { name: 'apple-mobile-web-app-title', content: 'PembayaranIuran' }
@@ -42,6 +42,13 @@ export default defineNuxtConfig({
             "(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3)",
         },
         { rel: 'apple-touch-startup-image', href: '/icons/safari-pinned-tab.svg', color: '#003366' },
+      ],
+
+      script: [
+        {
+          src: 'https://app.sandbox.midtrans.com/snap/snap.js',
+          'data-client-key': process.env.NUXT_PUBLIC_MIDTRANS_CLIENT_KEY,
+        },
       ],
     },
   },

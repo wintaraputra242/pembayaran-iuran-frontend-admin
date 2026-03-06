@@ -1,26 +1,74 @@
 <script setup lang="ts">
-import ListInformasiIuranCreatePembayaran from '@/views/create-pembayaran/ListInformasiIuran.vue';
+import ListInformasiIuranCreatePembayaran from '@/views/create-pembayaran/ListInformasiIuran.vue'
 
 definePageMeta({
-  middleware: ['ketua-regu']
+  middleware: ['admin']
 })
 
-const uiStore = useUiStore()
+const route = useRoute()
 
-const tab = ref('kematian')
+const uiStore = useUiStore()
+const masterStore = useMasterInformasiIuranStore()
+
+const tab = ref<'kematian' | 'bulanan'>('kematian')
+const page = ref(1)
 
 const filters = reactive({
   kematian: '',
   bulanan: '',
 })
 
-onMounted(() => {
-  const fromPath = useCookie('from-path')
+const kematianItems = computed(() =>
+  masterStore.informasiIuran.filter(i => i.jenis_iuran === 'kematian')
+)
 
-  if (uiStore.isLoading && fromPath.value === '/login') {
-      uiStore.endLoading()
-      fromPath.value = null
-  }
+const bulananItems = computed(() =>
+  masterStore.informasiIuran.filter(i => i.jenis_iuran === 'bulanan')
+)
+
+const loadData = async (type: 'kematian' | 'bulanan') => {
+  masterStore.reload = true
+  masterStore.filters.keyword = filters[type] || ''
+
+  page.value = 1
+  
+  await masterStore.fetchInformasiIuran({
+    page: page.value,
+    limit: 10,
+    mode: 'admin',
+    jenis_iuran: type
+  })
+}
+
+watch(tab, (val) => {
+  loadData(val)
+})
+
+watch(() => filters.kematian, () => {
+  if (tab.value === 'kematian') loadData('kematian')
+})
+
+watch(() => filters.bulanan, () => {
+  if (tab.value === 'bulanan') loadData('bulanan')
+})
+
+watch(() => route.query.jenis_iuran, (newVal) => {
+  tab.value = newVal
+}, { immediate: true })
+
+const handleLoadMore = async () => {
+  page.value += 1
+
+  await masterStore.fetchInformasiIuran({
+    page: page.value,
+    limit: 10,
+    mode: 'admin',
+    jenis_iuran: tab.value
+  })
+}
+
+onMounted(() => {
+  loadData('kematian')
 })
 </script>
 
@@ -44,25 +92,25 @@ onMounted(() => {
     <VDivider></VDivider>
 
     <VTabsWindow v-model="tab">
-      <VTabsWindowItem value="kematian">
-        <div class="py-3">
+      <VTabsWindowItem class="py-5" value="kematian">
+        <div class="mb-3">
           <VTextField
             v-model="filters.kematian"
             placeholder="Cari informasi iuran kematian"
             prepend-inner-icon="ri-search-2-line"
           />
         </div>
-        <ListInformasiIuranCreatePembayaran :type="'kematian'" />
+        <ListInformasiIuranCreatePembayaran :has-more="masterStore.hasMore" :loading="masterStore.loading" :items="kematianItems" @load-more="handleLoadMore" />
       </VTabsWindowItem>
-      <VTabsWindowItem value="bulanan">
-        <div class="py-3">
+      <VTabsWindowItem class="py-5" value="bulanan">
+        <div class="mb-3">
           <VTextField
             v-model="filters.bulanan"
             placeholder="Cari informasi iuran bulanan"
             prepend-inner-icon="ri-search-2-line"
           />
         </div>
-        <ListInformasiIuranCreatePembayaran :type="'bulanan'" />
+        <ListInformasiIuranCreatePembayaran :has-more="masterStore.hasMore" :loading="masterStore.loading" :items="bulananItems" @load-more="handleLoadMore" />
       </VTabsWindowItem>
     </VTabsWindow>
   </div>

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 const emit = defineEmits<{
-  (e: 'submit'): void;
+  (e: 'submit', file: File): void;
   (e: 'reload'): void;
   (e: 'close'): void;
 }>();
@@ -51,29 +51,11 @@ const rules = {
   },
 }
 
-watch(
-  () => params.nama_regu,
-  newVal => {
-    if (!newVal) return
-    params.nama_regu = newVal.toUpperCase()
-  }
-)
-
 const handleClose = () => {
+  buktiPembayaran.value = null
+
   emit('close')
 }
-
-watch(
-  () => props.isEdit,
-  newVal => {
-    if (!newVal) return
-
-    params.judul = props.item?.info
-    params.jenis_iuran = props.item?.nama
-    params.periode = props.item?.nama
-    params.keterangan = props.item?.info
-  }
-)
 
 const currentYear = new Date().getFullYear()
 
@@ -93,8 +75,8 @@ const handleSubmit = () => {
     return
   }
 
+  emit('submit', buktiPembayaran.value)
   handleClose()
-  emit('submit')
 }
 </script>
 
@@ -122,6 +104,9 @@ const handleSubmit = () => {
               <div class="d-flex justify-end flex-wrap gap-2">
                 <VBtn variant="flat" block color="success" type="submit">
                   Unggah Bukti
+                </VBtn>
+                <VBtn variant="flat" block color="secondary" @click="handleClose">
+                  Batal
                 </VBtn>
               </div>
             </VCol>

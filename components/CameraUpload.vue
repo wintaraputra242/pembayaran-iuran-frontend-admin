@@ -47,6 +47,23 @@ const validate = () => {
 // Re-validate setiap kali modelValue berubah
 watch(() => props.modelValue, () => validate())
 
+watch(
+  () => props.modelValue,
+  (newVal, oldVal) => {
+    if (preview.value) {
+      URL.revokeObjectURL(preview.value)
+    }
+
+    if (!newVal) {
+      preview.value = null
+      return
+    }
+
+    preview.value = URL.createObjectURL(newVal)
+  },
+  { immediate: true }
+)
+
 // Open camera
 const openCamera = () => {
   fileInput.value?.click()
@@ -75,7 +92,9 @@ const removeImage = () => {
   validate()
 }
 
-watch(() => props.isErrorSubmit, (newVal) => newVal ? validate() : () => {})
+watch(() => props.isErrorSubmit, (newVal) => {
+  if (newVal) validate()
+})
 </script>
 
 <template>

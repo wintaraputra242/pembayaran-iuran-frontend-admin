@@ -6,6 +6,7 @@ import { defineStore } from 'pinia'
 export const useMasterInformasiIuranStore = defineStore('master-informasi-iuran', {
   state: () => ({
     informasiIuran: [] as MasterInformasiIuran[],
+    detailInformasiIuran: {} as MasterInformasiIuran,
     meta: null as PaginationMeta | null,
     loading: false,
     reload: false,
@@ -27,6 +28,7 @@ export const useMasterInformasiIuranStore = defineStore('master-informasi-iuran'
       page?: number
       limit?: number
       mode?: string
+      jenis_iuran?: string
     }) {
       if (this.reload) {
         this.informasiIuran = []
@@ -50,6 +52,7 @@ export const useMasterInformasiIuranStore = defineStore('master-informasi-iuran'
           page: params?.page,
           limit: params?.limit,
           mode: params?.mode,
+          jenis_iuran: params?.jenis_iuran,
           ...newFilter,
         })
 
@@ -57,6 +60,19 @@ export const useMasterInformasiIuranStore = defineStore('master-informasi-iuran'
 
         const { data, ...meta } = res.data
         this.meta = meta
+      } finally {
+        this.loading = false
+      }
+    },
+
+    async fetchDetailInformasiIuran(id: number | string) {
+      const api = useMasterInformasiIuran()
+      this.loading = true
+
+      try {
+        const res = await api.getDetailInformasiIuran(id)
+
+        this.detailInformasiIuran = res.data
       } finally {
         this.loading = false
       }

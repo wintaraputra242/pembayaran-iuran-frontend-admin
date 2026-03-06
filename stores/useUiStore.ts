@@ -12,6 +12,11 @@ export const useUiStore = defineStore('ui', {
       title: '',
       message: '',
     },
+    infoDialog: {
+      show: false,
+      title: '',
+      message: '',
+    },
     isLoading: true,
     firstLoadWeb: true,
   }),
@@ -39,6 +44,18 @@ export const useUiStore = defineStore('ui', {
 
     closeSuccess() {
       this.successDialog.show = false
+    },
+
+    showInfo(message: string, title = 'Info') {
+      this.infoDialog = {
+        show: true,
+        title,
+        message,
+      }
+    },
+
+    closeInfo() {
+      this.infoDialog.show = false
     },
 
     startLoading() {

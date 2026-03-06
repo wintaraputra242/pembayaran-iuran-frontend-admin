@@ -17,9 +17,11 @@ const props = defineProps({
   monthPicker: { type: Boolean, default: false },
   disabledDates: { type: Array, default: () => [] },
   showDatePicker: { type: Boolean, default: true },
+  isSubmit: { type: Boolean, default: false },
+  isClearMessage: { type: Boolean, default: false },
 })
 
-const emit = defineEmits(["update:modelValue"])
+const emit = defineEmits(["update:modelValue", 'clearErrorMessage'])
 
 const model = computed({
   get: () => props.modelValue,
@@ -28,7 +30,7 @@ const model = computed({
 
 const errorMessage = ref("")
 
-function validate() {
+const validate = () => {
   for (const rule of props.rules) {
     const result = rule(model.value)
     if (result !== true) {
@@ -40,7 +42,28 @@ function validate() {
   return true
 }
 
+const resetValidation = () => {
+  errorMessage.value = ""
+}
+
+watch(() => props.isSubmit, (newVal) => {
+  if (newVal) {
+    validate()
+  }
+})
+
+watch(() => props.isClearMessage, (newVal) => {
+  if (newVal) {
+    errorMessage.value = ""
+    emit('clearErrorMessage')
+  }
+})
 watch(() => props.modelValue, () => validate())
+
+defineExpose({
+  validate,
+  resetValidation,
+})
 </script>
 
 <template>
@@ -78,7 +101,7 @@ watch(() => props.modelValue, () => validate())
     />
 
     <!-- Error -->
-    <p v-if="errorMessage" class="bdp-error">
+    <p v-if="errorMessage" class="bdp-error text-body-2 mb-0" :class="{ 'disabled-error': disabled }">
       {{ errorMessage }}
     </p>
   </div>
@@ -93,12 +116,15 @@ watch(() => props.modelValue, () => validate())
   font-weight: 600;
 }
 
+.disabled-error {
+  color: rgba(0, 0, 0, .25) !important;
+}
+
 /* ERROR */
 .bdp-error {
   margin-top: 4px;
   color: #FF4C51;
-  font-size: 0.75rem;
-  font-weight: 500;
+  padding: 0 15px;
 }
 
 /* POPUP CALENDAR */

@@ -1,39 +1,32 @@
 <script setup lang="ts">
 // import qris from '@images/pages/qris.png'
-import type { Pembayaran } from '@/types/api/pembayaran';
-import type { PaginationMeta } from '@/types/common';
+import type { Pembayaran, UnpaidWarga } from '@/types/api/pembayaran';
 import eCommerce2 from '@images/eCommerce/2.png';
 import qris from '@images/pages/qris.png';
 
+
 const props = withDefaults(defineProps<{
   data: Pembayaran[]
-  meta: null | PaginationMeta
   loading: boolean
   hasMore: boolean
-  hasFilter: boolean
 }>(), {})
 
 const emit = defineEmits<{
-  (e: 'showHistoryPayment', item: Pembayaran): void;
+  (e: 'loadMore'): void
   (e: 'showBuktiBayar', item: Pembayaran): void;
-  (e: 'loadMore'): void;
-}>();
-
-const router = useRouter()
+  (e: 'sendNotif', item: UnpaidWarga): void
+}>()
 
 const headers = [
   { label: 'No.', key: 'no', width: '70px', sortable: false },
   { label: 'ID Transaksi', key: 'transaction_id', width: '200px' },
-  { label: 'Warga', key: 'warga', width: '200px' },
-  { label: 'Regu', key: 'regu', width: '180px' },
-  { label: 'Judul Iuran', key: 'judul_iuran', width: '220px' },
-  { label: 'Jenis Iuran', key: 'jenis_iuran', width: '220px' },
-  { label: 'Nominal Bayar', key: 'nominal', width: '160px' },
   { label: 'Tanggal Bayar', key: 'tanggal_bayar', width: '180px' },
+  { label: 'Judul Iuran', key: 'judul_iuran', width: '220px' },
   { label: 'Metode Bayar', key: 'metode_bayar', width: '160px' },
+  { label: 'Nominal', key: 'nominal', width: '160px' },
   { label: 'Petugas/Admin', key: 'petugas', width: '200px' },
   { label: 'Status', key: 'status', width: '150px', align: 'center' },
-  { label: 'Bukti Pembayaran', key: 'bukti_bayar', width: '200px', align: 'center', sortable: false },
+  { label: 'Bukti', key: 'bukti', width: '200px', align: 'center' },
 ]
 
 const statusChipsColor: Record<
@@ -78,55 +71,30 @@ const statusText: Record<
 <template>
   <AppDataTable
     :headers="headers"
-    :items="props.data"
-    :loading="props.loading"
-    :has-more="props.hasMore"
-    :has-filter="props.hasFilter"
-    @loadMore="emit('loadMore')"
+    :items="data"
+    :loading="loading"
+    :has-more="hasMore"
+    no-data-text="Belum ada transaksi pembayaran yang telah berhasil dilakukan"
   >
+
+    <!-- ID Transaksi -->
+    <template #cell-transaksi_id="{ item }">
+      {{ item.transaksi_id }}
+    </template>
+
     <!-- Tanggal Bayar -->
     <template #cell-tanggal_bayar="{ item }">
       {{ formatDateID(item.tanggal_bayar) }}
     </template>
 
-    <!-- Warga -->
-    <template #cell-warga="{ item }">
-      <span
-        class="text-info hover-text cursor-pointer"
-        @click="router.push('/pembayaran/riwayat/' + item.warga.nik)"
-      >
-        {{ item.warga.nama_warga }}
-        <VIcon icon="ri-arrow-right-up-long-line" size="16" />
-      </span>
-    </template>
-
-    <template #cell-regu="{ item }">
-      <span>
-        {{ item.warga.anggota_regu?.regu.nama_regu || '-' }}
-      </span>
-    </template>
-
+    <!-- Judul Iuran -->
     <template #cell-judul_iuran="{ item }">
-      <span>
-        {{ item.informasi_iuran.judul_iuran || '-' }}
-      </span>
-    </template>
-
-    <!-- Jenis -->
-    <template #cell-jenis_iuran="{ item }">
-      <div class="text-capitalize">
-        <VChip
-          size="small"
-          :color="item.informasi_iuran.jenis_iuran === 'bulanan' ? 'info' : 'error'"
-        >
-          {{ item.informasi_iuran.jenis_iuran }}
-        </VChip>
-      </div>
+      {{ item.informasi_iuran?.judul_iuran }}
     </template>
 
     <!-- Metode Bayar -->
     <template #cell-metode_bayar="{ item }">
-      <div class="d-flex align-center gap-1 text-capitalize">
+      <div class="d-flex align-center gap-1">
         <VIcon
           v-if="item.metode_bayar !== 'QRIS'"
           :icon="item.metode_bayar === 'Transfer' ? 'ri-exchange-line' : 'ri-cash-line'"
@@ -135,7 +103,7 @@ const statusText: Record<
         <VImg
           v-if="item.metode_bayar === 'QRIS'"
           :src="qris"
-          max-width="20px"
+          max-width="20"
         />
         {{ item.metode_bayar }}
       </div>
@@ -143,7 +111,12 @@ const statusText: Record<
 
     <!-- Nominal -->
     <template #cell-nominal="{ item }">
-      {{ formatRupiah(item.total_bayar) }}
+      {{ formatRupiah(item.nominal) }}
+    </template>
+
+    <!-- Petugas -->
+    <template #cell-petugas="{ item }">
+      {{ item.petugas }}
     </template>
 
     <!-- Status -->
@@ -158,26 +131,19 @@ const statusText: Record<
       </div>
     </template>
 
-    <!-- Petugas -->
-    <template #cell-petugas="{ item }">
-      <span>
-        {{ item.processed_by.name }}
-      </span>
-    </template>
-
-    <!-- Bukti Pembayaran -->
-    <template #cell-bukti_bayar="{ item }">
+    <!-- Bukti -->
+    <template #cell-bukti="{ item }">
       <div class="d-flex">
         <div
           v-ripple
           class="pa-2 rounded-lg cursor-pointer"
           @click="emit('showBuktiBayar', item)"
         >
-          <!-- <VImg :src="item.bukti_pembayaran || eCommerce2" width="50" /> -->
-          <VImg :src="eCommerce2" width="50" />
+          <VImg :src="item.bukti_bayar || eCommerce2" width="50" />
         </div>
       </div>
     </template>
+
   </AppDataTable>
 </template>
 

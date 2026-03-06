@@ -1,4 +1,4 @@
-import type { AddInformasiIuranPayload, AddInformasiIuranResponse, DeleteInformasiIuranResponse, GetMasterInformasiIuranResponse, UpdateInformasiIuranResponse, UpdateStatusInformasiIuranResponse } from '@/types/api/master-informasi-iuran'
+import type { AddInformasiIuranPayload, AddInformasiIuranResponse, DeleteInformasiIuranResponse, GetDetailMasterInformasiIuranResponse, GetMasterInformasiIuranResponse, UpdateInformasiIuranResponse, UpdateStatusInformasiIuranResponse } from '@/types/api/master-informasi-iuran'
 import { useApi } from './useApi'
 
 export const useMasterInformasiIuran = () => {
@@ -9,11 +9,18 @@ export const useMasterInformasiIuran = () => {
     limit?: number
     nama_regu?: string
     status_keaktifan?: number
+    jenis_iuran?: string
     mode?: string
   }): Promise<GetMasterInformasiIuranResponse> => {
     return await api<GetMasterInformasiIuranResponse>('/informasi-iuran', {
       method: 'GET',
       params,
+    })
+  }
+  
+  const getDetailInformasiIuran = async (id: number | string): Promise<GetDetailMasterInformasiIuranResponse> => {
+    return await api<GetDetailMasterInformasiIuranResponse>('/informasi-iuran/' + id, {
+      method: 'GET',
     })
   }
 
@@ -60,6 +67,7 @@ export const useMasterInformasiIuran = () => {
 
   return {
     getInformasiIuran,
+    getDetailInformasiIuran,
     addInformasiIuran,
     updateInformasiIuran,
     updateStatusInformasiIuran,

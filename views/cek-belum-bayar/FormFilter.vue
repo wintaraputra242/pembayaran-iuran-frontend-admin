@@ -5,42 +5,38 @@ const { smAndDown } = useDisplay()
 const showDialog = ref(false)
 
 const emit = defineEmits<{
+  (e: 'reload'): void;
+  (e: 'showFormData'): void;
+  (e: 'showNoPayment'): void;
   (e: 'filter', item: {
-    date: string
-    metode_bayar: string | null
-    status_bayar: string | null
+    date: [string, string] | string | null
     jenis_iuran: string | null
+    metode_bayar: string | null
+    status: string | null
     regu: string | null
-    nama_warga: string
-  }): void
-  (e: 'reload'): void
-  (e: 'exportExcel'): void
-}>()
+    nama_warga: string | null
+  }): void;
+}>();
 
 const filters = reactive({
   date: '',
-  metode_bayar: null as string | null,
-  status_bayar: null as string | null,
-  jenis_iuran: null as string | null,
-  regu: null as string | null,
+  metode_bayar: null,
+  status: null,
+  jenis_iuran: null,
+  regu: null,
   nama_warga: '',
 })
 
 const handleReload = () => {
-  filters.date = ''
-  filters.metode_bayar = null
-  filters.status_bayar = null
-  filters.jenis_iuran = null
-  filters.regu = null
-  filters.nama_warga = ''
+  filters.date = '',
+  filters.metode_bayar = null,
+  filters.status = null,
+  filters.jenis_iuran = null,
+  filters.regu = null,
+  filters.nama_warga = '',
 
   emit('reload')
 }
-
-const statusOptions = [
-  { label: 'Sudah Bayar', value: 'paid' },
-  { label: 'Belum Bayar', value: 'unpaid' },
-]
 </script>
 
 <template>
@@ -48,8 +44,6 @@ const statusOptions = [
     <VCardItem>
       <VForm @submit.prevent="emit('filter', filters); showDialog = false">
         <VRow align="center">
-
-          <!-- DESKTOP -->
           <template v-if="!smAndDown">
             <VCol cols="12" md="4">
               <DatePicker
@@ -59,16 +53,16 @@ const statusOptions = [
                 :enable-time="false"
               />
             </VCol>
-
+  
             <VCol cols="12" md="4">
               <VSelect
                 v-model="filters.jenis_iuran"
                 placeholder="Jenis iuran"
                 :items="['Bulanan', 'Kematian']"
                 clearable
-              />
+              />  
             </VCol>
-
+  
             <VCol cols="12" md="4">
               <VSelect
                 v-model="filters.metode_bayar"
@@ -77,18 +71,16 @@ const statusOptions = [
                 clearable
               />
             </VCol>
-
+  
             <VCol cols="12" md="4">
               <VSelect
-                v-model="filters.status_bayar"
+                v-model="filters.status"
                 placeholder="Status pembayaran"
-                :items="statusOptions"
-                item-title="label"
-                item-value="value"
+                :items="['Sudah Bayar', 'Belum Bayar']"
                 clearable
               />
             </VCol>
-
+  
             <VCol cols="12" md="4">
               <VSelect
                 v-model="filters.regu"
@@ -97,7 +89,7 @@ const statusOptions = [
                 clearable
               />
             </VCol>
-
+  
             <VCol cols="12" md="4">
               <VTextField
                 v-model="filters.nama_warga"
@@ -108,10 +100,8 @@ const statusOptions = [
             </VCol>
           </template>
 
-          <!-- BUTTON -->
           <VCol cols="12">
             <div class="d-flex flex-wrap gap-2">
-
               <VBtn
                 v-if="smAndDown"
                 color="primary"
@@ -121,12 +111,7 @@ const statusOptions = [
                 Filter
               </VBtn>
 
-              <VBtn
-                v-else
-                type="submit"
-                variant="flat"
-                color="primary"
-              >
+              <VBtn v-else type="submit" variant="flat" color="primary">
                 <VIcon icon="ri-search-line" class="me-2" />
                 Filter
               </VBtn>
@@ -142,27 +127,35 @@ const statusOptions = [
               <VBtn
                 variant="flat"
                 color="success"
-                @click="emit('exportExcel')"
+                @click="emit('showFormData')"
               >
-                <VIcon icon="ri-export-line" class="me-2" />
-                Export Excel
+                <VIcon icon="ri-add-large-line" class="me-2" />
+                Tambah Pembayaran
+              </VBtn>
+
+              <VBtn
+                variant="flat"
+                color="secondary"
+                @click="emit('showNoPayment')"
+              >
+                <VIcon icon="ri-list-check-2" class="me-2" />
+                Cek Belum Bayar
               </VBtn>
             </div>
           </VCol>
-
         </VRow>
       </VForm>
     </VCardItem>
   </VCard>
 
-  <!-- MOBILE FILTER -->
-  <VDialog v-model="showDialog">
+  <VDialog
+    v-model="showDialog"
+  >
     <VCard>
-
-      <VCardTitle class="pt-3 position-sticky top-0" style="background:#fff;z-index:10;">
+      <VCardTitle class="pt-3 position-sticky top-0" style="background-color: #fff !important; z-index: 10;">
         <div class="d-flex align-center justify-space-between">
           <h3>Filter</h3>
-          <IconBtn variant="text" size="small" @click="showDialog = false">
+          <IconBtn variant="text" color="secondary" size="small" @click="showDialog = false">
             <VIcon icon="ri-close-line" />
           </IconBtn>
         </div>
@@ -170,9 +163,8 @@ const statusOptions = [
 
       <VCardItem>
         <VForm @submit.prevent="emit('filter', filters); showDialog = false">
-          <VRow>
-
-            <VCol cols="12">
+          <VRow align="center">
+            <VCol cols="12" md="4">
               <DatePicker
                 v-model="filters.date"
                 placeholder="Rentang tanggal bayar"
@@ -181,16 +173,16 @@ const statusOptions = [
               />
             </VCol>
 
-            <VCol cols="12">
+            <VCol cols="12" md="4">
               <VSelect
                 v-model="filters.jenis_iuran"
                 placeholder="Jenis iuran"
                 :items="['Bulanan', 'Kematian']"
                 clearable
-              />
+              />  
             </VCol>
 
-            <VCol cols="12">
+            <VCol cols="12" md="4">
               <VSelect
                 v-model="filters.metode_bayar"
                 placeholder="Metode pembayaran"
@@ -199,18 +191,16 @@ const statusOptions = [
               />
             </VCol>
 
-            <VCol cols="12">
+            <VCol cols="12" md="4">
               <VSelect
-                v-model="filters.status_bayar"
+                v-model="filters.status"
                 placeholder="Status pembayaran"
-                :items="statusOptions"
-                item-title="label"
-                item-value="value"
+                :items="['Sudah Bayar', 'Belum Bayar']"
                 clearable
               />
             </VCol>
 
-            <VCol cols="12">
+            <VCol cols="12" md="4">
               <VSelect
                 v-model="filters.regu"
                 placeholder="Regu"
@@ -219,7 +209,7 @@ const statusOptions = [
               />
             </VCol>
 
-            <VCol cols="12">
+            <VCol cols="12" md="4">
               <VTextField
                 v-model="filters.nama_warga"
                 placeholder="Cari nama warga"
@@ -229,20 +219,22 @@ const statusOptions = [
             </VCol>
 
             <VCol cols="12">
-              <VBtn
-                block
-                color="primary"
-                type="submit"
-              >
-                <VIcon icon="ri-search-line" class="me-2" />
-                Filter
-              </VBtn>
+              <div class="d-flex flex-wrap gap-2">
+                <VBtn
+                  v-if="smAndDown"
+                  block
+                  color="primary"
+                  class="mb-3"
+                  type="submit"
+                >
+                  <VIcon icon="ri-search-line" class="me-2" />
+                  Filter
+                </VBtn>
+              </div>
             </VCol>
-
           </VRow>
         </VForm>
       </VCardItem>
-
     </VCard>
   </VDialog>
 </template>

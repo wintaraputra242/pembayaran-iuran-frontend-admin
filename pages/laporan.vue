@@ -10,6 +10,8 @@ definePageMeta({
 
 const router = useRouter()
 
+const masterInformasiIuranStore = useMasterInformasiIuranStore()
+
 const showFormData = ref(false)
 const isEdit = ref(false)
 
@@ -52,15 +54,15 @@ const confirmOptions = {
 }
 
 const handleExportExcel = () => {
-  confirmOptions.title = 'Export Data?'
-  confirmOptions.message = 'Apakah Anda yakin ingin mengeksport data dari tanggal 12 juni 2025 sampai 19 februari 2026 dengan regu A?'
-  confirmOptions.confirmText = 'Export'
-  confirmOptions.cancelText = 'Batal'
-  confirmOptions.confirmColor = 'success'
-  confirmOptions.confirmIcon = 'ri-export-line'
+  // confirmOptions.title = 'Export Data?'
+  // confirmOptions.message = 'Apakah Anda yakin ingin mengeksport data dari tanggal 12 juni 2025 sampai 19 februari 2026 dengan regu A?'
+  // confirmOptions.confirmText = 'Export'
+  // confirmOptions.cancelText = 'Batal'
+  // confirmOptions.confirmColor = 'success'
+  // confirmOptions.confirmIcon = 'ri-export-line'
 
-  showConfirmation.value = true 
-  itemSelected.value = item
+  // showConfirmation.value = true 
+  // itemSelected.value = item
 }
 
 const showPaymentProof = ref(false)
@@ -81,7 +83,7 @@ const showSuccessConfirm = ref(false)
         cols="12"
         md="4"
       >
-        <DataTableLaporan @show-bukti-bayar="showPaymentProof = true" />
+        <DataTableLaporan :data="masterInformasiIuranStore.informasiIuran" :meta="masterInformasiIuranStore.meta" :loading="masterInformasiIuranStore.loading" :has-more="masterInformasiIuranStore.hasMore" :has-filter="masterInformasiIuranStore.hasFilter"  @show-bukti-bayar="showPaymentProof = true" />
       </VCol>
     </VRow>
 
