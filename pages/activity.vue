@@ -1,70 +1,59 @@
 <script setup lang="ts">
-import DataTableActivity from '@/views/activity/DataTable.vue';
-import FormFilterActivity from '@/views/activity/FormFilter.vue';
-import eCommerce2 from '@images/eCommerce/2.png';
-
+import DataTableActivity from '@/views/activity/DataTable.vue'
+import FormFilterActivity from '@/views/activity/FormFilter.vue'
 
 definePageMeta({
-  middleware: ['admin']
+  middleware: ['admin'],
 })
 
-const router = useRouter()
+const activityStore = useActivityStore()
 
-const showFormData = ref(false)
-const isEdit = ref(false)
+const page = ref(1)
 
-const handleCloseFormData = () => {
-  if (isEdit.value) isEdit.value = false
-
-  showFormData.value = false
+const handleLoadMore = async () => {
+  page.value += 1
+  await activityStore.fetchActivities({ limit: 10, page: page.value })
 }
 
-const itemSelected = ref<object | null>(null)
+const handleFilter = async (filters: {
+  action: string
+  user: string
+  date: string
+}) => {
+  page.value = 1
+  activityStore.reload = true
 
-const handleEditData = (item: object) => {
-  showFormData.value = true 
-  isEdit.value = true
-  itemSelected.value = item
+  if (filters.date && Array.isArray(filters.date)) {
+    activityStore.setFilter('start_date', formatDateToYMD(filters.date[0]))
+    activityStore.setFilter('end_date', formatDateToYMD(filters.date[1]))
+  } else {
+    activityStore.setFilter('start_date', '')
+    activityStore.setFilter('end_date', '')
+  }
+
+  activityStore.setFilter('action', filters.action || '')
+  activityStore.setFilter('user', filters.user || '')
+
+  await activityStore.fetchActivities({ limit: 10, page: page.value })
 }
 
-const showConfirmation = ref(false)
-const isLoadingConfirm = ref(false)
+const handleReload = async () => {
+  page.value = 1
+  activityStore.reload = true
+  activityStore.resetFilter()
 
-async function deleteItem() {
-  isLoadingConfirm.value = true
-
-  // contoh request
-  await new Promise(res => setTimeout(res, 1000))
-
-  isLoadingConfirm.value = false
-  showConfirmation.value = false
-
-  showSuccessConfirm.value = true
+  await activityStore.fetchActivities({
+    page: 1,
+    limit: 10,
+  })
 }
 
-const confirmOptions = {
-  title: '',
-  message: '',
-  confirmText: '',  
-  cancelText: '',
-  confirmColor: '',
-  confirmIcon: '',
-}
-
-const handleExportExcel = () => {
-  confirmOptions.title = 'Export Data?'
-  confirmOptions.message = 'Apakah Anda yakin ingin mengeksport data dari tanggal 12 juni 2025 sampai 19 februari 2026 dengan regu A?'
-  confirmOptions.confirmText = 'Export'
-  confirmOptions.cancelText = 'Batal'
-  confirmOptions.confirmColor = 'success'
-  confirmOptions.confirmIcon = 'ri-export-line'
-
-  showConfirmation.value = true 
-  itemSelected.value = item
-}
-
-const showPaymentProof = ref(false)
-const showSuccessConfirm = ref(false)
+onMounted(async () => {
+  await activityStore.fetchActivities({
+    page: 1,
+    limit: 10,
+  })
+})
 </script>
 
 <template>
@@ -74,31 +63,26 @@ const showSuccessConfirm = ref(false)
       <VCol
         cols="12"
       >
-        <FormFilterActivity @export-excel="handleExportExcel" />
+        <FormFilterActivity
+          :loading="activityStore.loading"
+          @filter="handleFilter"
+          @reload="handleReload"
+        />
       </VCol>
   
       <VCol
         cols="12"
         md="4"
       >
-        <DataTableActivity @show-bukti-bayar="showPaymentProof = true" />
+        <DataTableActivity
+          :data="activityStore.activities"
+          :meta="activityStore.meta"
+          :loading="activityStore.loading"
+          :has-more="activityStore.hasMore"
+          :has-filter="activityStore.hasFilter"
+          @load-more="handleLoadMore"
+        />
       </VCol>
     </VRow>
-
-    <ConfirmDialog
-      v-model="showConfirmation"
-      :title="confirmOptions.title"
-      :message="confirmOptions.message"
-      :confirm-text="confirmOptions.confirmText"
-      :cancel-text="confirmOptions.cancelText"
-      :confirm-color="confirmOptions.confirmColor"
-      :confirm-icon="confirmOptions.confirmIcon"
-      :loading="isLoadingConfirm"
-      @confirm="deleteItem"
-    />
-
-    <PaymentProofImageDialog v-model="showPaymentProof" :src="eCommerce2" />
-    
-    <SuccessDialog v-model="showSuccessConfirm" title="Export Data Berhasil" message="File berupa Excel berhasil diunduh dan tersimpan di penyimpanan lokal Anda" />
   </div>
 </template>

@@ -2,7 +2,7 @@
 import ListInformasiIuranCreatePembayaran from '@/views/create-pembayaran/ListInformasiIuran.vue'
 
 definePageMeta({
-  middleware: ['admin']
+  middleware: ['role']
 })
 
 const route = useRoute()
@@ -48,12 +48,14 @@ watch(() => filters.kematian, () => {
   if (tab.value === 'kematian') loadData('kematian')
 })
 
-watch(() => filters.bulanan, () => {
-  if (tab.value === 'bulanan') loadData('bulanan')
+watch(() => filters.bulanan, (newVal) => {
+  if (!newVal && tab.value === 'bulanan') loadData('bulanan')
 })
 
 watch(() => route.query.jenis_iuran, (newVal) => {
-  tab.value = newVal
+  if (newVal) {
+    tab.value = newVal as 'kematian' | 'bulanan'
+  }
 }, { immediate: true })
 
 const handleLoadMore = async () => {

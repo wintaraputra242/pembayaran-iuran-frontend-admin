@@ -8,6 +8,7 @@ const route = useRoute()
 const { logout } = useAuth()
 
 const uiStore = useUiStore()
+const authStore = useAuthStore()
 
 const isLoadingLogout = ref(false)
 const logoutUser = async () => {
@@ -76,14 +77,14 @@ const logoutUser = async () => {
             </template>
 
             <VListItemTitle class="font-weight-semibold">
-              Admin
+              {{ authStore.user?.name }}
             </VListItemTitle>
-            <VListItemSubtitle>Admin</VListItemSubtitle>
+            <VListItemSubtitle class="text-capitalize">{{ authStore.user?.role }}</VListItemSubtitle>
           </VListItem>
-          <VDivider class="my-2" />
+          <VDivider v-if="authStore.user?.role !== 'admin'" class="my-2" />
 
           <!-- 👉 Profile -->
-          <VListItem link to="/regu-list">
+          <VListItem v-if="authStore.user?.role !== 'admin'" link to="/regu-list">
             <template #prepend>
               <VIcon
                 class="me-2"
@@ -96,7 +97,7 @@ const logoutUser = async () => {
           </VListItem>
 
           <!-- 👉 Settings -->
-          <VListItem link to="/my-activity">
+          <VListItem v-if="authStore.user?.role !== 'admin'" link to="/my-activity">
             <template #prepend>
               <VIcon
                 class="me-2"

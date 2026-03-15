@@ -105,6 +105,8 @@ const statusOptions = [
                 placeholder="Regu"
                 :loading="loadingReguOptions"
                 :items="reguOptions"
+                item-title="nama_regu"
+                item-value="id"
                 clearable
               />
             </VCol>

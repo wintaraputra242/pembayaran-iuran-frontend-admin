@@ -1,9 +1,24 @@
 <script lang="ts" setup>
 const emit = defineEmits<{
-  (e: 'reload'): void;
-}>();
+  (e: 'change', value: 'notifikasi' | 'pembayaran' | 'warga_belum_bayar' | 'activity_log'): void
+}>()
 
-const show = ref('Notifikasi')
+const show = ref<'Notifikasi' | 'Pembayaran Masuk' | 'Warga Belum Bayar' | 'Riwayat Log'>('Notifikasi')
+
+const typeMap = {
+  'Notifikasi': 'notifikasi',
+  'Pembayaran Masuk': 'pembayaran',
+  'Warga Belum Bayar': 'warga_belum_bayar',
+  'Riwayat Log': 'activity_log',
+} as const
+
+watch(show, (val) => {
+  emit('change', typeMap[val])
+})
+
+onMounted(() => {
+  emit('change', 'notifikasi')
+})
 </script>
 
 <template>
@@ -11,19 +26,12 @@ const show = ref('Notifikasi')
     <VCardItem>
       <VForm @submit.prevent="() => {}">
         <VRow align="center">
-          <VCol cols="9">
+          <VCol cols="12">
             <VSelect
               v-model="show"
               :items="['Notifikasi', 'Pembayaran Masuk', 'Warga Belum Bayar', 'Riwayat Log']"
               placeholder="Pilih yang ingin ditampilkan"
             />
-          </VCol>
-          <VCol cols="3">
-            <div class="d-flex justify-center">
-              <IconBtn variant="flat" color="primary" @click="emit('reload')">
-                <VIcon icon="ri-restart-line" />
-              </IconBtn>
-            </div>
           </VCol>
         </VRow>
       </VForm>

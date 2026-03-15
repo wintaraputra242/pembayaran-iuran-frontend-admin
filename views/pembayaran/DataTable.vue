@@ -128,12 +128,12 @@ const statusText: Record<
     <template #cell-metode_bayar="{ item }">
       <div class="d-flex align-center gap-1 text-capitalize">
         <VIcon
-          v-if="item.metode_bayar !== 'QRIS'"
-          :icon="item.metode_bayar === 'Transfer' ? 'ri-exchange-line' : 'ri-cash-line'"
+          v-if="item.metode_bayar !== 'qris'"
+          :icon="item.metode_bayar === 'transfer' ? 'ri-exchange-line' : 'ri-cash-line'"
           size="20"
         />
         <VImg
-          v-if="item.metode_bayar === 'QRIS'"
+          v-if="item.metode_bayar === 'qris'"
           :src="qris"
           max-width="20px"
         />

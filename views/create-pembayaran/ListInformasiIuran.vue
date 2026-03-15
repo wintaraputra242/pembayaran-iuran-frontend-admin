@@ -147,7 +147,7 @@ watch(
   </VRow>
 
   <div
-    v-if="hasMore"
+    v-if="(props.items as []).length > 0 && hasMore"
     ref="mobileSentinel"
     style="height: 1px"
   />

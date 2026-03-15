@@ -19,24 +19,37 @@ const props = withDefaults(defineProps<{
 
 const headers = [
   { key: 'no', label: 'No.', width: '70px' },
-  { key: 'transaksi_id', label: 'ID Transaksi', width: '200px' },
+  { key: 'transaction_id', label: 'ID Transaksi', width: '200px' },
   { key: 'tanggal_bayar', label: 'Tanggal Bayar', width: '180px' },
   { key: 'warga', label: 'Warga', width: '200px' },
   { key: 'regu', label: 'Regu', width: '180px' },
   { key: 'judul_iuran', label: 'Judul Iuran', width: '220px' },
+  { key: 'jenis_iuran', label: 'Jenis Iuran', width: '220px' },
   { key: 'bulan_dibayar', label: 'Bulan Dibayar', width: '200px' },
   { key: 'metode_bayar', label: 'Metode Bayar', width: '160px' },
-  { key: 'nominal', label: 'Nominal', width: '160px' },
+  { key: 'total_bayar', label: 'Nominal', width: '160px' },
   { key: 'petugas', label: 'Petugas/Admin', width: '200px' },
-  { key: 'status', label: 'Status', width: '150px' },
+  { key: 'status_bayar', label: 'Status', width: '150px' },
 ]
 
-const statusChipsColor: any = {
-  pending: 'info',
-  success: 'success',
+const statusChipsColor: Record<string, string> = {
+  pending: 'warning',
+  waiting_payment: 'info',
+  paid: 'success',
   failed: 'error',
   expired: 'secondary',
-  cancelled: 'secondary',
+  canceled: 'secondary',
+  manual: 'primary',
+}
+
+const statusText: Record<string, string> = {
+  pending: 'Pending',
+  waiting_payment: 'Menunggu Pembayaran',
+  paid: 'Lunas',
+  failed: 'Gagal',
+  expired: 'Kadaluarsa',
+  canceled: 'Dibatalkan',
+  manual: 'Manual',
 }
 
 const bulanMap: Record<number, string> = {
@@ -71,11 +84,9 @@ const bulanMap: Record<number, string> = {
 
     <template #cell-warga="{ item }">
       <span
-        class="text-info hover-text cursor-pointer"
-        @click="emit('showHistoryPayment', item)"
+        class="font-weight-bold"
       >
         {{ item.warga }}
-        <VIcon icon="ri-arrow-right-up-long-line" size="16" />
       </span>
     </template>
 
@@ -96,14 +107,14 @@ const bulanMap: Record<number, string> = {
     </template>
 
     <template #cell-metode_bayar="{ item }">
-      <div class="d-flex align-center gap-1">
+      <div class="d-flex align-center gap-1 text-capitalize">
         <VIcon
-          v-if="item.metode_bayar !== 'QRIS'"
-          :icon="item.metode_bayar === 'Transfer' ? 'ri-exchange-line' : 'ri-cash-line'"
+          v-if="item.metode_bayar !== 'qris'"
+          :icon="item.metode_bayar === 'transfer' ? 'ri-exchange-line' : 'ri-cash-line'"
           size="20"
         />
         <VImg
-          v-if="item.metode_bayar === 'QRIS'"
+          v-if="item.metode_bayar === 'qris'"
           :src="qris"
           max-width="20"
         />
@@ -111,16 +122,28 @@ const bulanMap: Record<number, string> = {
       </div>
     </template>
 
-    <template #cell-nominal="{ item }">
-      {{ formatRupiah(item.nominal) }}
+    <template #cell-total_bayar="{ item }">
+      {{ formatRupiah(item.total_bayar) }}
     </template>
 
-    <template #cell-status="{ item }">
+    <!-- Jenis -->
+    <template #cell-jenis_iuran="{ item }">
+      <div class="text-capitalize">
+        <VChip
+          size="small"
+          :color="item.jenis_iuran === 'bulanan' ? 'info' : 'error'"
+        >
+          {{ item.jenis_iuran }}
+        </VChip>
+      </div>
+    </template>
+
+    <template #cell-status_bayar="{ item }">
       <VChip
         size="small"
-        :color="statusChipsColor[item.status] || 'secondary'"
+        :color="statusChipsColor[item.status_bayar] || 'secondary'"
       >
-        {{ item.status }}
+        {{ statusText[item.status_bayar] || item.status_bayar }}
       </VChip>
     </template>
 

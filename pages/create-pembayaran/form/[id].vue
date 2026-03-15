@@ -4,7 +4,7 @@ import DialogTakeFotoBuktiPembayaran from '@/views/create-pembayaran/DialogTakeF
 import FormCreatePembayaran from '@/views/create-pembayaran/FormCreatePembayaran.vue';
 
 definePageMeta({
-  middleware: ['admin']
+  middleware: ['role']
 })
 
 const route = useRoute()
@@ -13,6 +13,7 @@ const pembayaranStore = usePembayaranStore()
 const masterInformasiIuranStore = useMasterInformasiIuranStore()
 const dropdownStore = useDropdownStore()
 const uiStore = useUiStore()
+const authStore = useAuthStore()
 
 const tab = ref('kematian')
 

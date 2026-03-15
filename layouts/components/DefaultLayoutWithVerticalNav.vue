@@ -29,7 +29,7 @@ const { isScrolled } = useScrollStatus(20)
   
           <VSpacer />
   
-          <IconBtn class="me-2">
+          <IconBtn class="me-2" to="/notifications">
             <VIcon icon="ri-notification-line" />
           </IconBtn>
   

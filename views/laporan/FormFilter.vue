@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import type { InformasiIuranForDropdown, ReguForDropdown } from '@/types/api/dropdown';
 import { useDisplay } from 'vuetify';
 
 const { smAndDown } = useDisplay()
@@ -11,11 +12,19 @@ const emit = defineEmits<{
     status_bayar: string | null
     jenis_iuran: string | null
     regu: string | null
-    nama_warga: string
+    informasi_iuran: string | null
   }): void
   (e: 'reload'): void
   (e: 'exportExcel'): void
 }>()
+
+const props = withDefaults(defineProps<{
+  reguOptions: ReguForDropdown[]
+  informasiIuranOptions: InformasiIuranForDropdown[]
+  loadingReguOptions: boolean
+  loadingInformasiIuranOptions: boolean
+  loadingExportExcel: boolean
+}>(), {})
 
 const filters = reactive({
   date: '',
@@ -23,7 +32,7 @@ const filters = reactive({
   status_bayar: null as string | null,
   jenis_iuran: null as string | null,
   regu: null as string | null,
-  nama_warga: '',
+  informasi_iuran: null as string | null,
 })
 
 const handleReload = () => {
@@ -32,7 +41,7 @@ const handleReload = () => {
   filters.status_bayar = null
   filters.jenis_iuran = null
   filters.regu = null
-  filters.nama_warga = ''
+  filters.informasi_iuran = null
 
   emit('reload')
 }
@@ -90,19 +99,25 @@ const statusOptions = [
             </VCol>
 
             <VCol cols="12" md="4">
-              <VSelect
+              <VAutocomplete
                 v-model="filters.regu"
                 placeholder="Regu"
-                :items="['Regu A', 'Regu B', 'Regu C']"
+                :loading="loadingReguOptions"
+                :items="reguOptions"
+                item-title="nama_regu"
+                item-value="id"
                 clearable
               />
             </VCol>
 
             <VCol cols="12" md="4">
-              <VTextField
-                v-model="filters.nama_warga"
-                placeholder="Cari nama warga"
-                prepend-inner-icon="ri-search-2-line"
+              <VAutocomplete
+                v-model="filters.informasi_iuran"
+                placeholder="Informasi Iuran"
+                :loading="loadingInformasiIuranOptions"
+                :items="informasiIuranOptions"
+                item-title="judul_iuran"
+                item-value="id"
                 clearable
               />
             </VCol>
@@ -142,6 +157,7 @@ const statusOptions = [
               <VBtn
                 variant="flat"
                 color="success"
+                :loading="loadingExportExcel"
                 @click="emit('exportExcel')"
               >
                 <VIcon icon="ri-export-line" class="me-2" />
@@ -210,20 +226,26 @@ const statusOptions = [
               />
             </VCol>
 
-            <VCol cols="12">
-              <VSelect
+            <VCol cols="12" md="4">
+              <VAutocomplete
                 v-model="filters.regu"
                 placeholder="Regu"
-                :items="['Regu A', 'Regu B', 'Regu C']"
+                :loading="loadingReguOptions"
+                :items="reguOptions"
+                item-title="nama_regu"
+                item-value="id"
                 clearable
               />
             </VCol>
 
-            <VCol cols="12">
-              <VTextField
-                v-model="filters.nama_warga"
-                placeholder="Cari nama warga"
-                prepend-inner-icon="ri-search-2-line"
+            <VCol cols="12" md="4">
+              <VAutocomplete
+                v-model="filters.informasi_iuran"
+                placeholder="Informasi Iuran"
+                :loading="loadingInformasiIuranOptions"
+                :items="informasiIuranOptions"
+                item-title="judul_iuran"
+                item-value="id"
                 clearable
               />
             </VCol>
