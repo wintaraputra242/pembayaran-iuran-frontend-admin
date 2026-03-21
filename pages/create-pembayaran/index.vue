@@ -7,6 +7,7 @@ definePageMeta({
 
 const route = useRoute()
 
+const authStore = useAuthStore()
 const uiStore = useUiStore()
 const masterStore = useMasterInformasiIuranStore()
 
@@ -70,6 +71,13 @@ const handleLoadMore = async () => {
 }
 
 onMounted(() => {
+  const fromPath = useCookie('from-path')
+
+  if (authStore.user?.role === 'ketua_regu' && uiStore.isLoading && fromPath.value === '/login') {
+      uiStore.endLoading()
+      fromPath.value = null
+  }
+
   loadData('kematian')
 })
 </script>
