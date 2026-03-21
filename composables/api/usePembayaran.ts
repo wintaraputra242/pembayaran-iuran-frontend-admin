@@ -152,6 +152,20 @@ export const usePembayaran = () => {
     )
   }
 
+  const getUnpaidPembayaranKetuaRegu = async (params: {
+    nama_warga?: string
+    per_page?: number
+    page?: number
+  }): Promise<GetUnpaidPembayaranResponse> => {
+    return await api<GetUnpaidPembayaranResponse>(
+      '/pembayaran-unpaid-payment-ketua-regu',
+      {
+        method: 'GET',
+        params, // kirim sebagai query string
+      }
+    )
+  }
+
   return {
     getPembayaran,
     getDetailPembayaran,
@@ -164,5 +178,6 @@ export const usePembayaran = () => {
     getHistoryNotYetPaid,
     notifyResidentAllUnpaid,
     notifyResidentUnpaidOneByOne,
+    getUnpaidPembayaranKetuaRegu
   }
 }

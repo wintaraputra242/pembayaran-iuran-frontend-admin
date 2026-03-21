@@ -1,5 +1,5 @@
 import { useDropdown } from '@/composables/api/useDropdown'
-import type { InformasiIuranForDropdown, ReguForDropdown, WargaForDropdown, WargaPembayaranForDropdown } from '@/types/api/dropdown'
+import type { AnggotaReguForDropdown, InformasiIuranForDropdown, ReguForDropdown, WargaForDropdown, WargaPembayaranForDropdown } from '@/types/api/dropdown'
 import { defineStore } from 'pinia'
 
 export const useDropdownStore = defineStore('dropdown', {
@@ -9,12 +9,14 @@ export const useDropdownStore = defineStore('dropdown', {
     itemWargaForPembayaran: [] as WargaPembayaranForDropdown[],
     itemInformasiIuranForDropdown: [] as InformasiIuranForDropdown[],
     reguForDropdown: [] as ReguForDropdown[],
+    anggotaReguForDropdown: [] as AnggotaReguForDropdown[],
     loading: {
       wargaForAddAnggota: false,
       wargaForDropdown: false,
       wargaForPembayaran: false,
       informasiIuranForDropdown: false,
-      reguForDropdown: false
+      reguForDropdown: false,
+      anggotaReguForDropdown: false
     }
   }),
 
@@ -114,6 +116,23 @@ export const useDropdownStore = defineStore('dropdown', {
         return res
       } finally {
         this.loading.reguForDropdown = false
+      }
+    },
+
+    async fetchAnggotaReguForDropdown() {
+
+      const api = useDropdown()
+      this.loading.anggotaReguForDropdown = true
+      this.anggotaReguForDropdown = []
+
+      try {
+        const res = await api.getAnggotaReguForDropdown()
+
+        this.anggotaReguForDropdown = res.data
+
+        return res
+      } finally {
+        this.loading.anggotaReguForDropdown = false
       }
     },
   },

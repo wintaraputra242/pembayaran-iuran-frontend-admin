@@ -22,6 +22,7 @@ export const usePembayaranStore = defineStore('pembayaran', {
     loading: false,
     reload: false,
     isReloadDataUnpaidWarga: false,
+    isReloadDataHistoryUnpaid: false,
 
     filters: {
       nama_warga: '',
@@ -253,6 +254,11 @@ export const usePembayaranStore = defineStore('pembayaran', {
     async fetchHistoryUnpaid(params?: { page?: number; limit?: number }) {
       if (!this.nikWarga) return
 
+      if (this.isReloadDataHistoryUnpaid) {
+        this.historyUnpaid = []
+        this.isReloadDataHistoryUnpaid = false
+      }
+
       const api = usePembayaran()
       this.loading = true
 
@@ -286,6 +292,31 @@ export const usePembayaranStore = defineStore('pembayaran', {
         console.log(this.monthPaidPaymentWarga)
       } finally {
         this.loadingGetPaidMonthWarga = false
+      }
+    },
+
+    async fetchUnpaidPembayaranKetuaRegu(params?: { page?: number; limit?: number }) {
+      if (this.isReloadDataUnpaidWarga) {
+        this.unpaidWarga = []
+        this.isReloadDataUnpaidWarga = false
+      }
+
+      const api = usePembayaran()
+      this.loading = true
+
+      try {
+        const res = await api.getUnpaidPembayaranKetuaRegu({
+          nama_warga: this.namaWarga || undefined,
+          page: params?.page,
+          per_page: params?.limit,
+        })
+
+        this.unpaidWarga = [...this.unpaidWarga, ...res.data.data]
+
+        const { data, ...meta } = res.data
+        this.meta = meta
+      } finally {
+        this.loading = false
       }
     },
   },

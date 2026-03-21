@@ -22,6 +22,13 @@ export interface ReguForDropdown {
   nama_regu: string,
 }
 
+export interface AnggotaReguForDropdown {
+  id: number,
+  nik: string,
+  nama_warga: string,
+  is_leader: string
+}
+
 export interface GetWargaForDropdownResponse {
   code: number
   success: boolean
@@ -55,4 +62,11 @@ export interface GetWargaForDropdownReguResponse {
   success: boolean
   message: string
   data: ReguForDropdown[]
+}
+
+export interface GetDropdownAnggotaReguResponse {
+  code: number
+  success: boolean
+  message: string
+  data: AnggotaReguForDropdown[]
 }

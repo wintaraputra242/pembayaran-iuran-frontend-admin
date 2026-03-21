@@ -15,7 +15,6 @@ const props = withDefaults(defineProps<{
 
 const headers = [
   { key: 'no', label: 'No.', width: '70px' },
-  { key: 'user', label: 'User', width: '180px' },
   { key: 'created_at', label: 'Waktu', width: '180px' },
   { key: 'action', label: 'Aksi', width: '160px' },
   { key: 'description', label: 'Deskripsi Aktivitas', width: '400px' },
@@ -50,11 +49,6 @@ const actionLabel: Record<string, string> = {
     :has-filter="props.hasFilter"
     @loadMore="emit('loadMore')"
   >
-
-    <!-- waktu -->
-    <template #cell-user="{ item }">
-      <span>{{ item.user.name }}</span>
-    </template>
 
     <!-- waktu -->
     <template #cell-created_at="{ item }">

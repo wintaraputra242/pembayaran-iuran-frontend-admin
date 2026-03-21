@@ -1,4 +1,4 @@
-import type { GetWargaForDropdownAddAnggotaResponse, GetWargaForDropdownInformasiIuranResponse, GetWargaForDropdownPembayaranResponse, GetWargaForDropdownReguResponse, GetWargaForDropdownResponse } from '@/types/api/dropdown'
+import type { GetDropdownAnggotaReguResponse, GetWargaForDropdownAddAnggotaResponse, GetWargaForDropdownInformasiIuranResponse, GetWargaForDropdownPembayaranResponse, GetWargaForDropdownReguResponse, GetWargaForDropdownResponse } from '@/types/api/dropdown'
 import { useApi } from './useApi'
 
 export const useDropdown = () => {
@@ -38,11 +38,18 @@ export const useDropdown = () => {
     })
   }
 
+  const getAnggotaReguForDropdown = async (): Promise<GetDropdownAnggotaReguResponse> => {
+    return await api<GetDropdownAnggotaReguResponse>('/dropdown/anggota-regu', {
+      method: 'GET',
+    })
+  }
+
   return {
     getWargaForDropdownAddAnggota,
     getWargaForDropdown,
     getWargaForDropdownPembayaran,
     getInformasiIuranForDropdown,
-    getReguForDropdown
+    getReguForDropdown,
+    getAnggotaReguForDropdown
   }
 }

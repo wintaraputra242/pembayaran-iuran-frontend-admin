@@ -239,6 +239,7 @@ const handleSubmit = async (params: CreateReguPayload) => {
   if (localStorage.getItem('from') && localStorage.getItem('from') === 'create-user') {
     handleCloseFormData()
     masterUsersStore.reload = true
+    masterUsersStore.resetFilter()
     navigateTo('/master-data/users')
     return
   }

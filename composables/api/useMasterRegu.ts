@@ -60,7 +60,7 @@ export const useMasterRegu = () => {
   // Anggota Regu
 
   const getAnggotaRegu = async (params?: {
-    id_regu: number
+    id_regu?: number
   }): Promise<GetAnggotaReguResponse> => {
     return await api<GetAnggotaReguResponse>('/anggota-regu', {
       method: 'GET',

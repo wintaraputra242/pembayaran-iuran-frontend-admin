@@ -90,7 +90,11 @@ const handleDownloadCredentials = async () => {
 }
 
 onMounted(async () => {
-  await masterUsersStore.fetchUsers({ limit: 10, page: page.value })
+  if (masterUsersStore.page) page.value = masterUsersStore.page
+
+  if (masterUsersStore.page === 0) {
+    await masterUsersStore.fetchUsers({ limit: 10, page: page.value })
+  }
 })
 </script>
 

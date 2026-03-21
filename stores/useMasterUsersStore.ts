@@ -10,6 +10,7 @@ export const useMasterUsersStore = defineStore('master-users', {
     loading: false,
     loadingDownload: false,
     reload: false,
+    page: 0,
 
     filters: {
       keyword: '',
@@ -47,6 +48,8 @@ export const useMasterUsersStore = defineStore('master-users', {
 
         const { data, ...meta } = res.data
         this.meta = meta
+
+        this.page = params?.page as number
       } finally {
         this.loading = false
       }
@@ -61,6 +64,8 @@ export const useMasterUsersStore = defineStore('master-users', {
         keyword: '',
         role: '',
       }
+
+      this.page = 0
     },
   },
 })

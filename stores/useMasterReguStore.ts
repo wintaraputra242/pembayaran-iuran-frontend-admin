@@ -133,7 +133,7 @@ export const useMasterReguStore = defineStore('master-regu', {
     },
 
     // Anggota Regu
-    async fetchAnggotaRegu(id_regu: number) {
+    async fetchAnggotaRegu(id_regu?: number) {
 
       const api = useMasterRegu()
       this.loadingAnggota = true

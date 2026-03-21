@@ -91,6 +91,7 @@ export interface AddPembayaranResponse {
 
 export interface UnpaidWarga {
   nik: string
+  nik_penanggung_jawab: string
   id_user: number | null
   nama_warga: string
   alamat: string
