@@ -113,7 +113,10 @@ onMounted(async () => {
 
 <template>
   <div>
-    <h2 class="mb-3">Laporan</h2>
+    <div class="mb-3">
+      <h2>Laporan</h2>
+      <span class="text-body-2">Menampilkan rekapitulasi dan hasil olahan data untuk kebutuhan monitoring dan evaluasi.</span>
+    </div>
 
     <VRow class="match-height">
       <VCol cols="12">

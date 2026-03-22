@@ -85,7 +85,10 @@ watch(
 <template>
   <VRow class="mb-2" align="center" justify="space-between">
     <VCol cols="auto">
-      <h2>Notifications</h2>
+      <div>
+        <h2>Notifikasi</h2>
+        <span class="text-body-2">Menampilkan informasi dan pemberitahuan terkait aktivitas serta update penting dalam sistem.</span>
+      </div>
     </VCol>
   </VRow>
 

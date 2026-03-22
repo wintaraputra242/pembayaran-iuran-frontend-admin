@@ -223,7 +223,10 @@ onMounted(async () => {
 
 <template>
   <div>
-    <h2 class="mb-3">Pembayaran</h2>
+    <div class="mb-3">
+      <h2>Pembayaran</h2>
+      <span class="text-body-2">Catat dan kelola transaksi pembayaran iuran yang dilakukan oleh warga.</span>
+    </div>
 
     <VRow class="match-height">
       <VCol cols="12">

@@ -224,7 +224,10 @@ onMounted(async () => {
 
 <template>
   <div>
-    <h2 class="mb-3">Data Informasi Iuran</h2>
+    <div class="mb-3">
+      <h2>Data Informasi Iuran</h2>
+      <span class="text-body-2">Kelola jenis dan detail iuran yang berlaku, termasuk nominal dan kategori iuran.</span>
+    </div>
     <VRow class="match-height">
       <VCol
         cols="12"

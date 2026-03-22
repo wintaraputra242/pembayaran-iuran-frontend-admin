@@ -47,7 +47,11 @@ onMounted(async () => {
 
 <template>
   <div>
-    <h2 class="mb-3">Dashboard</h2>
+    <div class="mb-3">
+      <h2>Dashboard</h2>
+      <span class="text-body-2">Ringkasan data utama sistem, termasuk statistik warga, regu, iuran, dan aktivitas terbaru.</span>
+    </div>
+    
     <VRow class="match-height">
       <VCol
         cols="12"

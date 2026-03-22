@@ -375,7 +375,10 @@ onMounted(async () => {
 
 <template>
   <div>
-    <h2 class="mb-3">Data Regu</h2>
+    <div class="mb-3">
+      <h2>Data Regu</h2>
+      <span class="text-body-2">Kelola data regu dan pengelompokan warga berdasarkan struktur yang ditentukan.</span>
+    </div>
     <VRow class="match-height">
       <VCol
         cols="12"

@@ -100,7 +100,10 @@ onMounted(async () => {
 
 <template>
   <div>
-    <h2 class="mb-3">Data Pengguna</h2>
+    <div class="mb-3">
+      <h2>Data Pengguna</h2>
+      <span class="text-body-2">Kelola data akun pengguna yang memiliki akses ke sistem beserta perannya.</span>
+    </div>
     <VRow class="match-height">
       <VCol
         cols="12"

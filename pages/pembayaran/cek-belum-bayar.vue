@@ -279,7 +279,10 @@ onMounted(() => {
       Keluar
     </VBtn>
 
-    <h2 class="mb-3">Cek Belum Bayar</h2>
+    <div class="mb-3">
+      <h2>Cek Belum Bayar</h2>
+      <span class="text-body-2">Menampilkan daftar warga yang masih memiliki kewajiban iuran yang belum diselesaikan.</span>
+    </div>
 
     <VRow class="match-height">
       <VCol cols="12">

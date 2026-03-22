@@ -58,7 +58,10 @@ onMounted(async () => {
 
 <template>
   <div>
-    <h2 class="mb-3">Aktivitas</h2>
+    <div class="mb-3">
+      <h2>Aktivitas</h2>
+      <span class="text-body-2">Menampilkan riwayat aktivitas pengguna dalam sistem untuk keperluan audit dan tracking.</span>
+    </div>
     <VRow class="match-height">
       <VCol
         cols="12"
