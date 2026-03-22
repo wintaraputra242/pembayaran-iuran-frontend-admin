@@ -266,6 +266,14 @@ const handleSendNotifToAll = async () => {
   }
 }
 
+const handleLeaveCreatePembayaran = () => {
+  filters.informasi_iuran = null
+  filters.bulan = null
+  filters.nama_warga = null
+
+  navigateTo('/pembayaran')
+}
+
 onMounted(() => {
   handleGetDropdownInformasiIuran()
 })
@@ -274,7 +282,7 @@ onMounted(() => {
 
 <template>
   <div>
-    <VBtn class="px-0 py-1 mb-3" variant="text" size="large" to="/pembayaran">
+    <VBtn class="px-0 py-1 mb-3" variant="text" size="large" @click="handleLeaveCreatePembayaran">
       <VIcon icon="ri-arrow-left-s-line" class="me-2" />
       Keluar
     </VBtn>
@@ -321,7 +329,7 @@ onMounted(() => {
               class="mb-3"
             />
 
-            <VBtn v-if="pembayaranStore.unpaidWarga.length > 0" type="submit" variant="flat" color="primary" :loading="pembayaranStore.loadingSendNotifToAll" @click="handleSendNotifToAll">
+            <VBtn v-if="pembayaranStore.unpaidWarga.length > 0" type="submit" variant="flat" color="primary" block :loading="pembayaranStore.loadingSendNotifToAll" @click="handleSendNotifToAll">
               <VIcon icon="ri-send-plane-fill" class="me-2" />
               Kirim Notif ke Semua Warga
             </VBtn>
