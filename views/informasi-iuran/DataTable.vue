@@ -54,7 +54,7 @@ const headers = [
     </template>
 
     <template #cell-jenis_iuran="{ item }">
-      <VChip class="text-capitalize" size="small" :color="item.jenis_iuran === 'bulanan' ? 'info' : 'secondary'">
+      <VChip class="text-capitalize" size="small" :color="item.jenis_iuran === 'bulanan' ? 'info' : 'error'">
         {{ item.jenis_iuran }}
       </VChip>
     </template>
