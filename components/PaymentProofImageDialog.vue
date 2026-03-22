@@ -3,6 +3,10 @@ import { ref } from 'vue';
 
 const props = defineProps({
   modelValue: { type: Boolean, default: false },
+  judulIuran: {
+    type: String,
+    required: false,
+  },
   src: {
     type: String,
     required: false,
@@ -57,8 +61,8 @@ const dialog = ref(false)
         </VCardTitle>
 
         <VCardText>
-          <div>
-            <p class="pa-0 ma-0 text-caption">Judul Iuran: {{ props.item.judul_iuran || '-' }}</p>
+          <div class="mb-3">
+            <p class="pa-0 ma-0 text-caption">Judul Iuran: {{ props.judulIuran || '-' }}</p>
             <p class="pa-0 ma-0 text-caption">Nama Warga: {{ props.item.warga.nama_warga || '-' }}</p>
           </div>
 

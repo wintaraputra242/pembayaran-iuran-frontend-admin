@@ -5,11 +5,12 @@ import DialogFormDataPembayaran from '@/views/pembayaran/DialogFormData.vue'
 import DialogHistoryPaymentWargaPembayaran from '@/views/pembayaran/DialogHistoryPaymentWarga.vue'
 import DialogNoPaymentPembayaran from '@/views/pembayaran/DialogNoPayment.vue'
 import FormFilterPembayaran from '@/views/pembayaran/FormFilter.vue'
-import eCommerce2 from '@images/eCommerce/2.png'
 
 definePageMeta({
   middleware: ['admin'],
 })
+
+const config = useRuntimeConfig()
 
 const pembayaranStore = usePembayaranStore()
 const dropdownStore = useDropdownStore()
@@ -284,7 +285,8 @@ onMounted(async () => {
 
     <PaymentProofImageDialog
       v-model="showPaymentProof"
-      :src="eCommerce2"
+      :judul-iuran="itemSelected?.informasi_iuran.judul_iuran"
+      :src="config.public.backendUrl + '/storage/' + itemSelected?.bukti_pembayaran"
       :item="(itemSelected as Pembayaran)"
     />
 

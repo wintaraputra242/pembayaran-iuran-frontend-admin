@@ -2,7 +2,6 @@
 // import qris from '@images/pages/qris.png'
 import type { Pembayaran } from '@/types/api/pembayaran';
 import type { PaginationMeta } from '@/types/common';
-import eCommerce2 from '@images/eCommerce/2.png';
 import qris from '@images/pages/qris.png';
 
 const props = withDefaults(defineProps<{
@@ -20,6 +19,7 @@ const emit = defineEmits<{
 }>();
 
 const router = useRouter()
+const config = useRuntimeConfig()
 
 const headers = [
   { label: 'No.', key: 'no', width: '70px', sortable: false },
@@ -174,7 +174,8 @@ const statusText: Record<
           @click="emit('showBuktiBayar', item)"
         >
           <!-- <VImg :src="item.bukti_pembayaran || eCommerce2" width="50" /> -->
-          <VImg :src="eCommerce2" width="50" />
+          <VImg v-if="item.bukti_pembayaran" :src="config.public.backendUrl + '/storage/' + item.bukti_pembayaran" width="50" />
+          <span v-else>-</span>
         </div>
       </div>
     </template>
