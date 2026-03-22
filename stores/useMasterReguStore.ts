@@ -12,6 +12,7 @@ export const useMasterReguStore = defineStore('master-regu', {
     loadingAnggota: false,
     reload: false,
     leaderAvailable: false,
+    page: 0,
 
     filters: {
       nama_regu: '',
@@ -58,6 +59,8 @@ export const useMasterReguStore = defineStore('master-regu', {
 
         const { data, ...meta } = res.data
         this.meta = meta
+
+        this.page = params?.page as number
       } finally {
         this.loading = false
       }

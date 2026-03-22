@@ -101,10 +101,14 @@ const handleReload = async () => {
 }
 
 onMounted(async () => {
-  await laporanStore.fetchLaporan({
-    page: 1,
-    limit: 10,
-  })
+  if (laporanStore.page) page.value = laporanStore.page
+
+  if (laporanStore.page === 0) {
+    await laporanStore.fetchLaporan({
+      page: 1,
+      limit: 10,
+    })
+  }
 
   await dropdownStore.fetchReguForDropdown()
   await dropdownStore.fetchInformasiIuranForDropdown()

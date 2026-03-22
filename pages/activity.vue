@@ -49,10 +49,14 @@ const handleReload = async () => {
 }
 
 onMounted(async () => {
-  await activityStore.fetchActivities({
-    page: 1,
-    limit: 10,
-  })
+  if (activityStore.page) page.value = activityStore.page
+
+  if (activityStore.page === 0) {
+    await activityStore.fetchActivities({
+      page: 1,
+      limit: 10,
+    })
+  }
 })
 </script>
 

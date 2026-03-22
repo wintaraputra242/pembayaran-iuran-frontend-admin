@@ -217,7 +217,12 @@ const handleAddData = async (params: AddInformasiIuranPayload) => {
 }
 
 onMounted(async () => {
-  await masterInformasiIuranStore.fetchInformasiIuran({ limit: 10, page: page.value, mode: 'admin' })
+  if (masterInformasiIuranStore.page) page.value = masterInformasiIuranStore.page
+
+  if (masterInformasiIuranStore.page === 0) {
+    await masterInformasiIuranStore.fetchInformasiIuran({ limit: 10, page: page.value, mode: 'admin' })
+  }
+  
   await dropdownStore.fetchWargaForDropdown()
 })
 </script>

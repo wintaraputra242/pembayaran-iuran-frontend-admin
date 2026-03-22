@@ -214,7 +214,11 @@ const handleGetDropdownRegu = async () => {
 }
 
 onMounted(async () => {
-  await pembayaranStore.fetchPembayaran({ limit: 10, page: page.value })
+  if (pembayaranStore.page) page.value = pembayaranStore.page
+
+  if (pembayaranStore.page === 0) {
+    await pembayaranStore.fetchPembayaran({ limit: 10, page: page.value })
+  }
 
   handleGetDropdownRegu()
 })

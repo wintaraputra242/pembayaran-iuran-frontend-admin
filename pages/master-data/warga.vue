@@ -182,7 +182,11 @@ const handleUpdate = async (params: AddWargaPayload) => {
 }
 
 onMounted(async () => {
-  await masterWargaStore.fetchWarga({ limit: 10, page: page.value })
+  if (masterWargaStore.page) page.value = masterWargaStore.page
+
+  if (masterWargaStore.page === 0) {
+    await masterWargaStore.fetchWarga({ limit: 10, page: page.value })
+  }
 })
 </script>
 

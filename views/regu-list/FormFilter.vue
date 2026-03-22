@@ -35,10 +35,10 @@ const filter = reactive({
                 <VIcon icon="ri-add-large-line" class="me-2" />
                 Tambah Data
               </VBtn>
-              <VBtn variant="flat" color="error" @click="emit('resetAllAnggota')">
+              <!-- <VBtn variant="flat" color="error" @click="emit('resetAllAnggota')">
                 <VIcon icon="ri-user-community-line" class="me-2" />
                 Reset Semua Anggota
-              </VBtn>
+              </VBtn> -->
             </div>
           </VCol>
         </VRow>

@@ -23,6 +23,7 @@ export const usePembayaranStore = defineStore('pembayaran', {
     reload: false,
     isReloadDataUnpaidWarga: false,
     isReloadDataHistoryUnpaid: false,
+    page: 0,
 
     filters: {
       nama_warga: '',
@@ -93,6 +94,8 @@ export const usePembayaranStore = defineStore('pembayaran', {
 
         const { data, ...meta } = res.data
         this.meta = meta
+
+        this.page = params?.page as number
       } finally {
         this.loading = false
       }

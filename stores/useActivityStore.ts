@@ -9,6 +9,7 @@ export const useActivityStore = defineStore('activity', {
     meta: null as PaginationMeta | null,
     loading: false,
     reload: false,
+    page: 0,
 
     filters: {
       action: '',
@@ -55,6 +56,8 @@ export const useActivityStore = defineStore('activity', {
 
         const { data, ...meta } = res.data
         this.meta = meta
+
+        this.page = params?.page as number
       } finally {
         this.loading = false
       }

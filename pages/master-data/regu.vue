@@ -369,7 +369,11 @@ onMounted(async () => {
     showAnnouncement.value = true
   }
 
-  await masterReguStore.fetchRegu({ limit: 10, page: page.value })
+  if (masterReguStore.page) page.value = masterReguStore.page
+
+  if (masterReguStore.page === 0) {
+    await masterReguStore.fetchRegu({ limit: 10, page: page.value })
+  }
 })
 </script>
 

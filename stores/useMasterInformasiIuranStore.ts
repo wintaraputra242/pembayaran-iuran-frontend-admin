@@ -10,7 +10,8 @@ export const useMasterInformasiIuranStore = defineStore('master-informasi-iuran'
     meta: null as PaginationMeta | null,
     loading: false,
     reload: false,
-
+    page: 0,
+    
     filters: {
       keyword: '',
       status_aktif: '',
@@ -60,6 +61,8 @@ export const useMasterInformasiIuranStore = defineStore('master-informasi-iuran'
 
         const { data, ...meta } = res.data
         this.meta = meta
+
+        this.page = params?.page as number
       } finally {
         this.loading = false
       }
