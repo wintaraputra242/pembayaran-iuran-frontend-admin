@@ -15,13 +15,14 @@ export const useMasterInformasiIuranStore = defineStore('master-informasi-iuran'
     filters: {
       keyword: '',
       status_aktif: '',
+      jenis_iuran: '',
     },
   }),
 
   getters: {
     hasData: (state) => state.informasiIuran.length > 0,
     hasMore: (state) => state.meta?.total !== state.informasiIuran.length,
-    hasFilter: (state) => !!state.filters.keyword || !!state.filters.status_aktif
+    hasFilter: (state) => !!state.filters.keyword || !!state.filters.status_aktif || !!state.filters.jenis_iuran
   },
 
   actions: {
@@ -72,6 +73,7 @@ export const useMasterInformasiIuranStore = defineStore('master-informasi-iuran'
       page?: number
       limit?: number
       jenis_iuran?: string
+      keyword?: string
     }) {
       if (this.reload) {
         this.informasiIuran = []
@@ -86,6 +88,7 @@ export const useMasterInformasiIuranStore = defineStore('master-informasi-iuran'
           page: params?.page,
           limit: params?.limit,
           jenis_iuran: params?.jenis_iuran,
+          keyword: params?.keyword,
         })
 
         this.informasiIuran = [...this.informasiIuran, ...res.data.data]
@@ -119,7 +122,8 @@ export const useMasterInformasiIuranStore = defineStore('master-informasi-iuran'
     resetFilter() {
       this.filters = {
         keyword: '',
-        status_aktif: ''
+        status_aktif: '',
+        jenis_iuran: ''
       }
     },
 

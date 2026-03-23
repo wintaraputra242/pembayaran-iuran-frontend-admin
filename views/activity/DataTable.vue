@@ -13,12 +13,23 @@ const props = withDefaults(defineProps<{
   hasFilter: boolean
 }>(), {})
 
-const headers = [
+const authStore = useAuthStore()
+
+const baseHeaders = [
   { key: 'no', label: 'No.', width: '70px' },
+  { key: 'petugas', label: 'Petugas', width: '180px' },
   { key: 'created_at', label: 'Waktu', width: '180px' },
   { key: 'action', label: 'Aksi', width: '160px' },
   { key: 'description', label: 'Deskripsi Aktivitas', width: '400px' },
 ]
+
+const headers = computed(() => {
+  if (authStore.user?.role === 'ketua_regu') {
+    return baseHeaders.filter(h => h.key !== 'petugas')
+  }
+
+  return baseHeaders
+})
 
 const actionColor: Record<string, string> = {
   create: 'success',
@@ -49,6 +60,11 @@ const actionLabel: Record<string, string> = {
     :has-filter="props.hasFilter"
     @loadMore="emit('loadMore')"
   >
+
+    <!-- waktu -->
+    <template #cell-petugas="{ item }">
+      {{ item.user.name }}
+    </template>
 
     <!-- waktu -->
     <template #cell-created_at="{ item }">

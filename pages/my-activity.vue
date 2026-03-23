@@ -57,6 +57,13 @@ onMounted(async () => {
 
 <template>
   <div>
+    <div class="mb-7">
+      <VBtn class="px-0 py-1" variant="text" size="large" :to="'/create-pembayaran'">
+        <VIcon icon="ri-arrow-left-s-line" class="me-2" />
+        Keluar
+      </VBtn>
+    </div>
+
     <div class="mb-4">
       <h2>Aktivitas Saya</h2>
       <span>Informasi terkait dengan aktivitas yang sudah pernah Anda lakukan sebelumnya</span>

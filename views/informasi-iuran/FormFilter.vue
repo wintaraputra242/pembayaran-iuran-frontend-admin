@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 const emit = defineEmits<{
-  (e: 'filter', item: { keyword: string, status_aktif: null | number }): void;
+  (e: 'filter', item: { keyword: string, status_aktif: null | number, jenis_iuran: string | null }): void;
   (e: 'reload'): void;
   (e: 'showFormData'): void;
 }>();
@@ -8,11 +8,13 @@ const emit = defineEmits<{
 const filters = reactive({
   keyword: '',
   status_aktif: null,
+  jenis_iuran: null,
 })
 
 const handleReload = () => {
   filters.keyword = ''
   filters.status_aktif = null
+  filters.jenis_iuran = null
 
   emit('reload')
 }
@@ -40,6 +42,19 @@ const handleReload = () => {
               :items="[
                 {label: 'Aktif', value: 1},
                 {label: 'Tidak Aktif', value: 0},
+              ]"
+            />
+          </VCol>
+          <VCol cols="12">
+            <VSelect
+              v-model="filters.jenis_iuran"
+              placeholder="Pilih jenis iuran"
+              item-title="label"
+              item-value="value"
+              clearable
+              :items="[
+                {label: 'Kematian', value: 'kematian'},
+                {label: 'Bulanan', value: 'bulanan'},
               ]"
             />
           </VCol>

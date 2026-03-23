@@ -76,6 +76,13 @@ onMounted(async () => {
 
 <template>
   <div>
+    <div class="mb-7">
+      <VBtn class="px-0 py-1" variant="text" size="large" :to="'/create-pembayaran'">
+        <VIcon icon="ri-arrow-left-s-line" class="me-2" />
+        Keluar
+      </VBtn>
+    </div>
+
     <div class="mb-4">
       <h2>Regu Saya</h2>
       <span>Informasi terkait dengan anggota regu Anda, beserta anggota regu Anda yang belum bayar</span>
@@ -108,7 +115,6 @@ onMounted(async () => {
             item-title="nama_warga"
             item-value="nik"
             clearable
-            class="mb-3"
             :loading="dropdownStore.loading.anggotaReguForDropdown"
           />
         </div>

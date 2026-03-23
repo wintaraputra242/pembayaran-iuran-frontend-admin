@@ -5,6 +5,8 @@ import { useDisplay } from 'vuetify';
 const { smAndDown } = useDisplay()
 const showDialog = ref(false)
 
+const laporanStore = useLaporanStore()
+
 const emit = defineEmits<{
   (e: 'filter', item: {
     date: string
@@ -47,8 +49,8 @@ const handleReload = () => {
 }
 
 const statusOptions = [
-  { label: 'Sudah Bayar', value: 'paid' },
-  { label: 'Belum Bayar', value: 'unpaid' },
+  { label: 'Lunas', value: 'paid' },
+  { label: 'Belum Lunas', value: 'unpaid' },
 ]
 </script>
 
@@ -73,8 +75,13 @@ const statusOptions = [
               <VSelect
                 v-model="filters.jenis_iuran"
                 placeholder="Jenis iuran"
-                :items="['Bulanan', 'Kematian']"
+                item-title="label"
+                item-value="value"
                 clearable
+                :items="[
+                  {label: 'Kematian', value: 'kematian'},
+                  {label: 'Bulanan', value: 'bulanan'},
+                ]"
               />
             </VCol>
 
@@ -107,6 +114,7 @@ const statusOptions = [
                 item-title="nama_regu"
                 item-value="id"
                 clearable
+                @click:clear="filters.regu = null; laporanStore.setFilter('regu', '')"
               />
             </VCol>
 
@@ -119,6 +127,7 @@ const statusOptions = [
                 item-title="judul_iuran"
                 item-value="id"
                 clearable
+                @click:clear="filters.informasi_iuran = null; laporanStore.setFilter('informasi_iuran', '')"
               />
             </VCol>
           </template>
@@ -201,8 +210,13 @@ const statusOptions = [
               <VSelect
                 v-model="filters.jenis_iuran"
                 placeholder="Jenis iuran"
-                :items="['Bulanan', 'Kematian']"
+                item-title="label"
+                item-value="value"
                 clearable
+                :items="[
+                  {label: 'Kematian', value: 'kematian'},
+                  {label: 'Bulanan', value: 'bulanan'},
+                ]"
               />
             </VCol>
 
@@ -235,6 +249,7 @@ const statusOptions = [
                 item-title="nama_regu"
                 item-value="id"
                 clearable
+                @click:clear="filters.regu = null; laporanStore.setFilter('regu', '')"
               />
             </VCol>
 
@@ -247,6 +262,7 @@ const statusOptions = [
                 item-title="judul_iuran"
                 item-value="id"
                 clearable
+                @click:clear="filters.informasi_iuran = null; laporanStore.setFilter('informasi_iuran', '')"
               />
             </VCol>
 

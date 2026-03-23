@@ -102,11 +102,11 @@ const handleShowFormData = () => {
   showFormData.value = true
 }
 
-const handleFilter = (filters: { keyword: string, status_aktif: null | number }) => {
+const handleFilter = (filters: { keyword: string, status_aktif: null | number, jenis_iuran: string | null }) => {
   page.value = 1
   masterInformasiIuranStore.reload = true
   Object.entries(filters).forEach(([key, value]) => {
-    masterInformasiIuranStore.setFilter(key as 'status_aktif' | 'keyword', value as string)
+    masterInformasiIuranStore.setFilter(key as 'status_aktif' | 'keyword' | 'jenis_iuran', value as string)
   })
   masterInformasiIuranStore.fetchInformasiIuran({ limit: 10, page: page.value, mode: 'admin' })
 }

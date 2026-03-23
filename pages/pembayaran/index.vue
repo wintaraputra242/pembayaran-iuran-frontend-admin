@@ -109,6 +109,7 @@ const handleShowBuktiBayarHistoryPayment = () => {
 }
 
 const handleShowNoPayment = () => {
+  
   // showNoPaymentList.value = true
   router.push('/pembayaran/cek-belum-bayar')
 }
@@ -223,6 +224,10 @@ onMounted(async () => {
   }
 
   handleGetDropdownRegu()
+})
+
+onBeforeRouteLeave(() => {
+  handleReload()
 })
 </script>
 

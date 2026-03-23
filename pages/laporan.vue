@@ -113,6 +113,10 @@ onMounted(async () => {
   await dropdownStore.fetchReguForDropdown()
   await dropdownStore.fetchInformasiIuranForDropdown()
 })
+
+onBeforeRouteLeave(() => {
+  handleReload()
+})
 </script>
 
 <template>

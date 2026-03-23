@@ -36,7 +36,8 @@ const loadData = async (type: 'kematian' | 'bulanan') => {
   await masterStore.fetchInformasiIuranActive({
     page: page.value,
     limit: 10,
-    jenis_iuran: type
+    jenis_iuran: type,
+    keyword: filters[type]
   })
 }
 
@@ -44,12 +45,26 @@ watch(tab, (val) => {
   loadData(val)
 })
 
-watch(() => filters.kematian, () => {
-  if (tab.value === 'kematian') loadData('kematian')
+let debounceTimer: any
+
+watch(() => filters.kematian, (val) => {
+  if (tab.value !== 'kematian') return
+
+  if (debounceTimer) clearTimeout(debounceTimer)
+
+  debounceTimer = setTimeout(() => {
+    loadData('kematian')
+  }, 500)
 })
 
-watch(() => filters.bulanan, (newVal) => {
-  if (!newVal && tab.value === 'bulanan') loadData('bulanan')
+watch(() => filters.bulanan, (val) => {
+  if (tab.value !== 'bulanan') return
+
+  if (debounceTimer) clearTimeout(debounceTimer)
+
+  debounceTimer = setTimeout(() => {
+    loadData('bulanan')
+  }, 500)
 })
 
 watch(() => route.query.jenis_iuran, (newVal) => {

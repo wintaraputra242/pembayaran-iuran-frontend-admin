@@ -72,6 +72,12 @@ watch(
       </div>
     </template>
 
+    <template v-if="props.items?.length === 0 && !loading">
+      <div class="d-flex justify-center w-100 mt-4">
+        Tidak ada data
+      </div>
+    </template>
+
     <template v-else>
       <VCol
         v-for="item in props.items"

@@ -51,7 +51,7 @@ const headers = [
       <IconBtn variant="outlined" class="rounded-lg" size="small" color="secondary" @click="emit('updateStatus', item)">
         <VIcon :icon="item.status_keaktifan === 'aktif' ? 'ri-eye-off-line' : 'ri-eye-line'" />
       </IconBtn>
-      <IconBtn variant="outlined" class="rounded-lg" size="small" color="secondary" @click="emit('edit', item)">
+      <IconBtn v-if="!item.is_deleted" variant="outlined" class="rounded-lg" size="small" color="secondary" @click="emit('edit', item)">
         <VIcon icon="ri-edit-line" />
       </IconBtn>
       <IconBtn v-if="!item.is_deleted" variant="outlined" class="rounded-lg" size="small" color="error" @click="emit('delete', item)">

@@ -22,6 +22,7 @@ export const useMasterInformasiIuran = () => {
     page?: number
     limit?: number
     jenis_iuran?: string
+    keyword?: string
   }): Promise<GetMasterInformasiIuranResponse> => {
     return await api<GetMasterInformasiIuranResponse>('/informasi-iuran-active', {
       method: 'GET',
