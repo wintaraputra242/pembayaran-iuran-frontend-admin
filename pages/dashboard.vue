@@ -53,6 +53,40 @@ onMounted(async () => {
     </div>
     
     <VRow class="match-height">
+
+      <!-- 🔥 MINI CARDS -->
+      <VCol cols="12">
+        <VRow>
+          <VCol cols="6">
+            <VCard class="pa-3">
+              <div class="d-flex align-center justify-space-between">
+                <div>
+                  <div class="text-caption">Total Warga</div>
+                  <div class="text-h6 font-weight-bold">
+                    {{ dashboardStore.totalWarga }}
+                  </div>
+                </div>
+                <div><i class="ri-group-line text-h5"></i></div>
+              </div>
+            </VCard>
+          </VCol>
+
+          <VCol cols="6">
+            <VCard class="pa-3">
+              <div class="d-flex align-center justify-space-between">
+                <div>
+                  <div class="text-caption">Bayar Hari Ini</div>
+                  <div class="text-h6 font-weight-bold">
+                    {{ dashboardStore.totalPembayaranHariIni }}
+                  </div>
+                </div>
+                <div><i class="ri-money-dollar-circle-line text-h5"></i></div>
+              </div>
+            </VCard>
+          </VCol>
+        </VRow>
+      </VCol>
+
       <VCol
         cols="12"
       >
