@@ -73,6 +73,10 @@ const statusText: Record<
   canceled: 'Dibatalkan',
   manual: 'Manual',
 }
+
+const handleJumpToHistoryPayment = (item: Pembayaran) => {
+  emit('showHistoryPayment', item)
+}
 </script>
 
 <template>
@@ -93,7 +97,7 @@ const statusText: Record<
     <template #cell-warga="{ item }">
       <span
         class="text-info hover-text cursor-pointer"
-        @click="router.push('/pembayaran/riwayat/' + item.warga.nik)"
+        @click="handleJumpToHistoryPayment(item)"
       >
         {{ item.warga.nama_warga }}
         <VIcon icon="ri-arrow-right-up-long-line" size="16" />

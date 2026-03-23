@@ -20,6 +20,7 @@ export const usePembayaranStore = defineStore('pembayaran', {
     loadingSendNotifToAll: false,
     loadingGetPaidMonthWarga: false,
     loading: false,
+    loadingDetail: false,
     reload: false,
     isReloadDataUnpaidWarga: false,
     isReloadDataHistoryUnpaid: false,
@@ -125,15 +126,18 @@ export const usePembayaranStore = defineStore('pembayaran', {
       }
     },
 
-    async fetchDetailPembayaran(id: number) {
+    async fetchDetailPembayaran(nik: string) {
       const api = usePembayaran()
-      this.loading = true
+      this.loadingDetail = true
 
       try {
-        const res = await api.getDetailPembayaran(id)
+        const res = await api.getDetailPembayaran(nik)
+
+        this.itemSelected = res.data
+        
         return res
       } finally {
-        this.loading = false
+        this.loadingDetail = false
       }
     },
 
@@ -214,6 +218,18 @@ export const usePembayaranStore = defineStore('pembayaran', {
 
       try {
         const res = await api.notifyUnpaidResidents(body)
+        return res
+      } finally {
+        this.loadingSendNotifToAll = false
+      }
+    },
+    
+    async fetchNotifyResidentAllUnpaid(nik: string) {
+      const api = usePembayaran()
+      this.loadingSendNotifToAll = true
+
+      try {
+        const res = await api.notifyResidentAllUnpaid({ nik })
         return res
       } finally {
         this.loadingSendNotifToAll = false

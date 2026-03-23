@@ -98,7 +98,8 @@ const handleShowBuktiBayar = (item: Pembayaran) => {
 const handleHistoryPayment = (item: Pembayaran) => {
   pembayaranStore.itemSelected = item
   itemSelected.value = item
-  showHistoryPayment.value = true
+  
+  router.push('/pembayaran/riwayat/' + item.warga.nik)
 }
 
 const handleShowBuktiBayarHistoryPayment = () => {

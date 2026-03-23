@@ -99,15 +99,13 @@ const handleShowBuktiBayarHistoryPayment = () => {
 const itemSelectForSendNotif = ref<string | null>(null)
 
 const handleSendNotif = async (item?: UnpaidWarga) => {
-  if (!item) return
-
-  itemSelectForSendNotif.value = item.nik
+  const newItem = pembayaranStore.itemSelected
 
   try {
     await pembayaranStore.fetchNotifyResident({
-      nik: item.nik,
+      nik: newItem?.warga.nik as string,
       title: 'Pengingat Pembayaran Iuran',
-      message: `Halo ${item.nama_warga}, mohon segera melakukan pembayaran iuran.`,
+      message: `Halo ${newItem?.warga.nama_warga}, mohon segera melakukan pembayaran iuran.`,
     })
 
     successTitle.value = 'Kirim Notif Berhasil'
@@ -256,19 +254,16 @@ watch(
 )
 
 const handleSendNotifToAll = async () => {
-  if (!pembayaranStore.idInformasiIuran) return
-
   try {
-    await pembayaranStore.fetchNotifyUnpaid({
-      id_informasi_iuran: pembayaranStore.idInformasiIuran,
-      month: pembayaranStore.bulan || undefined,
-    })
-
-    successTitle.value = 'Kirim Notif Berhasil'
-    successMessage.value =
-      'Notifikasi berhasil dikirim ke semua warga yang belum membayar.'
-
-    showSuccessConfirm.value = true
+    if ('nik' in route.params) {
+      await pembayaranStore.fetchNotifyResidentAllUnpaid(route.params.nik)
+  
+      successTitle.value = 'Kirim Notif Berhasil'
+      successMessage.value =
+        'Notifikasi terkait seluruh pembayaran dari warga, berhasil dikirim.'
+  
+      showSuccessConfirm.value = true
+    }
   } catch (error) {
     console.error(error)
   }
@@ -300,6 +295,10 @@ const handleGetData = async () => {
 
 onMounted(() => {
   handleGetData()
+
+  if (!pembayaranStore.itemSelected && ('nik' in route.params)) {
+    pembayaranStore.fetchDetailPembayaran(route.params.nik)
+  }
 })
 </script>
 
@@ -313,10 +312,14 @@ onMounted(() => {
 
     <div class="mb-3">
       <h2>Riwayat Pembayaran</h2>
-      <span class="text-body-2">Nama: {{ pembayaranStore.itemSelected?.warga.nama_warga || '-' }}</span>
+      <span v-if="!pembayaranStore.loadingDetail" class="text-body-2">Nama: {{ pembayaranStore.itemSelected?.warga.nama_warga || '-' }}</span>
     </div>
 
-    <VRow class="match-height">
+    <div v-if="pembayaranStore.loadingDetail" class="text-center py-4">
+      <VProgressCircular indeterminate size="26" />
+    </div>
+
+    <VRow v-else class="match-height">
       <VCol cols="12" md="4">
         <VTabs v-model="tab" color="info" class="custom-tabs">
           <VTab value="history">Riwayat</VTab>
@@ -343,7 +346,8 @@ onMounted(() => {
               <VBtn
                 variant="flat"
                 color="info"
-                @click=""
+                :loading="pembayaranStore.loadingSendNotifToAll"
+                @click="handleSendNotifToAll"
               >
                 <VIcon icon="ri-bell-line" class="me-2" />
                 Kirim Semua Notif

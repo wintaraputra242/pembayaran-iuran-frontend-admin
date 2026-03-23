@@ -34,8 +34,8 @@ export const usePembayaran = () => {
     })
   }
 
-  const getDetailPembayaran = async (id: number): Promise<GetDetailPembayaranResponse> => {
-    return await api<GetDetailPembayaranResponse>(`/pembayaran/${id}`, {
+  const getDetailPembayaran = async (nik: string): Promise<GetDetailPembayaranResponse> => {
+    return await api<GetDetailPembayaranResponse>(`/pembayaran/${nik}`, {
       method: 'GET',
     })
   }
