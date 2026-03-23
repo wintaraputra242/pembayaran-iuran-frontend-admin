@@ -16,7 +16,7 @@ const logoutUser = async () => {
   try {
     await logout()
 
-    uiStore.startLoading()
+    // uiStore.startLoading()
     const fromPath = useCookie('from-path')
     fromPath.value = route.path
     

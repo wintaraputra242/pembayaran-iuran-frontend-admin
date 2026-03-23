@@ -7,7 +7,7 @@ export default defineNuxtRouteMiddleware(() => {
     if (redirect.value) {
       const path = redirect.value
       redirect.value = null
-      console.log(path);
+      // console.log(path);
 
       return navigateTo(path)
     }

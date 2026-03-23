@@ -56,7 +56,7 @@ export const useDropdownStore = defineStore('dropdown', {
 
         this.itemWargaForDropdown = res.data
 
-        console.log(this.itemWargaForDropdown);
+        // console.log(this.itemWargaForDropdown);
         
 
         return res
@@ -76,7 +76,7 @@ export const useDropdownStore = defineStore('dropdown', {
 
         this.itemWargaForPembayaran = res.data
 
-        console.log(this.itemWargaForPembayaran);
+        // console.log(this.itemWargaForPembayaran);
         
 
         return res

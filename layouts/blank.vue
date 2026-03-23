@@ -11,7 +11,7 @@ const ui = useUiStore()
 
 // const getUser = async () => {
 //   const ok = await fetchUser()
-//   console.log(authStore.role);
+//   // console.log(authStore.role);
   
 //   // if (ok) {
 //   //   router.push(authStore.role === 'admin' ? '/' : '/create-pembayaran')

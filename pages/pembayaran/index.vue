@@ -157,13 +157,13 @@ const handleFilter = (filters: {
   page.value = 1
   pembayaranStore.reload = true
 
-  console.log(filters)
+  // console.log(filters)
 
   Object.entries(filters).forEach(([key, value]) => {
     if (value !== undefined && value !== null) {
       // khusus untuk date, ubah ke start_date & end_date
       if (key === 'date' && Array.isArray(value)) {
-        console.log(value)
+        // console.log(value)
         if (!value) {
           pembayaranStore.setFilter('start_date', '')
           pembayaranStore.setFilter('end_date', '')

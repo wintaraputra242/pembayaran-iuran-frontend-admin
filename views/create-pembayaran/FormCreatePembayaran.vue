@@ -251,7 +251,7 @@ const handleWarga = () => {
 }
 
 watch(() => buktiPembayaran.value, (newVal) => {
-  console.log(newVal)
+  // console.log(newVal)
 })
 </script>
 

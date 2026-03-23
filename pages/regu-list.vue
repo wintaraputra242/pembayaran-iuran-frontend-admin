@@ -27,7 +27,7 @@ const handleDetailAnggota = async (item: AnggotaRegu) => {
   showDetail.value = true
   itemSelected.value = item
 
-  console.log(itemSelected.value)
+  // console.log(itemSelected.value)
 
   await masterWargaStore.fetchDetailWarga(item.nik)
 }

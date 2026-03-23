@@ -64,7 +64,7 @@ const years = Array.from({ length: 31 }, (_, i) => (currentYear + i).toString())
 const buktiPembayaran = ref<File | null>(null)
 
 watch(() => buktiPembayaran.value, (newVal) => {
-  console.log(newVal)
+  // console.log(newVal)
 })
 
 const isErrorSubmit = ref(false)

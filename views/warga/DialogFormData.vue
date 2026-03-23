@@ -67,7 +67,7 @@ const dropzoneEvents = {
   },
 
   success: (file: File, response: any) => {
-    console.log("Success:", response)
+    // console.log("Success:", response)
   },
 
   error: (file: File, message: any) => {
@@ -177,7 +177,7 @@ const handleImport = async () => {
 watch(
   () => props.isFetchSuccess,
   newVal => {
-    console.log(newVal);
+    // console.log(newVal);
     
 
     if (newVal) {

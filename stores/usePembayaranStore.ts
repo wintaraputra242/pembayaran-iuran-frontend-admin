@@ -79,7 +79,7 @@ export const usePembayaranStore = defineStore('pembayaran', {
       try {
         const newFilter: Record<string, string> = {}
 
-        console.log(this.filters)
+        // console.log(this.filters)
 
         Object.entries(this.filters).forEach(([key, value]) => {
           if (value) newFilter[key] = value
@@ -162,7 +162,7 @@ export const usePembayaranStore = defineStore('pembayaran', {
       // bulan (array)
       if (params.bulan && Array.isArray(params.bulan)) {
         params.bulan.forEach((item: any, index) => {
-          console.log(item)
+          // console.log(item)
           formData.append(`bulan[${index}]`, String(item))
         })
       }
@@ -187,7 +187,7 @@ export const usePembayaranStore = defineStore('pembayaran', {
       }
 
       if (!this.idInformasiIuran) {
-        console.log(this.idInformasiIuran);
+        // console.log(this.idInformasiIuran);
         return
       } 
 
@@ -308,7 +308,7 @@ export const usePembayaranStore = defineStore('pembayaran', {
 
         this.monthPaidPaymentWarga = res.data
 
-        console.log(this.monthPaidPaymentWarga)
+        // console.log(this.monthPaidPaymentWarga)
       } finally {
         this.loadingGetPaidMonthWarga = false
       }

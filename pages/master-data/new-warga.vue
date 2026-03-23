@@ -35,7 +35,7 @@ async function deleteItem() {
   isLoadingConfirm.value = false
   showConfirmation.value = false
 
-  console.log("Item dihapus!")
+  // console.log("Item dihapus!")
 }
 
 const confirmOptions = {
