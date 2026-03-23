@@ -17,6 +17,17 @@ export const useMasterInformasiIuran = () => {
       params,
     })
   }
+
+  const getInformasiIuranActive = async (params?: {
+    page?: number
+    limit?: number
+    jenis_iuran?: string
+  }): Promise<GetMasterInformasiIuranResponse> => {
+    return await api<GetMasterInformasiIuranResponse>('/informasi-iuran-active', {
+      method: 'GET',
+      params,
+    })
+  }
   
   const getDetailInformasiIuran = async (id: number | string): Promise<GetDetailMasterInformasiIuranResponse> => {
     return await api<GetDetailMasterInformasiIuranResponse>('/informasi-iuran/' + id, {
@@ -67,6 +78,7 @@ export const useMasterInformasiIuran = () => {
 
   return {
     getInformasiIuran,
+    getInformasiIuranActive,
     getDetailInformasiIuran,
     addInformasiIuran,
     updateInformasiIuran,

@@ -68,6 +68,37 @@ export const useMasterInformasiIuranStore = defineStore('master-informasi-iuran'
       }
     },
 
+    async fetchInformasiIuranActive(params?: {
+      page?: number
+      limit?: number
+      jenis_iuran?: string
+    }) {
+      if (this.reload) {
+        this.informasiIuran = []
+        this.reload = false
+      }
+
+      const api = useMasterInformasiIuran()
+      this.loading = true
+
+      try {
+        const res = await api.getInformasiIuranActive({
+          page: params?.page,
+          limit: params?.limit,
+          jenis_iuran: params?.jenis_iuran,
+        })
+
+        this.informasiIuran = [...this.informasiIuran, ...res.data.data]
+
+        const { data, ...meta } = res.data
+        this.meta = meta
+
+        this.page = params?.page as number
+      } finally {
+        this.loading = false
+      }
+    },
+
     async fetchDetailInformasiIuran(id: number | string) {
       const api = useMasterInformasiIuran()
       this.loading = true

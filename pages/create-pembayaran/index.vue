@@ -33,10 +33,9 @@ const loadData = async (type: 'kematian' | 'bulanan') => {
 
   page.value = 1
   
-  await masterStore.fetchInformasiIuran({
+  await masterStore.fetchInformasiIuranActive({
     page: page.value,
     limit: 10,
-    mode: 'admin',
     jenis_iuran: type
   })
 }
@@ -62,10 +61,9 @@ watch(() => route.query.jenis_iuran, (newVal) => {
 const handleLoadMore = async () => {
   page.value += 1
 
-  await masterStore.fetchInformasiIuran({
+  await masterStore.fetchInformasiIuranActive({
     page: page.value,
     limit: 10,
-    mode: 'admin',
     jenis_iuran: tab.value
   })
 }
