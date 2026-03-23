@@ -6,11 +6,12 @@ import DataTableBelumBayarRiwayat from '@/views/riwayat-pembayaran/DataTableBelu
 import DialogFormDataRiwayat from '@/views/riwayat-pembayaran/DialogFormData.vue'
 import DialogHistoryPaymentWargaRiwayat from '@/views/riwayat-pembayaran/DialogHistoryPaymentWarga.vue'
 import DialogNoPaymentRiwayat from '@/views/riwayat-pembayaran/DialogNoPayment.vue'
-import eCommerce2 from '@images/eCommerce/2.png'
 
 definePageMeta({
   middleware: ['admin'],
 })
+
+const config = useRuntimeConfig()
 
 const router = useRouter()
 const route = useRoute()
@@ -337,6 +338,7 @@ onMounted(() => {
               :loading="pembayaranStore.loading"
               :has-more="pembayaranStore.hasMoreHistoryPaid"
               @load-more="handleLoadMoreHistoryPaid"
+              @show-bukti-bayar="handleShowBuktiBayar"
             />
           </VTabsWindowItem>
 
@@ -388,7 +390,8 @@ onMounted(() => {
 
     <PaymentProofImageDialog
       v-model="showPaymentProof"
-      :src="eCommerce2"
+      :judul-iuran="itemSelected?.informasi_iuran.judul_iuran"
+      :src="config.public.backendUrl + '/storage/' + itemSelected?.bukti_pembayaran"
       :item="(itemSelected as Pembayaran)"
     />
 

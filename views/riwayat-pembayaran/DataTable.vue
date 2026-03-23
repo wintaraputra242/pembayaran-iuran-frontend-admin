@@ -1,7 +1,6 @@
 <script setup lang="ts">
 // import qris from '@images/pages/qris.png'
 import type { Pembayaran, UnpaidWarga } from '@/types/api/pembayaran';
-import eCommerce2 from '@images/eCommerce/2.png';
 import qris from '@images/pages/qris.png';
 
 
@@ -16,6 +15,8 @@ const emit = defineEmits<{
   (e: 'showBuktiBayar', item: Pembayaran): void;
   (e: 'sendNotif', item: UnpaidWarga): void
 }>()
+
+const config = useRuntimeConfig()
 
 const headers = [
   { label: 'No.', key: 'no', width: '70px', sortable: false },
@@ -139,7 +140,9 @@ const statusText: Record<
           class="pa-2 rounded-lg cursor-pointer"
           @click="emit('showBuktiBayar', item)"
         >
-          <VImg :src="item.bukti_bayar || eCommerce2" width="50" />
+          <!-- <VImg :src="item.bukti_pembayaran || eCommerce2" width="50" /> -->
+          <VImg v-if="item.bukti_pembayaran" :src="config.public.backendUrl + '/storage/' + item.bukti_pembayaran" width="50" />
+          <span v-else>-</span>
         </div>
       </div>
     </template>
