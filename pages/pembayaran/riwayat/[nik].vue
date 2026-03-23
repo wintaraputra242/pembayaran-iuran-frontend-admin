@@ -321,7 +321,7 @@ onMounted(() => {
 
     <VRow v-else class="match-height">
       <VCol cols="12" md="4">
-        <VTabs v-model="tab" color="info" class="custom-tabs">
+        <VTabs v-model="tab" color="primary">
           <VTab value="history">Riwayat</VTab>
           <VTab value="no-payment">Belum Bayar</VTab>
         </VTabs>
