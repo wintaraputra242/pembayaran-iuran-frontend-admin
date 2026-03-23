@@ -83,7 +83,7 @@ onMounted(() => {
 <template>
   <div class="mt-n5">
     <div class="mb-4">
-      <div class="mb-3">
+      <div v-if="authStore.user?.role === 'admin'" class="mb-3">
         <VBtn class="px-0 py-1" variant="text" size="large" to="/pembayaran">
           <VIcon icon="ri-arrow-left-s-line" class="me-2" />
           Keluar

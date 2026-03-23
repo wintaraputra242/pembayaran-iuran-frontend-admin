@@ -8,6 +8,8 @@ import UserProfile from '@/layouts/components/UserProfile.vue';
 
 import { useScrollStatus } from '@/composables/useScrollNavbar';
 
+const authStore = useAuthStore()
+
 const { isMobile } = useDevice()
 const { isScrolled } = useScrollStatus(20)
 </script>
@@ -20,6 +22,7 @@ const { isScrolled } = useScrollStatus(20)
         <div class="d-flex h-100 align-center">
           <!-- 👉 Vertical nav toggle in overlay mode -->
           <IconBtn
+            v-if="authStore.user?.role === 'admin'"
             class="d-lg-none"
             :class="{ 'ms-n3': !isMobile }"
             @click="toggleVerticalOverlayNavActive(true)"
