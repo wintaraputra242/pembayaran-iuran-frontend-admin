@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useAuth } from '@/composables/api/useAuth';
-import avatar1 from '@images/avatars/avatar-1.png';
 
 const router = useRouter()
 const route = useRoute()
@@ -45,7 +44,7 @@ const logoutUser = async () => {
       color="primary"
       variant="tonal"
     >
-      <VImg :src="avatar1" />
+      <i class="ri-user-fill text-lg"></i>
 
       <!-- SECTION Menu -->
       <VMenu
@@ -70,7 +69,7 @@ const logoutUser = async () => {
                     color="primary"
                     variant="tonal"
                   >
-                    <VImg :src="avatar1" />
+                    <i class="ri-user-fill text-lg"></i>
                   </VAvatar>
                 </VBadge>
               </VListItemAction>
@@ -109,32 +108,6 @@ const logoutUser = async () => {
             <VListItemTitle>Aktivitas Saya</VListItemTitle>
           </VListItem>
 
-          <!-- 👉 Pricing -->
-          <!-- <VListItem link>
-            <template #prepend>
-              <VIcon
-                class="me-2"
-                icon="ri-money-dollar-circle-line"
-                size="22"
-              />
-            </template>
-
-            <VListItemTitle>Pricing</VListItemTitle>
-          </VListItem> -->
-
-          <!-- 👉 FAQ -->
-          <!-- <VListItem link>
-            <template #prepend>
-              <VIcon
-                class="me-2"
-                icon="ri-question-line"
-                size="22"
-              />
-            </template>
-
-            <VListItemTitle>FAQ</VListItemTitle>
-          </VListItem> -->
-
           <!-- Divider -->
           <VDivider class="my-2" />
 
@@ -152,7 +125,6 @@ const logoutUser = async () => {
           </VListItem>
         </VList>
       </VMenu>
-      <!-- !SECTION -->
     </VAvatar>
   </VBadge>
 </template>
