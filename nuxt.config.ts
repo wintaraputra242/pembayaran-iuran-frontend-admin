@@ -53,7 +53,7 @@ export default defineNuxtConfig({
     },
   },
 
-  // ssr: false,
+  ssr: false,
 
   // debug: true,
 
