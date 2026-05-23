@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import error from '@images/pages/error.png';
+import error from '@images/pages/error_new.png';
   
 const props = withDefaults(defineProps<{
   show: boolean,

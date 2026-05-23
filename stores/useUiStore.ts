@@ -17,7 +17,7 @@ export const useUiStore = defineStore('ui', {
       title: '',
       message: '',
     },
-    isLoading: true,
+    isLoading: false,
     firstLoadWeb: true,
   }),
 

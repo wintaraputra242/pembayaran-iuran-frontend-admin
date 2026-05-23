@@ -80,14 +80,8 @@ const handleJumpToHistoryPayment = (item: Pembayaran) => {
 </script>
 
 <template>
-  <AppDataTable
-    :headers="headers"
-    :items="props.data"
-    :loading="props.loading"
-    :has-more="props.hasMore"
-    :has-filter="props.hasFilter"
-    @loadMore="emit('loadMore')"
-  >
+  <AppDataTable :headers="headers" :items="props.data" :loading="props.loading" :has-more="props.hasMore"
+    :has-filter="props.hasFilter" @loadMore="emit('loadMore')">
     <!-- Tanggal Bayar -->
     <template #cell-tanggal_bayar="{ item }">
       {{ formatDateID(item.tanggal_bayar) }}
@@ -95,10 +89,7 @@ const handleJumpToHistoryPayment = (item: Pembayaran) => {
 
     <!-- Warga -->
     <template #cell-warga="{ item }">
-      <span
-        class="text-info hover-text cursor-pointer"
-        @click="handleJumpToHistoryPayment(item)"
-      >
+      <span class="text-info hover-text cursor-pointer" @click="handleJumpToHistoryPayment(item)">
         {{ item.warga.nama_warga }}
         <VIcon icon="ri-arrow-right-up-long-line" size="16" />
       </span>
@@ -106,7 +97,7 @@ const handleJumpToHistoryPayment = (item: Pembayaran) => {
 
     <template #cell-regu="{ item }">
       <span>
-        {{ item.warga.anggota_regu?.regu.nama_regu || '-' }}
+        {{ item.warga?.anggota_regu[0]?.regu?.nama_regu || '-' }}
       </span>
     </template>
 
@@ -119,10 +110,7 @@ const handleJumpToHistoryPayment = (item: Pembayaran) => {
     <!-- Jenis -->
     <template #cell-jenis_iuran="{ item }">
       <div class="text-capitalize">
-        <VChip
-          size="small"
-          :color="item.informasi_iuran.jenis_iuran === 'bulanan' ? 'info' : 'error'"
-        >
+        <VChip size="small" :color="item.informasi_iuran.jenis_iuran === 'bulanan' ? 'info' : 'error'">
           {{ item.informasi_iuran.jenis_iuran }}
         </VChip>
       </div>
@@ -131,16 +119,9 @@ const handleJumpToHistoryPayment = (item: Pembayaran) => {
     <!-- Metode Bayar -->
     <template #cell-metode_bayar="{ item }">
       <div class="d-flex align-center gap-1 text-capitalize">
-        <VIcon
-          v-if="item.metode_bayar !== 'qris'"
-          :icon="item.metode_bayar === 'transfer' ? 'ri-exchange-line' : 'ri-cash-line'"
-          size="20"
-        />
-        <VImg
-          v-if="item.metode_bayar === 'qris'"
-          :src="qris"
-          max-width="20px"
-        />
+        <VIcon v-if="item.metode_bayar !== 'qris'"
+          :icon="item.metode_bayar === 'transfer' ? 'ri-exchange-line' : 'ri-cash-line'" size="20" />
+        <VImg v-if="item.metode_bayar === 'qris'" :src="qris" max-width="20px" />
         {{ item.metode_bayar }}
       </div>
     </template>
@@ -153,10 +134,7 @@ const handleJumpToHistoryPayment = (item: Pembayaran) => {
     <!-- Status -->
     <template #cell-status="{ item }">
       <div class="text-capitalize">
-        <VChip
-          size="small"
-          :color="statusChipsColor[item.status_bayar as keyof typeof statusChipsColor]"
-        >
+        <VChip size="small" :color="statusChipsColor[item.status_bayar as keyof typeof statusChipsColor]">
           {{ statusText[item.status_bayar as keyof typeof statusText] }}
         </VChip>
       </div>
@@ -165,20 +143,17 @@ const handleJumpToHistoryPayment = (item: Pembayaran) => {
     <!-- Petugas -->
     <template #cell-petugas="{ item }">
       <span>
-        {{ item.processed_by.name }}
+        {{ item?.processed_by?.name }}
       </span>
     </template>
 
     <!-- Bukti Pembayaran -->
     <template #cell-bukti_bayar="{ item }">
       <div class="d-flex">
-        <div
-          v-ripple
-          class="pa-2 rounded-lg cursor-pointer"
-          @click="emit('showBuktiBayar', item)"
-        >
+        <div v-ripple class="pa-2 rounded-lg cursor-pointer" @click="emit('showBuktiBayar', item)">
           <!-- <VImg :src="item.bukti_pembayaran || eCommerce2" width="50" /> -->
-          <VImg v-if="item.bukti_pembayaran" :src="config.public.backendUrl + '/storage/' + item.bukti_pembayaran" width="50" />
+          <VImg v-if="item.bukti_pembayaran" :src="config.public.backendUrl + '/storage/' + item.bukti_pembayaran"
+            width="50" />
           <span v-else>-</span>
         </div>
       </div>
@@ -188,7 +163,8 @@ const handleJumpToHistoryPayment = (item: Pembayaran) => {
 
 <style scoped>
 .table-scroll-wrapper {
-  max-height: 400px;   /* tinggi container */
+  max-height: 400px;
+  /* tinggi container */
   overflow-y: auto;
   overflow-x: hidden;
   height: 100%;

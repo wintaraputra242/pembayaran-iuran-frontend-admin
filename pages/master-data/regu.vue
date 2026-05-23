@@ -5,9 +5,7 @@ import DialogDataTableAnggota from '@/views/regu/DialogDataTableAnggota.vue';
 import DialogFormDataRegu from '@/views/regu/DialogFormData.vue';
 import FormFilterRegu from '@/views/regu/FormFilter.vue';
 
-definePageMeta({
-  middleware: ['admin']
-})
+definePageMeta({ onlyAdmin: true })
 
 const masterReguStore = useMasterReguStore()
 const masterUsersStore = useMasterUsersStore()

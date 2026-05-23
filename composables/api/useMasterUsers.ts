@@ -1,4 +1,4 @@
-import type { GetMasterUsersResponse } from '@/types/api/master-users'
+import type { GetDetailMasterUsersResponse, GetMasterUsersResponse, UpdateUserPayload, UpdateUserResponse } from '@/types/api/master-users'
 import { useApi } from './useApi'
 
 export const useMasterUsers = () => {
@@ -11,12 +11,31 @@ export const useMasterUsers = () => {
     role?: string
   }): Promise<GetMasterUsersResponse> => {
     return await api<GetMasterUsersResponse>('/users', {
-      method: 'GET',
-      params,
+      query: params,
+    })
+  }
+
+  const getDetailUser = async (id: number): Promise<GetDetailMasterUsersResponse> => {
+    return await api<GetDetailMasterUsersResponse>(`/users/${id}`)
+  }
+
+  const updateUser = async (body: UpdateUserPayload, id: number): Promise<UpdateUserResponse> => {
+    return await api<UpdateUserResponse>(`/users/${id}`, {
+      method: 'PUT',
+      body,
+    })
+  }
+
+  const downloadCredentialPdf = async (): Promise<Blob> => {
+    return await api<Blob>('/users/credential/download', {
+      responseType: 'blob',
     })
   }
 
   return {
     getUsers,
+    getDetailUser,
+    updateUser,
+    downloadCredentialPdf,
   }
 }

@@ -4,6 +4,7 @@ import type {
   NotifyResidentPayload,
   NotifyUnpaidPayload,
   Pembayaran,
+  PembayaranByRegu,
   UnpaidWarga,
 } from '@/types/api/pembayaran'
 import type { PaginationMeta } from '@/types/common'
@@ -24,6 +25,7 @@ export const usePembayaranStore = defineStore('pembayaran', {
     reload: false,
     isReloadDataUnpaidWarga: false,
     isReloadDataHistoryUnpaid: false,
+    isReloadDataPembayaranByRegu: false,
     page: 0,
 
     filters: {
@@ -45,25 +47,32 @@ export const usePembayaranStore = defineStore('pembayaran', {
     nikWarga: '',
     historyPaid: [] as Pembayaran[],
     historyUnpaid: [] as UnpaidWarga[],
-    monthPaidPaymentWarga: [] as number[] | string[]
+    monthPaidPaymentWarga: [] as number[] | string[],
+    pembayaranByRegu: [] as PembayaranByRegu[],
+    loadingByRegu: false,
+    metaByRegu: {} as Record<string, any>,
   }),
 
   getters: {
     hasData: (state) => state.pembayaran.length > 0,
     hasMore: (state) => state.meta?.total !== state.pembayaran.length,
     hasFilter: (state) =>
-        !!state.filters.nama_warga ||
-        !!state.filters.regu ||
-        !!state.filters.jenis_iuran ||
-        !!state.filters.metode_bayar ||
-        !!state.filters.status ||
-        !!state.filters.start_date ||
-        !!state.filters.end_date,
-        
+      !!state.filters.nama_warga ||
+      !!state.filters.regu ||
+      !!state.filters.jenis_iuran ||
+      !!state.filters.metode_bayar ||
+      !!state.filters.status ||
+      !!state.filters.start_date ||
+      !!state.filters.end_date,
+
+    hasNikFilter: (state) =>
+      !!state.nikWarga,
+
     hasMoreUnpaidWarga: (state) => state.meta?.total !== state.unpaidWarga.length,
-    
+
     hasMoreHistoryPaid: (state) => state.meta?.total !== state.historyPaid.length,
     hasMoreHistoryUnpaid: (state) => state.meta?.total !== state.historyUnpaid.length,
+    hasMoreByRegu: (state) => state.metaByRegu?.total !== state.pembayaranByRegu.length,
   },
 
   actions: {
@@ -78,8 +87,6 @@ export const usePembayaranStore = defineStore('pembayaran', {
 
       try {
         const newFilter: Record<string, string> = {}
-
-        // console.log(this.filters)
 
         Object.entries(this.filters).forEach(([key, value]) => {
           if (value) newFilter[key] = value
@@ -134,7 +141,7 @@ export const usePembayaranStore = defineStore('pembayaran', {
         const res = await api.getDetailPembayaran(nik)
 
         this.itemSelected = res.data
-        
+
         return res
       } finally {
         this.loadingDetail = false
@@ -187,9 +194,8 @@ export const usePembayaranStore = defineStore('pembayaran', {
       }
 
       if (!this.idInformasiIuran) {
-        // console.log(this.idInformasiIuran);
         return
-      } 
+      }
 
       const api = usePembayaran()
       this.loading = true
@@ -223,7 +229,7 @@ export const usePembayaranStore = defineStore('pembayaran', {
         this.loadingSendNotifToAll = false
       }
     },
-    
+
     async fetchNotifyResidentAllUnpaid(nik: string) {
       const api = usePembayaran()
       this.loadingSendNotifToAll = true
@@ -270,33 +276,6 @@ export const usePembayaranStore = defineStore('pembayaran', {
       }
     },
 
-    async fetchHistoryUnpaid(params?: { page?: number; limit?: number }) {
-      if (!this.nikWarga) return
-
-      if (this.isReloadDataHistoryUnpaid) {
-        this.historyUnpaid = []
-        this.isReloadDataHistoryUnpaid = false
-      }
-
-      const api = usePembayaran()
-      this.loading = true
-
-      try {
-        const res = await api.getHistoryNotYetPaid({
-          nik: this.nikWarga,
-          page: params?.page,
-          per_page: params?.limit,
-        })
-
-        this.historyUnpaid = [...this.historyUnpaid, ...res.data.data]
-
-        const { data, ...meta } = res.data
-        this.metaHistoryUnpaid = meta
-      } finally {
-        this.loading = false
-      }
-    },
-
     async fetchPaidMonthWarga(params: { id_informasi_iuran: number, nik: string }) {
       const api = usePembayaran()
       this.loadingGetPaidMonthWarga = true
@@ -338,5 +317,63 @@ export const usePembayaranStore = defineStore('pembayaran', {
         this.loading = false
       }
     },
+
+    async fetchHistoryUnpaid(params?: { page?: number; limit?: number }) {
+      if (!this.nikWarga) return
+
+      if (this.isReloadDataHistoryUnpaid) {
+        this.historyUnpaid = []
+        this.isReloadDataHistoryUnpaid = false
+      }
+
+      const api = usePembayaran()
+      this.loading = true
+
+      try {
+        const res = await api.getHistoryNotYetPaid({
+          nik: this.nikWarga,
+          page: params?.page,
+          per_page: params?.limit,
+        })
+
+        this.historyUnpaid = [...this.historyUnpaid, ...res.data.data]
+
+        const { data, ...meta } = res.data
+        this.metaHistoryUnpaid = meta
+      } finally {
+        this.loading = false
+      }
+    },
+
+    async fetchPembayaranByRegu(params?: {
+      id_informasi_iuran?: number
+      id_regu?: number
+      status_bayar?: string
+      nama_warga?: string
+      page?: number
+      per_page?: number
+    }) {
+      if (this.isReloadDataPembayaranByRegu) {
+        this.pembayaranByRegu = []
+        this.isReloadDataPembayaranByRegu = false
+      }
+
+      const api = usePembayaran()
+      this.loadingByRegu = true
+
+      try {
+        const res = await api.getPembayaranByRegu({
+          per_page: 10,
+          ...params,
+        })
+
+        this.pembayaranByRegu = [...this.pembayaranByRegu, ...res.data.data]
+        const { data, ...meta } = res.data
+        this.metaByRegu = meta
+      } finally {
+        this.loadingByRegu = false
+      }
+    },
+
   },
 })

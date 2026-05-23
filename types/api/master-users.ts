@@ -15,3 +15,26 @@ export interface GetMasterUsersResponse {
   message: string
   data: PaginatedResponse<MasterUser>
 }
+
+export interface GetDetailMasterUsersResponse {
+  code: number
+  success: boolean
+  message: string
+  data: MasterUser
+}
+
+export interface UpdateUserPayload {
+  name: string
+  username: string
+  password: string
+  role: 'admin' | 'ketua_regu'
+  is_active: boolean
+}
+
+export interface UpdateUserResponse {
+  success: boolean,
+  code: number,
+  message: string,
+  data: null
+}
+

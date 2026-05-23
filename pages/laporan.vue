@@ -3,9 +3,7 @@ import DataTableLaporan from '@/views/laporan/DataTable.vue'
 import FormFilterLaporan from '@/views/laporan/FormFilter.vue'
 import eCommerce2 from '@images/eCommerce/2.png'
 
-definePageMeta({
-  middleware: ['admin'],
-})
+definePageMeta({ onlyAdmin: true })
 
 const laporanStore = useLaporanStore()
 const dropdownStore = useDropdownStore()

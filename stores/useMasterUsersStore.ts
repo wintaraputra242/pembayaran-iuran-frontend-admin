@@ -55,6 +55,24 @@ export const useMasterUsersStore = defineStore('master-users', {
       }
     },
 
+    async downloadCredential() {
+      const api = useMasterUsers()
+      this.loadingDownload = true
+
+      try {
+        const blob = await api.downloadCredentialPdf()
+
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = 'credential-regu.pdf'
+        a.click()
+        URL.revokeObjectURL(url)
+      } finally {
+        this.loadingDownload = false
+      }
+    },
+
     setFilter(key: keyof typeof this.filters, value: string) {
       this.filters[key] = value
     },
@@ -64,7 +82,6 @@ export const useMasterUsersStore = defineStore('master-users', {
         keyword: '',
         role: '',
       }
-
       this.page = 0
     },
   },

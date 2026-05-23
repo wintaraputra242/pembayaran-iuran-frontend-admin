@@ -3,9 +3,7 @@ import DataTableWarga from '@/views/warga/DataTable.vue';
 import DialogFormDataWarga from '@/views/warga/DialogFormData.vue';
 import FormFilterWarga from '@/views/warga/FormFilter.vue';
 
-definePageMeta({
-  middleware: ['admin']
-})
+definePageMeta({ onlyAdmin: true })
 
 const showFormData = ref(false)
 const isEdit = ref(false)

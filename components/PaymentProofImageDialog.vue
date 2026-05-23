@@ -7,6 +7,10 @@ const props = defineProps({
     type: String,
     required: false,
   },
+  namaWarga: {
+    type: String,
+    required: false,
+  },
   src: {
     type: String,
     required: false,
@@ -53,7 +57,7 @@ const dialog = ref(false)
           <div class="d-flex align-center justify-space-between">
             <span class="px-4">Bukti Pembayaran</span>
             <div class="px-2">
-              <IconBtn variant="text" color="secondary" size="x-small"  @click="handleClose">
+              <IconBtn variant="text" color="secondary" size="x-small" @click="handleClose">
                 <VIcon icon="ri-close-line" />
               </IconBtn>
             </div>
@@ -63,15 +67,10 @@ const dialog = ref(false)
         <VCardText>
           <div class="mb-3">
             <p class="pa-0 ma-0 text-caption">Judul Iuran: {{ props.judulIuran || '-' }}</p>
-            <p class="pa-0 ma-0 text-caption">Nama Warga: {{ props.item.warga.nama_warga || '-' }}</p>
+            <p class="pa-0 ma-0 text-caption">Nama Warga: {{ props.namaWarga || '-' }}</p>
           </div>
 
-          <VImg
-            :src="src"
-            height="450"
-            rounded="lg"
-            :lazy-src="lazySrc"
-          >
+          <VImg :src="src" height="450" rounded="lg" :lazy-src="lazySrc">
             <template #placeholder>
               <VResponsive class="w-100 h-100">
                 <VSkeletonLoader type="image" />

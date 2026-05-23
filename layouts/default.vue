@@ -2,13 +2,13 @@
 import DefaultLayoutWithVerticalNav from './components/DefaultLayoutWithVerticalNav.vue';
 
 const uiStore = useUiStore()
-const notificationStore = useNotificationStore()
+// const notificationStore = useNotificationStore()
 
 const { isScrolled, scrollToTop } = useScrollStatus(20)
 
-onMounted(async () => {
-  await notificationStore.fetchUnreadCount()
-})
+// onMounted(async () => {
+//   await notificationStore.fetchUnreadCount()
+// })
 </script>
 
 <template>

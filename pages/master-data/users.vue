@@ -3,9 +3,7 @@ import type { MasterUser } from '@/types/api/master-users';
 import DataTableUsers from '@/views/users/DataTable.vue';
 import FormFilterUsers from '@/views/users/FormFilter.vue';
 
-definePageMeta({
-  middleware: ['admin']
-})
+definePageMeta({ onlyAdmin: true })
 
 const config = useRuntimeConfig()
 
@@ -86,7 +84,7 @@ const handleGetPassword = (item: MasterUser) => {
 const showCredential = ref(false)
 
 const handleDownloadCredentials = async () => {
-  window.open(config.public.backendUrl + '/regu/credential/download', '_blank')
+  await masterUsersStore.downloadCredential()
 }
 
 onMounted(async () => {

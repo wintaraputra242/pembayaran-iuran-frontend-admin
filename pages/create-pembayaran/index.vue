@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import ListInformasiIuranCreatePembayaran from '@/views/create-pembayaran/ListInformasiIuran.vue'
 
-definePageMeta({
-  middleware: ['role']
-})
+definePageMeta({ adminAndKetuaRegu: true })
 
 const route = useRoute()
 

@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import DataTableActivity from '@/views/activity/DataTable.vue'
 
-definePageMeta({
-  middleware: ['role']
-})
+definePageMeta({ adminAndKetuaRegu: true })
 
 const activityStore = useActivityStore()
 

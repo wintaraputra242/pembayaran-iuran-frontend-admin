@@ -19,8 +19,7 @@ export const useLaporan = () => {
     end_date?: string
   }): Promise<GetPembayaranResponse> => {
     return await api<GetPembayaranResponse>('/laporan', {
-      method: 'GET',
-      params,
+      query: params, 
     })
   }
 
@@ -33,8 +32,7 @@ export const useLaporan = () => {
     nama_warga?: string
   }): Promise<Blob> => {
     return await api<Blob>('/laporan/export-excel', {
-      method: 'GET',
-      params,
+      query: params,      
       responseType: 'blob',
     })
   }

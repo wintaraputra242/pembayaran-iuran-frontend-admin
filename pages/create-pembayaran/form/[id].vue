@@ -3,9 +3,7 @@ import type { MetodeBayar } from '@/types/api/pembayaran';
 import DialogTakeFotoBuktiPembayaran from '@/views/create-pembayaran/DialogTakeFotoBuktiPembayaran.vue';
 import FormCreatePembayaran from '@/views/create-pembayaran/FormCreatePembayaran.vue';
 
-definePageMeta({
-  middleware: ['role']
-})
+definePageMeta({ adminAndKetuaRegu: true })
 
 const route = useRoute()
 

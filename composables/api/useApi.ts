@@ -6,32 +6,26 @@ export const useApi = () => {
 
   const api = $fetch.create({
     baseURL: config.public.apiBase,
-    credentials: 'include',
 
     onRequest({ options }) {
-      const csrf = useCookie('XSRF-TOKEN').value
-      if (csrf) {
+      const token = authStore.token
+      if (token) {
         options.headers = new Headers(options.headers)
-        options.headers.set('X-XSRF-TOKEN', csrf)
+        options.headers.set('Authorization', `Bearer ${token}`)
+        options.headers.set('Accept', 'application/json')
       }
     },
 
     onRequestError({ error }) {
-      // Tidak ada internet / network error
       if (
-        (
-          error.message?.includes('Failed to fetch') ||
-          error.message?.includes('NetworkError') ||
-          error.message?.includes('fetch')
-        )
+        error.message?.includes('Failed to fetch') ||
+        error.message?.includes('NetworkError') ||
+        error.message?.includes('fetch')
       ) {
         uiStore.showError('Coba cek internet Anda.', 'Tidak Ada Internet')
-
         return
       }
 
-      // Error lain
-      console.error('Request error lainnya:', error)
       uiStore.showError(error.message, 'Terjadi Kesalahan')
     },
 
@@ -39,24 +33,23 @@ export const useApi = () => {
       const status = response.status
       const data = response._data
 
-      if (status === 419) {
-        try {
-          await $fetch(
-            `${config.public.apiBase}/sanctum/csrf-cookie`,
-            { credentials: 'include' }
-          )
-        } catch {}
-      }
-
       if (status === 401) {
-        authStore.logout()
-        router.push('/login')
+        const isLoginEndpoint = response.url?.includes('/auth/login')
+
+        if (!isLoginEndpoint) {
+          authStore.logout()
+          router.push('/login')
+        }
+
+        throw {
+          status,
+          message: data?.message || 'Terjadi kesalahan',
+          errors: data?.errors || null,
+          raw: response,
+        }
       }
 
-      if (data?.code !== 401) {
-        uiStore.showError(data?.errors ?? data?.message, 'Gagal')
-      }
-
+      uiStore.showError(data?.errors ?? data?.message, 'Gagal')
 
       throw {
         status,
@@ -67,15 +60,5 @@ export const useApi = () => {
     },
   })
 
-  const fetchCsrf = async () => {
-    await  $fetch('http://localhost:8000/sanctum/csrf-cookie', {
-      credentials: 'include'
-    })
-  }
-  
-
-  return {
-    api,
-    fetchCsrf
-  }
+  return { api }
 }

@@ -132,9 +132,11 @@ export interface NotifyUnpaidResponse {
 }
 
 export interface NotifyResidentPayload {
+  id_informasi_iuran: number
   nik: string
-  title: string
-  message: string
+  month: number | null
+  // title: string
+  // message: string
 }
 
 export interface NotifyResidentResponse {
@@ -170,4 +172,37 @@ export interface NotifyResponse {
   success: boolean
   message: string
   data: null
+}
+
+export interface PembayaranByRegu {
+  id: number
+  transaction_id: string
+  nik: string
+  nama_warga: string
+  regu: string | null
+  regu_id: number | null
+  informasi_iuran: {
+    id: number
+    nama: string
+    jenis_iuran: string
+  } | null
+  bulan: number[] | null
+  jumlah_iuran_snapshot: number
+  total_bayar: number
+  tanggal_bayar: string | null
+  metode_bayar: string | null
+  status_bayar: string
+  processed_by: string | null
+  bukti_pembayaran: string | null
+}
+
+export interface GetPembayaranByReguResponse {
+  data: {
+    data: PembayaranByRegu[]
+    current_page: number
+    last_page: number
+    per_page: number
+    total: number
+  }
+  message: string
 }

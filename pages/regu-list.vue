@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import type { AnggotaRegu } from '@/types/api/master-regu';
+import type { PembayaranByRegu, UnpaidWarga } from '@/types/api/pembayaran';
 import DataTableAnggotaReguList from '@/views/regu-list/DataTableAnggota.vue';
 import DataTableNoPaymentReguList from '@/views/regu-list/DataTableNoPayment.vue';
+import DataTablePayment from '@/views/regu-list/DataTablePayment.vue';
 import DialogDetailAnggotaReguList from '@/views/regu-list/DialogDetailAnggota.vue';
 
-definePageMeta({
-  middleware: ['role']
-})
+definePageMeta({ adminAndKetuaRegu: true })
+
+const config = useRuntimeConfig()
 
 const masterReguStore = useMasterReguStore()
 const masterWargaStore = useMasterWargaStore()
@@ -18,6 +20,7 @@ const page = ref(1)
 
 const filters = reactive({
   anggota: '',
+  anggota_sudah_bayar: '',
   nik: null,
 })
 
@@ -26,8 +29,6 @@ const itemSelected = ref<AnggotaRegu | null>(null)
 const handleDetailAnggota = async (item: AnggotaRegu) => {
   showDetail.value = true
   itemSelected.value = item
-
-  // console.log(itemSelected.value)
 
   await masterWargaStore.fetchDetailWarga(item.nik)
 }
@@ -38,12 +39,12 @@ const successTitle = ref('')
 const successMessage = ref('')
 const showSuccessConfirm = ref(false)
 
-const handleSendNotif = async () => {
+const handleSendNotif = async (item: UnpaidWarga) => {
   try {
     await pembayaranStore.fetchNotifyResident({
-      nik: filters.nik?.nik,
-      title: 'Pengingat Pembayaran Iuran',
-      message: `Halo ${filters.nik?.nama_warga}, mohon segera melakukan pembayaran iuran.`,
+      id_informasi_iuran: Number(item),
+      nik: String(filters.nik),
+      month: null
     })
 
     successTitle.value = 'Kirim Notif Berhasil'
@@ -68,6 +69,31 @@ watch(() => filters.nik, async (val: any) => {
   await pembayaranStore.fetchHistoryUnpaid({ limit: 10, page: page.value })
 })
 
+const pagePembayaran = ref(1)
+
+watch(
+  () => filters.anggota_sudah_bayar,
+  useDebounceFn((val) => {
+    pembayaranStore.isReloadDataPembayaranByRegu = true
+    pagePembayaran.value = 1
+    pembayaranStore.fetchPembayaranByRegu({ page: pagePembayaran.value, nama_warga: val })
+  }, 400),
+  { immediate: true }
+)
+
+const showPaymentProof = ref(false)
+const itemSelectedPembayaran = ref<PembayaranByRegu | null>(null)
+
+const handleShowBuktiBayar = (item: PembayaranByRegu) => {
+  showPaymentProof.value = true
+  itemSelectedPembayaran.value = item
+}
+
+const handleLoadMorePembayaran = async () => {
+  pagePembayaran.value += 1
+  await pembayaranStore.fetchPembayaranByRegu({ page: pagePembayaran.value })
+}
+
 onMounted(async () => {
   await masterReguStore.fetchAnggotaRegu()
   await dropdownStore.fetchAnggotaReguForDropdown()
@@ -89,6 +115,7 @@ onMounted(async () => {
     </div>
     <VTabs v-model="tab" color="primary">
       <VTab value="anggota">Anggota</VTab>
+      <VTab value="sudah_bayar">Sudah Bayar</VTab>
       <VTab value="belum_bayar">Belum Bayar</VTab>
     </VTabs>
 
@@ -97,38 +124,39 @@ onMounted(async () => {
     <VTabsWindow v-model="tab">
       <VTabsWindowItem value="anggota" class="px-2">
         <div class="py-3">
-          <VTextField
-            v-model="filters.anggota"
-            placeholder="Cari anggota regu Anda"
-            prepend-inner-icon="ri-search-2-line"
-          />
+          <VTextField v-model="filters.anggota" placeholder="Cari anggota regu Anda"
+            prepend-inner-icon="ri-search-2-line" />
         </div>
-        <DataTableAnggotaReguList :data="masterReguStore.anggotaRegu" :loading="masterReguStore.loadingAnggota" @detail-anggota="handleDetailAnggota" />
+        <DataTableAnggotaReguList :data="masterReguStore.anggotaRegu" :loading="masterReguStore.loadingAnggota"
+          @detail-anggota="handleDetailAnggota" />
+      </VTabsWindowItem>
+      <VTabsWindowItem value="sudah_bayar" class="px-2">
+        <div class="py-3">
+          <VTextField v-model="filters.anggota_sudah_bayar" placeholder="Cari anggota regu Anda"
+            prepend-inner-icon="ri-search-2-line" clearable />
+        </div>
+        <DataTablePayment :data="pembayaranStore.pembayaranByRegu" :loading="pembayaranStore.loadingByRegu"
+          :has-more="pembayaranStore.hasMoreByRegu" @show-bukti-bayar="handleShowBuktiBayar"
+          @load-more="handleLoadMorePembayaran" />
       </VTabsWindowItem>
       <VTabsWindowItem value="belum_bayar">
         <div class="py-3">
-          <VAutocomplete
-            v-model="filters.nik"
-            placeholder="Cari nama anggota regu yang belum bayar"
-            :items="dropdownStore.anggotaReguForDropdown"
-            return-object
-            item-title="nama_warga"
-            item-value="nik"
-            clearable
-            :loading="dropdownStore.loading.anggotaReguForDropdown"
-          />
+          <VAutocomplete v-model="filters.nik" placeholder="Cari nama anggota regu yang belum bayar"
+            :items="dropdownStore.anggotaReguForDropdown" return-object item-title="nama_warga" item-value="nik"
+            clearable :loading="dropdownStore.loading.anggotaReguForDropdown" />
         </div>
-        <DataTableNoPaymentReguList 
-          :data="pembayaranStore.historyUnpaid"
-          :loading="pembayaranStore.loading"
-          :loading-send-notif="pembayaranStore.loadingSendNotif"
-          :has-more="pembayaranStore.hasMoreUnpaidWarga"
-          @send-notif="handleSendNotif"
-          @load-more="handleLoadMoreHistoryUnpaid"
-        />
+        <DataTableNoPaymentReguList :data="pembayaranStore.historyUnpaid" :meta="pembayaranStore.metaByRegu"
+          :loading="pembayaranStore.loading" :loading-send-notif="pembayaranStore.loadingSendNotif"
+          :has-more="pembayaranStore.hasMoreUnpaidWarga" :has-filter="pembayaranStore.hasNikFilter"
+          @send-notif="handleSendNotif" @load-more="handleLoadMoreHistoryUnpaid" />
       </VTabsWindowItem>
     </VTabsWindow>
 
     <DialogDetailAnggotaReguList :is-show="showDetail" :item="itemSelected" @close="showDetail = false" />
+
+    <PaymentProofImageDialog v-model="showPaymentProof" :judul-iuran="itemSelectedPembayaran?.informasi_iuran?.nama"
+      :nama-warga="itemSelectedPembayaran?.nama_warga"
+      :src="config.public.backendUrl + '/storage/' + itemSelectedPembayaran?.bukti_pembayaran"
+      :item="(itemSelectedPembayaran as PembayaranByRegu)" />
   </div>
 </template>

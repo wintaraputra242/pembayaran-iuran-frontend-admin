@@ -4,9 +4,7 @@ import DataTableInformasiIuran from '@/views/informasi-iuran/DataTable.vue';
 import DialogFormDataInformasiIuran from '@/views/informasi-iuran/DialogFormData.vue';
 import FormFilterInformasiIuran from '@/views/informasi-iuran/FormFilter.vue';
 
-definePageMeta({
-  middleware: ['admin']
-})
+definePageMeta({ onlyAdmin: true })
 
 const masterInformasiIuranStore = useMasterInformasiIuranStore()
 const uiStore = useUiStore()

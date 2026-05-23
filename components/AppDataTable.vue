@@ -79,20 +79,11 @@ watch(
 
 <template>
   <!-- ================= DESKTOP ================= -->
-  <VTable
-    v-if="!display.smAndDown"
-    fixed-header
-    height="400px"
-    class="my-table"
-  >
+  <VTable v-if="!display.smAndDown" fixed-header height="400px" class="my-table">
     <thead>
       <tr>
-        <th
-          v-for="header in headers"
-          :key="header.key"
-          :style="{ width: header.width }"
-          :class="header.align === 'center' ? 'text-center' : ''"
-        >
+        <th v-for="header in headers" :key="header.key" :style="{ width: header.width }"
+          :class="header.align === 'center' ? 'text-center' : ''">
           {{ header.label }}
         </th>
         <th style="width: 100px"></th>
@@ -111,21 +102,11 @@ watch(
 
         <td>
           <div class="d-flex gap-2">
-            <IconBtn
-              size="small"
-              variant="outlined"
-              color="secondary"
-              @click="emit('editPassword', item)"
-            >
+            <IconBtn size="small" variant="outlined" color="secondary" @click="emit('editPassword', item)">
               <VIcon icon="ri-lock-2-line" />
             </IconBtn>
 
-            <IconBtn
-              size="small"
-              variant="outlined"
-              color="secondary"
-              @click="emit('edit', item)"
-            >
+            <IconBtn size="small" variant="outlined" color="secondary" @click="emit('edit', item)">
               <VIcon icon="ri-edit-line" />
             </IconBtn>
           </div>
@@ -148,15 +129,8 @@ watch(
 
   <!-- ================= MOBILE ================= -->
   <div v-else class="list-data">
-    <VCard
-      v-for="(item, i) in items"
-      :key="item.id"
-      class="mb-4"
-      rounded="lg"
-      border="sm"
-      :variant="props.variant"
-      position="relative"
-    >
+    <VCard v-for="(item, i) in items" :key="item.id" class="mb-4" rounded="lg" border="sm" :variant="props.variant"
+      position="relative">
       <VCardText class="d-flex flex-column gap-2">
         <div class="text-caption text-medium-emphasis">
           #{{ i + 1 }}
@@ -194,11 +168,7 @@ watch(
     </VCard>
 
     <!-- 🔥 MOBILE SENTINEL -->
-    <div
-      v-if="hasMore"
-      ref="mobileSentinel"
-      style="height: 1px"
-    />
+    <div v-if="hasMore" ref="mobileSentinel" style="height: 1px" />
 
     <div v-if="loading" class="text-center py-4">
       <VProgressCircular indeterminate size="26" />

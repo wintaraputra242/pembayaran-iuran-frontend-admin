@@ -39,14 +39,8 @@ const headers = [
 </script>
 
 <template>
-  <AppDataTable
-    :headers="headers"
-    :items="props.data"
-    :loading="props.loading"
-    :has-more="props.hasMore"
-    :has-filter="props.hasFilter"
-    @loadMore="emit('loadMore')"
-  >
+  <AppDataTable :headers="headers" :items="props.data" :loading="props.loading" :has-more="props.hasMore"
+    :has-filter="props.hasFilter" @loadMore="emit('loadMore')">
     <template #cell-status_aktif="{ item }">
       <VChip size="small" :color="item.status_aktif === 1 ? 'success' : 'error'">
         {{ item.status_aktif === 1 ? 'Aktif' : 'Tidak Aktif' }}
@@ -68,7 +62,7 @@ const headers = [
     </template>
 
     <template #cell-nik_penanggung_jawab="{ item }">
-      <span v-if="item.jenis_iuran === 'kematian'">{{ item.warga?.nama_warga || '-' }}</span>
+      <span v-if="item.jenis_iuran === 'kematian'">{{ item.penanggung_jawab?.nama_warga || '-' }}</span>
       <span v-else></span>
     </template>
 
@@ -101,10 +95,12 @@ const headers = [
       <IconBtn variant="outlined" class="rounded-lg" size="small" color="secondary" @click="emit('updateStatus', item)">
         <VIcon :icon="item.status_aktif === 1 ? 'ri-eye-off-line' : 'ri-eye-line'" />
       </IconBtn>
-      <IconBtn v-if="!item.is_deleted" variant="outlined" class="rounded-lg" size="small" color="secondary" @click="emit('edit', item)">
+      <IconBtn v-if="!item.is_deleted" variant="outlined" class="rounded-lg" size="small" color="secondary"
+        @click="emit('edit', item)">
         <VIcon icon="ri-edit-line" />
       </IconBtn>
-      <IconBtn v-if="!item.is_deleted" variant="outlined" class="rounded-lg" size="small" color="error" @click="emit('delete', item)">
+      <IconBtn v-if="!item.is_deleted" variant="outlined" class="rounded-lg" size="small" color="error"
+        @click="emit('delete', item)">
         <VIcon icon="ri-delete-bin-line" />
       </IconBtn>
     </template>
@@ -113,7 +109,8 @@ const headers = [
 
 <style scoped>
 .table-scroll-wrapper {
-  max-height: 400px;   /* tinggi container */
+  max-height: 400px;
+  /* tinggi container */
   overflow-y: auto;
   overflow-x: hidden;
   height: 100%;

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import success from '@images/pages/success_new.png'
+import success from '@images/pages/success_new2.png'
 import { ref, watch } from "vue"
 
 const props = defineProps({

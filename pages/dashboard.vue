@@ -2,9 +2,7 @@
 import DataTableDashboard from '@/views/dashboard-new/DataTable.vue';
 import FormFilterDashboard from '@/views/dashboard-new/FormFilter.vue';
 
-definePageMeta({
-  middleware: ['admin']
-})
+definePageMeta({ onlyAdmin: true })
 
 const uiStore = useUiStore()
 const dashboardStore = useDashboardStore()

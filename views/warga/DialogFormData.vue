@@ -23,6 +23,8 @@ const props = withDefaults(defineProps<{
   isEdit: false,
 })
 
+const masterWargaStore = useMasterWargaStore()
+
 const form = ref()
 
 const defaultParams = {
@@ -31,7 +33,7 @@ const defaultParams = {
   alamat: '',
   no_hp: '',
 }
-const params = reactive({...defaultParams})
+const params = reactive({ ...defaultParams })
 
 const tab = ref('form')
 
@@ -53,7 +55,7 @@ const dropzoneEvents = {
   addedFile: (file: File) => {
     if (file instanceof File) {
       errorMessageFile.value = 'Yang dikirim, harus berformatkan File'
-      
+
       return
     }
 
@@ -117,7 +119,7 @@ const rules = {
   file: (v: File) => {
     if (!v) return "File wajib diupload"
     if (v.size > 5_000_000) return "Maksimal 5 MB"
-    if (!['application/vnd.ms-excel','application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'].includes(v.type)) return "Hanya file Excel"
+    if (!['application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'].includes(v.type)) return "Hanya file Excel"
     return true
   },
 }
@@ -131,14 +133,14 @@ watch(
 )
 
 const handleClose = () => {
-  
+
   form.value?.reset()
-  
+
   if (selectedFile.value) {
     uploaderRef.value?.reset()
     selectedFile.value = null
   }
-  
+
   emit('close')
 }
 
@@ -162,7 +164,7 @@ const handleSubmit = async () => {
   emit('submit', params)
 }
 
-const errorMessageFile = ref('') 
+const errorMessageFile = ref('')
 const formImport = ref()
 
 const handleImport = async () => {
@@ -178,11 +180,11 @@ watch(
   () => props.isFetchSuccess,
   newVal => {
     // console.log(newVal);
-    
+
 
     if (newVal) {
       form.value.reset()
-      
+
       if (selectedFile.value) {
         uploaderRef.value?.reset()
       }
@@ -211,12 +213,17 @@ watch(
     }
   }
 )
+
+const handleDownloadTemplate = async () => {
+  await masterWargaStore.downloadTemplateImport()
+}
 </script>
 
 <template>
   <VDialog v-model="props.isShow">
     <VCard position="relative">
-      <VCardTitle class="pt-3" :class="{ 'position-fixed top-0 left-0 w-100': !isEdit }" style="background-color: #fff !important; z-index: 10;">
+      <VCardTitle class="pt-3" :class="{ 'position-fixed top-0 left-0 w-100': !isEdit }"
+        style="background-color: #fff !important; z-index: 10;">
         <div class="d-flex align-center justify-space-between">
           <h3>{{ props.isEdit ? 'Edit' : 'Tambah' }}</h3>
           <IconBtn :disabled="props.loading" variant="text" color="secondary" size="small" @click="handleClose">
@@ -225,10 +232,16 @@ watch(
         </div>
       </VCardTitle>
       <VCardText v-if="!props.isEdit" class="pb-0 py-1 mt-14">
-        <div class="d-flex justify-end">
-          <VBtn :disabled="props.loading" variant="flat" :color="tab === 'form' ? 'primary' : 'secondary'" @click="tab === 'form' ? (tab = 'import') : (tab = 'form')">
+        <div class="d-flex justify-end flex-wrap gap-2">
+          <VBtn :disabled="props.loading" variant="flat" :color="tab === 'form' ? 'primary' : 'secondary'"
+            @click="tab === 'form' ? (tab = 'import') : (tab = 'form')">
             <VIcon :icon="tab === 'form' ? 'ri-download-2-line' : 'ri-close-line'" class="me-2" />
             {{ tab === 'form' ? 'Import' : 'Batal' }}
+          </VBtn>
+          <VBtn v-if="tab === 'import'" :loading="masterWargaStore.loadingDownloadTemplate" :disabled="props.loading"
+            variant="flat" color="info" @click="handleDownloadTemplate">
+            <VIcon icon="ri-file-excel-line" class="me-1" />
+            Download Template
           </VBtn>
         </div>
       </VCardText>
@@ -238,38 +251,20 @@ watch(
             <VForm ref="form" @submit.prevent="handleSubmit">
               <VRow align="center" class="pt-1">
                 <VCol cols="12">
-                  <VTextField
-                    v-model="params.nik"
-                    label="NIK"
-                    placeholder="Masukkan nik warga"
-                    :rules="[rules.nik]"
-                    maxlength="16"
-                  />
+                  <VTextField v-model="params.nik" label="NIK" placeholder="Masukkan nik warga" :rules="[rules.nik]"
+                    maxlength="16" />
                 </VCol>
                 <VCol cols="12">
-                  <VTextField
-                    v-model="params.nama_warga"
-                    label="Nama"
-                    placeholder="Masukkan nama warga"
-                    :rules="[rules.nama]"
-                  />
+                  <VTextField v-model="params.nama_warga" label="Nama" placeholder="Masukkan nama warga"
+                    :rules="[rules.nama]" />
                 </VCol>
                 <VCol cols="12">
-                  <VTextarea
-                    v-model="params.alamat"
-                    label="Alamat"
-                    placeholder="Masukkan alamat warga"
-                    :rules="[rules.alamat]"
-                    auto-grow
-                  />
+                  <VTextarea v-model="params.alamat" label="Alamat" placeholder="Masukkan alamat warga"
+                    :rules="[rules.alamat]" auto-grow />
                 </VCol>
                 <VCol cols="12">
-                  <VTextField
-                    v-model="params.no_hp"
-                    label="No. Handphone"
-                    placeholder="Masukkan no. handphone warga"
-                    :rules="[rules.phone]"
-                  />
+                  <VTextField v-model="params.no_hp" label="No. Handphone" placeholder="Masukkan no. handphone warga"
+                    :rules="[rules.phone]" />
                 </VCol>
                 <VCol cols="12">
                   <div class="d-flex justify-end flex-wrap gap-2">
@@ -277,9 +272,10 @@ watch(
                       <VIcon icon="ri-close-line" class="me-1" />
                       Batal
                     </VBtn>
-                    <VBtn :loading="props.loading" variant="flat" :color="props.isEdit ? 'info' : 'success'" size="small" type="submit">
+                    <VBtn :loading="props.loading" variant="flat" :color="props.isEdit ? 'info' : 'success'"
+                      size="small" type="submit">
                       <VIcon :icon="props.isEdit ? 'ri-save-2-line' : 'ri-add-line'" class="me-1" />
-                      {{ props.isEdit ? 'Simpan' : 'Tambah'}}
+                      {{ props.isEdit ? 'Simpan' : 'Tambah' }}
                     </VBtn>
                   </div>
                 </VCol>
@@ -293,13 +289,8 @@ watch(
             <VForm ref="formImport" @submit.prevent="handleImport">
               <VRow align="center" class="pt-1">
                 <VCol cols="12">
-                  <FileUploader
-                    v-model="selectedFile"
-                    ref="uploaderRef" 
-                    :options="optionsUploader"
-                    :on-events="dropzoneEvents" 
-                    :rules="[rules.file]" 
-                  />
+                  <FileUploader v-model="selectedFile" ref="uploaderRef" :options="optionsUploader"
+                    :on-events="dropzoneEvents" :rules="[rules.file]" />
                 </VCol>
                 <VCol cols="12">
                   <div class="d-flex justify-end flex-wrap gap-2">

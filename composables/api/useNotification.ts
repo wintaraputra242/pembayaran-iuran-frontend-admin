@@ -15,15 +15,12 @@ export const useNotification = () => {
     type?: string
   }): Promise<GetNotificationsResponse> => {
     return await api<GetNotificationsResponse>('/notifications', {
-      method: 'GET',
-      params,
+      query: params,
     })
   }
 
   const getUnreadCount = async (): Promise<GetUnreadNotificationCountResponse> => {
-    return await api<GetUnreadNotificationCountResponse>('/notifications/unread-count', {
-      method: 'GET',
-    })
+    return await api<GetUnreadNotificationCountResponse>('/notifications/unread-count')
   }
 
   const markAsRead = async (id: number): Promise<MarkNotificationReadResponse> => {

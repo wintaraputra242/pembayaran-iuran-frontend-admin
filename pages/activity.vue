@@ -2,9 +2,7 @@
 import DataTableActivity from '@/views/activity/DataTable.vue'
 import FormFilterActivity from '@/views/activity/FormFilter.vue'
 
-definePageMeta({
-  middleware: ['admin'],
-})
+definePageMeta({ onlyAdmin: true })
 
 const activityStore = useActivityStore()
 

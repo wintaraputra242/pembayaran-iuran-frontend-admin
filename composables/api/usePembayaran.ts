@@ -3,6 +3,7 @@ import type {
   GetDetailPembayaranResponse,
   GetPaidMonthPembayaranResponse,
   GetPaidPembayaranByWargaResponse,
+  GetPembayaranByReguResponse,
   GetPembayaranResponse,
   GetUnpaidPembayaranResponse,
   NotifyResidentPayload,
@@ -15,7 +16,7 @@ import type {
 import { useApi } from './useApi'
 
 export const usePembayaran = () => {
-  const { api, fetchCsrf } = useApi()
+  const { api } = useApi()
 
   const getPembayaran = async (params?: {
     page?: number
@@ -29,20 +30,15 @@ export const usePembayaran = () => {
     end_date?: string
   }): Promise<GetPembayaranResponse> => {
     return await api<GetPembayaranResponse>('/pembayaran', {
-      method: 'GET',
-      params,
+      query: params,
     })
   }
 
-  const getDetailPembayaran = async (nik: string): Promise<GetDetailPembayaranResponse> => {
-    return await api<GetDetailPembayaranResponse>(`/pembayaran/${nik}`, {
-      method: 'GET',
-    })
+  const getDetailPembayaran = async (id: number): Promise<GetDetailPembayaranResponse> => {
+    return await api<GetDetailPembayaranResponse>(`/pembayaran/${id}`)
   }
 
   const addPembayaran = async (body: FormData): Promise<AddPembayaranResponse> => {
-    await fetchCsrf()
-
     return await api<AddPembayaranResponse>('/pembayaran', {
       method: 'POST',
       body,
@@ -56,43 +52,17 @@ export const usePembayaran = () => {
     per_page?: number
     page?: number
   }): Promise<GetUnpaidPembayaranResponse> => {
-    return await api<GetUnpaidPembayaranResponse>(
-      '/pembayaran-unpaid-payment',
-      {
-        method: 'GET',
-        params, // kirim sebagai query string
-      }
-    )
+    return await api<GetUnpaidPembayaranResponse>('/pembayaran/unpaid', { // UBAH: /pembayaran-unpaid-payment
+      query: params,
+    })
   }
 
   const getMonthPaidPembayaran = async (params: {
     id_informasi_iuran: number
     nik: string
   }): Promise<GetPaidMonthPembayaranResponse> => {
-    return await api<GetPaidMonthPembayaranResponse>(
-      '/pembayaran-paid-month',
-      {
-        method: 'GET',
-        params,
-      }
-    )
-  }
-
-  const notifyUnpaidResidents = async (body: NotifyUnpaidPayload): Promise<NotifyUnpaidResponse> => {
-    await fetchCsrf()
-
-    return await api<NotifyUnpaidResponse>('/pembayaran-notify-unpaid', {
-      method: 'POST',
-      body
-    })
-  }
-
-  const notifyResident = async (body: NotifyResidentPayload): Promise<NotifyResidentResponse> => {
-    await fetchCsrf()
-
-    return await api<NotifyResidentResponse>('/pembayaran-notify-resident', {
-      method: 'POST',
-      body,
+    return await api<GetPaidMonthPembayaranResponse>('/pembayaran/paid-month', { // UBAH: /pembayaran-paid-month
+      query: params,
     })
   }
 
@@ -101,13 +71,9 @@ export const usePembayaran = () => {
     per_page?: number
     page?: number
   }): Promise<GetPaidPembayaranByWargaResponse> => {
-    return await api<GetPaidPembayaranByWargaResponse>(
-      '/pembayaran-history-paid',
-      {
-        method: 'GET',
-        params,
-      }
-    )
+    return await api<GetPaidPembayaranByWargaResponse>('/pembayaran/history-paid', { // UBAH: /pembayaran-history-paid
+      query: params,
+    })
   }
 
   const getHistoryNotYetPaid = async (params: {
@@ -115,41 +81,9 @@ export const usePembayaran = () => {
     per_page?: number
     page?: number
   }): Promise<GetUnpaidPembayaranResponse> => {
-    return await api<GetUnpaidPembayaranResponse>(
-      '/pembayaran-history-unpaid',
-      {
-        method: 'GET',
-        params,
-      }
-    )
-  }
-
-  const notifyResidentAllUnpaid = async (
-    body: { nik: string }
-  ): Promise<NotifyResponse> => {
-    await fetchCsrf()
-
-    return await api<NotifyResponse>(
-      '/pembayaran-notify-resident-all-unpaid',
-      {
-        method: 'POST',
-        body,
-      }
-    )
-  }
-
-  const notifyResidentUnpaidOneByOne = async (
-    body: { nik: string }
-  ): Promise<NotifyResponse> => {
-    await fetchCsrf()
-
-    return await api<NotifyResponse>(
-      '/pembayaran-notify-resident-one-by-one',
-      {
-        method: 'POST',
-        body,
-      }
-    )
+    return await api<GetUnpaidPembayaranResponse>('/pembayaran/history-unpaid', { // UBAH: /pembayaran-history-unpaid
+      query: params,
+    })
   }
 
   const getUnpaidPembayaranKetuaRegu = async (params: {
@@ -157,13 +91,50 @@ export const usePembayaran = () => {
     per_page?: number
     page?: number
   }): Promise<GetUnpaidPembayaranResponse> => {
-    return await api<GetUnpaidPembayaranResponse>(
-      '/pembayaran-unpaid-payment-ketua-regu',
-      {
-        method: 'GET',
-        params, // kirim sebagai query string
-      }
-    )
+    return await api<GetUnpaidPembayaranResponse>('/pembayaran/unpaid-by-leader', { // UBAH: /pembayaran-unpaid-payment-ketua-regu
+      query: params,
+    })
+  }
+
+  const getPembayaranByRegu = async (params: {
+    id_informasi_iuran?: number
+    id_regu?: number
+    status_bayar?: string
+    nama_warga?: string
+    per_page?: number
+    page?: number
+  }): Promise<GetPembayaranByReguResponse> => {
+    return await api<GetPembayaranByReguResponse>('/pembayaran/by-regu', {
+      query: params,
+    })
+  }
+
+  const notifyUnpaidResidents = async (body: NotifyUnpaidPayload): Promise<NotifyUnpaidResponse> => {
+    return await api<NotifyUnpaidResponse>('/pembayaran/notify-unpaid', { // UBAH: /pembayaran-notify-unpaid
+      method: 'POST',
+      body,
+    })
+  }
+
+  const notifyResident = async (body: NotifyResidentPayload): Promise<NotifyResidentResponse> => {
+    return await api<NotifyResidentResponse>('/pembayaran/notify-resident', { // UBAH: /pembayaran-notify-resident
+      method: 'POST',
+      body,
+    })
+  }
+
+  const notifyResidentAllUnpaid = async (body: { nik: string }): Promise<NotifyResponse> => {
+    return await api<NotifyResponse>('/pembayaran/notify-all-unpaid', { // UBAH: /pembayaran-notify-resident-all-unpaid
+      method: 'POST',
+      body,
+    })
+  }
+
+  const notifyResidentUnpaidOneByOne = async (body: { nik: string }): Promise<NotifyResponse> => {
+    return await api<NotifyResponse>('/pembayaran/notify-one-by-one', { // UBAH: /pembayaran-notify-resident-one-by-one
+      method: 'POST',
+      body,
+    })
   }
 
   return {
@@ -172,12 +143,13 @@ export const usePembayaran = () => {
     addPembayaran,
     getUnpaidPembayaran,
     getMonthPaidPembayaran,
-    notifyUnpaidResidents,
-    notifyResident,
     getHistoryAlreadyPaid,
     getHistoryNotYetPaid,
+    getUnpaidPembayaranKetuaRegu,
+    getPembayaranByRegu,
+    notifyUnpaidResidents,
+    notifyResident,
     notifyResidentAllUnpaid,
     notifyResidentUnpaidOneByOne,
-    getUnpaidPembayaranKetuaRegu
   }
 }

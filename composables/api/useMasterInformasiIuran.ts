@@ -2,7 +2,7 @@ import type { AddInformasiIuranPayload, AddInformasiIuranResponse, DeleteInforma
 import { useApi } from './useApi'
 
 export const useMasterInformasiIuran = () => {
-  const { api, fetchCsrf } = useApi()
+  const { api } = useApi()
 
   const getInformasiIuran = async (params?: {
     page?: number
@@ -13,8 +13,7 @@ export const useMasterInformasiIuran = () => {
     mode?: string
   }): Promise<GetMasterInformasiIuranResponse> => {
     return await api<GetMasterInformasiIuranResponse>('/informasi-iuran', {
-      method: 'GET',
-      params,
+      query: params,
     })
   }
 
@@ -24,21 +23,16 @@ export const useMasterInformasiIuran = () => {
     jenis_iuran?: string
     keyword?: string
   }): Promise<GetMasterInformasiIuranResponse> => {
-    return await api<GetMasterInformasiIuranResponse>('/informasi-iuran-active', {
-      method: 'GET',
-      params,
+    return await api<GetMasterInformasiIuranResponse>('/informasi-iuran/active', { // UBAH: /informasi-iuran-active → /informasi-iuran/active
+      query: params,
     })
   }
-  
+
   const getDetailInformasiIuran = async (id: number | string): Promise<GetDetailMasterInformasiIuranResponse> => {
-    return await api<GetDetailMasterInformasiIuranResponse>('/informasi-iuran/' + id, {
-      method: 'GET',
-    })
+    return await api<GetDetailMasterInformasiIuranResponse>(`/informasi-iuran/${id}`)
   }
 
   const addInformasiIuran = async (body: AddInformasiIuranPayload): Promise<AddInformasiIuranResponse> => {
-    await fetchCsrf()
-
     return await api<AddInformasiIuranResponse>('/informasi-iuran', {
       method: 'POST',
       body,
@@ -46,35 +40,25 @@ export const useMasterInformasiIuran = () => {
   }
 
   const updateInformasiIuran = async (body: AddInformasiIuranPayload, id: number): Promise<UpdateInformasiIuranResponse> => {
-    await fetchCsrf()
-    
-    return await api<UpdateInformasiIuranResponse>('/informasi-iuran/' + id, {
+    return await api<UpdateInformasiIuranResponse>(`/informasi-iuran/${id}`, {
       method: 'PUT',
       body,
     })
   }
 
-  const updateStatusInformasiIuran = async (payload: { id: number, status_aktif: number }): Promise<UpdateStatusInformasiIuranResponse> => {
-    await fetchCsrf()
-
+  const updateStatusInformasiIuran = async (payload: { id: number; status_aktif: number }): Promise<UpdateStatusInformasiIuranResponse> => {
     const { id, status_aktif } = payload
 
-    const res = await api<UpdateStatusInformasiIuranResponse>(`/informasi-iuran/${id}/status`, {
+    return await api<UpdateStatusInformasiIuranResponse>(`/informasi-iuran/${id}/status`, {
       method: 'PATCH',
       body: { status_aktif },
     })
-
-    return res
   }
 
   const deleteInformasiIuran = async (id: number): Promise<DeleteInformasiIuranResponse> => {
-    await fetchCsrf()
-
-    const res = await api<DeleteInformasiIuranResponse>(`/informasi-iuran/${id}`, {
+    return await api<DeleteInformasiIuranResponse>(`/informasi-iuran/${id}`, {
       method: 'DELETE',
     })
-
-    return res
   }
 
   return {
@@ -84,6 +68,6 @@ export const useMasterInformasiIuran = () => {
     addInformasiIuran,
     updateInformasiIuran,
     updateStatusInformasiIuran,
-    deleteInformasiIuran
+    deleteInformasiIuran,
   }
 }

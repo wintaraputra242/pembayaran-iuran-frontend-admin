@@ -6,9 +6,7 @@ import DialogHistoryPaymentWargaPembayaran from '@/views/pembayaran/DialogHistor
 import DialogNoPaymentPembayaran from '@/views/pembayaran/DialogNoPayment.vue'
 import FormFilterPembayaran from '@/views/pembayaran/FormFilter.vue'
 
-definePageMeta({
-  middleware: ['admin'],
-})
+definePageMeta({ onlyAdmin: true })
 
 const config = useRuntimeConfig()
 
@@ -98,7 +96,7 @@ const handleShowBuktiBayar = (item: Pembayaran) => {
 const handleHistoryPayment = (item: Pembayaran) => {
   pembayaranStore.itemSelected = item
   itemSelected.value = item
-  
+
   router.push('/pembayaran/riwayat/' + item.warga.nik)
 }
 
@@ -109,7 +107,7 @@ const handleShowBuktiBayarHistoryPayment = () => {
 }
 
 const handleShowNoPayment = () => {
-  
+
   // showNoPaymentList.value = true
   router.push('/pembayaran/cek-belum-bayar')
 }
@@ -242,78 +240,40 @@ onBeforeRouteLeave(() => {
     <VRow class="match-height">
       <VCol cols="12">
         <div>
-          <FormFilterPembayaran
-            :regu-options="dropdownStore.reguForDropdown"
+          <FormFilterPembayaran :regu-options="dropdownStore.reguForDropdown"
             :loading-regu-options="dropdownStore.loading.reguForDropdown"
-            @show-form-data="router.push('/create-pembayaran')"
-            @filter="handleFilter" @reload="handleReload"
-            @reset-all-anggota="handleResetAllAnggota"
-            @show-no-payment="handleShowNoPayment"
-          />
+            @show-form-data="router.push('/create-pembayaran')" @filter="handleFilter" @reload="handleReload"
+            @reset-all-anggota="handleResetAllAnggota" @show-no-payment="handleShowNoPayment" />
         </div>
       </VCol>
 
       <VCol cols="12" md="4">
-        <DataTablePembayaran
-          :data="pembayaranStore.pembayaran"
-          :meta="pembayaranStore.meta"
-          :loading="pembayaranStore.loading"
-          :has-more="pembayaranStore.hasMore"
-          :has-filter="pembayaranStore.hasFilter"
-          @delete="handleDeleteData"
-          @show-anggota="handleShowAnggota"
-          @show-bukti-bayar="handleShowBuktiBayar"
-          @show-history-payment="handleHistoryPayment"
-          @send-notif="handleSendNotif"
-          @load-more="handleLoadMore"
-        />
+        <DataTablePembayaran :data="pembayaranStore.pembayaran" :meta="pembayaranStore.meta"
+          :loading="pembayaranStore.loading" :has-more="pembayaranStore.hasMore" :has-filter="pembayaranStore.hasFilter"
+          @delete="handleDeleteData" @show-anggota="handleShowAnggota" @show-bukti-bayar="handleShowBuktiBayar"
+          @show-history-payment="handleHistoryPayment" @send-notif="handleSendNotif" @load-more="handleLoadMore" />
       </VCol>
     </VRow>
 
-    <DialogFormDataPembayaran
-      :is-show="showFormData"
-      :is-edit="isEdit"
-      :item="itemSelected"
-      @close="handleCloseFormData"
-    />
+    <DialogFormDataPembayaran :is-show="showFormData" :is-edit="isEdit" :item="itemSelected"
+      @close="handleCloseFormData" />
 
-    <ConfirmDialog
-      v-model="showConfirmation"
-      :title="confirmOptions.title"
-      :message="confirmOptions.message"
-      :confirm-text="confirmOptions.confirmText"
-      :cancel-text="confirmOptions.cancelText"
-      :confirm-color="confirmOptions.confirmColor"
-      :confirm-icon="confirmOptions.confirmIcon"
-      :loading="isLoadingConfirm"
-      @confirm="deleteItem"
-    />
+    <ConfirmDialog v-model="showConfirmation" :title="confirmOptions.title" :message="confirmOptions.message"
+      :confirm-text="confirmOptions.confirmText" :cancel-text="confirmOptions.cancelText"
+      :confirm-color="confirmOptions.confirmColor" :confirm-icon="confirmOptions.confirmIcon"
+      :loading="isLoadingConfirm" @confirm="deleteItem" />
 
-    <PaymentProofImageDialog
-      v-model="showPaymentProof"
-      :judul-iuran="itemSelected?.informasi_iuran.judul_iuran"
+    <PaymentProofImageDialog v-model="showPaymentProof" :judul-iuran="itemSelected?.informasi_iuran.judul_iuran"
+      :nama-warga="itemSelected?.warga.nama_warga"
       :src="config.public.backendUrl + '/storage/' + itemSelected?.bukti_pembayaran"
-      :item="(itemSelected as Pembayaran)"
-    />
+      :item="(itemSelected as Pembayaran)" />
 
-    <DialogHistoryPaymentWargaPembayaran
-      :is-show="showHistoryPayment"
-      @close="handleCloseShowHistoryPaymentWarga"
-      @show-bukti-bayar="handleShowBuktiBayarHistoryPayment"
-      @send-notif="handleSendNotif"
-    />
+    <DialogHistoryPaymentWargaPembayaran :is-show="showHistoryPayment" @close="handleCloseShowHistoryPaymentWarga"
+      @show-bukti-bayar="handleShowBuktiBayarHistoryPayment" @send-notif="handleSendNotif" />
 
-    <DialogNoPaymentPembayaran
-      :is-show="showNoPaymentList"
-      @close="showNoPaymentList = false"
-      @send-notif="handleSendNotif"
-    />
+    <DialogNoPaymentPembayaran :is-show="showNoPaymentList" @close="showNoPaymentList = false"
+      @send-notif="handleSendNotif" />
 
-    <SuccessDialog
-      v-model="showSuccessConfirm"
-      :title="successTitle"
-      :message="successMessage"
-    />
+    <SuccessDialog v-model="showSuccessConfirm" :title="successTitle" :message="successMessage" />
   </div>
 </template>
-

@@ -7,9 +7,7 @@ import DialogFormDataRiwayat from '@/views/riwayat-pembayaran/DialogFormData.vue
 import DialogHistoryPaymentWargaRiwayat from '@/views/riwayat-pembayaran/DialogHistoryPaymentWarga.vue'
 import DialogNoPaymentRiwayat from '@/views/riwayat-pembayaran/DialogNoPayment.vue'
 
-definePageMeta({
-  middleware: ['admin'],
-})
+definePageMeta({ onlyAdmin: true })
 
 const config = useRuntimeConfig()
 

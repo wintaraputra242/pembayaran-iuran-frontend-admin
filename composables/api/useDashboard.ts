@@ -19,7 +19,7 @@ export const useDashboard = () => {
   }): Promise<GetDashboardResponse<Notification | Pembayaran | MasterWarga | ActivityLog>> => {
     return await api<GetDashboardResponse<Notification | Pembayaran | MasterWarga | ActivityLog>>('/dashboard', {
       method: 'GET',
-      params,
+      query: params,
     })
   }
 

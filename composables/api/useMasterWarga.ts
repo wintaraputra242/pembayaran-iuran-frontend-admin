@@ -2,7 +2,7 @@ import type { AddWargaPayload, AddWargaResponse, DeleteWargaResponse, GetDetailM
 import { useApi } from './useApi'
 
 export const useMasterWarga = () => {
-  const { api, fetchCsrf } = useApi()
+  const { api } = useApi()
 
   const getWarga = async (params?: {
     page?: number
@@ -11,85 +11,72 @@ export const useMasterWarga = () => {
     status?: string
   }): Promise<GetMasterWargaResponse> => {
     return await api<GetMasterWargaResponse>('/warga', {
-      method: 'GET',
-      params,
+      query: params,
     })
   }
 
   const addWarga = async (payload: AddWargaPayload): Promise<AddWargaResponse> => {
-    await fetchCsrf()
-
-    const res = await api<AddWargaResponse>('/warga', {
+    return await api<AddWargaResponse>('/warga', {
       method: 'POST',
       body: payload,
     })
-
-    return res
   }
 
   const importAddDataWarga = async (file: File): Promise<ImportAddWargaResponse> => {
-    await fetchCsrf()
-
-    const formData = new FormData
+    const formData = new FormData()
     formData.append('file', file)
 
-    const res = await api<ImportAddWargaResponse>('/warga/import-excel', {
+    return await api<ImportAddWargaResponse>('/warga/import-excel', {
       method: 'POST',
       body: formData,
+      headers: {
+        // Hapus Accept: application/json — sesuai catatan route
+        // $fetch otomatis set Content-Type multipart/form-data saat body FormData
+      },
     })
-
-    return res
-  }
-
-  const updateStatusWarga = async (payload: { nik: string, status_keaktifan: 'aktif' | 'tidak_aktif' }): Promise<UpdateStatusWargaResponse> => {
-    await fetchCsrf()
-
-    const { nik, status_keaktifan } = payload
-
-    const res = await api<UpdateStatusWargaResponse>(`/warga/${nik}/status`, {
-      method: 'PATCH',
-      body: { status_keaktifan },
-    })
-
-    return res
-  }
-
-  const updateWarga = async (payload: AddWargaPayload, nik: string): Promise<UpdateWargaResponse> => {
-    await fetchCsrf()
-
-    const res = await api<UpdateWargaResponse>(`/warga/${nik}`, {
-      method: 'PUT',
-      body: payload,
-    })
-
-    return res
-  }
-
-  const deleteWarga = async (nik: string): Promise<DeleteWargaResponse> => {
-    await fetchCsrf()
-
-    const res = await api<DeleteWargaResponse>(`/warga/${nik}`, {
-      method: 'DELETE',
-    })
-
-    return res
   }
 
   const detailWarga = async (nik: string): Promise<GetDetailMasterWargaResponse> => {
-    const res = await api<GetDetailMasterWargaResponse>(`/warga/${nik}`, {
-      method: 'GET',
-    })
-
-    return res
+    return await api<GetDetailMasterWargaResponse>(`/warga/${nik}`)
   }
+
+  const updateWarga = async (payload: AddWargaPayload, nik: string): Promise<UpdateWargaResponse> => {
+    return await api<UpdateWargaResponse>(`/warga/${nik}`, {
+      method: 'PUT',
+      body: payload,
+    })
+  }
+
+  const updateStatusWarga = async (payload: { nik: string; status_keaktifan: 'aktif' | 'tidak_aktif' }): Promise<UpdateStatusWargaResponse> => {
+    const { nik, status_keaktifan } = payload
+
+    return await api<UpdateStatusWargaResponse>(`/warga/${nik}/status`, {
+      method: 'PATCH',
+      body: { status_keaktifan },
+    })
+  }
+
+  const deleteWarga = async (nik: string): Promise<DeleteWargaResponse> => {
+    return await api<DeleteWargaResponse>(`/warga/${nik}`, {
+      method: 'DELETE',
+    })
+  }
+
+  const downloadTemplateImport = async (): Promise<Blob> => {
+    return await api<Blob>('/warga/template-import', {
+      responseType: 'blob',
+    })
+  }
+
 
   return {
     getWarga,
     addWarga,
     importAddDataWarga,
-    updateStatusWarga,
+    detailWarga,
     updateWarga,
+    updateStatusWarga,
     deleteWarga,
-    detailWarga
+    downloadTemplateImport
   }
 }

@@ -3,7 +3,9 @@ export interface LoginResponse {
   success: boolean
   message: string
   data: {
-    role: string
+    user: AuthUser,
+    access_token: string,
+    token_type: string,
   }
 }
 

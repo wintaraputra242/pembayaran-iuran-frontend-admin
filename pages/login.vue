@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useAuth } from '@/composables/api/useAuth'
 
-definePageMeta({ layout: 'blank', middleware: 'guest', public: true })
+definePageMeta({ guest: true })
 
 const router = useRouter()
 const route = useRoute()
@@ -21,34 +21,27 @@ const formComp = ref()
 
 const isLoadingSubmit = ref(false)
 const onSubmit = async () => {
-  const { valid } = await formComp.value.validate() 
+  const { valid } = await formComp.value.validate()
 
   if (!valid) return
 
   isLoadingSubmit.value = true
-  
+
   try {
     const res = await login({
       username: form.value.username,
       password: form.value.password,
     })
 
-    uiStore.startLoading()
-    const fromPath = useCookie('from-path')
-    fromPath.value = route.path
+    router.push(res.data.user.role === 'admin' ? '/' : '/create-pembayaran')
 
-    router.push(
-      res.data.role === 'admin'
-        ? '/'
-        : '/create-pembayaran'
-    )
-    
   } catch (e: any) {
     uiStore.showError(e.errors ?? 'Terjadi kesalahan saat login', 'Gagal Login')
   } finally {
     isLoadingSubmit.value = false
   }
 }
+
 
 onMounted(() => {
   const fromPath = useCookie('from-path')

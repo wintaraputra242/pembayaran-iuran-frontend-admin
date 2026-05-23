@@ -35,9 +35,12 @@ const actionColor: Record<string, string> = {
   create: 'success',
   update: 'info',
   delete: 'error',
-  reset: 'warning',
   login: 'primary',
   logout: 'secondary',
+  export: 'warning',
+  import: 'info',
+  send_notification: 'primary',
+  download: 'success',
 }
 
 const actionLabel: Record<string, string> = {
@@ -47,23 +50,19 @@ const actionLabel: Record<string, string> = {
   login: 'Login',
   logout: 'Logout',
   export: 'Export',
+  import: 'Import',
   send_notification: 'Kirim Notifikasi',
+  download: 'Download',
 }
 </script>
 
 <template>
-  <AppDataTable
-    :headers="headers"
-    :items="props.data"
-    :loading="props.loading"
-    :has-more="props.hasMore"
-    :has-filter="props.hasFilter"
-    @loadMore="emit('loadMore')"
-  >
+  <AppDataTable :headers="headers" :items="props.data" :loading="props.loading" :has-more="props.hasMore"
+    :has-filter="props.hasFilter" @loadMore="emit('loadMore')">
 
     <!-- waktu -->
     <template #cell-petugas="{ item }">
-      {{ item.user.name }}
+      {{ item?.user?.name }}
     </template>
 
     <!-- waktu -->
@@ -73,11 +72,7 @@ const actionLabel: Record<string, string> = {
 
     <!-- action -->
     <template #cell-action="{ item }">
-      <VChip
-        size="small"
-        class="text-capitalize"
-        :color="actionColor[item.action] || 'secondary'"
-      >
+      <VChip size="small" class="text-capitalize" :color="actionColor[item.action] || 'secondary'">
         {{ actionLabel[item.action] || item.action }}
       </VChip>
     </template>
@@ -108,7 +103,8 @@ const actionLabel: Record<string, string> = {
 
 <style scoped>
 .table-scroll-wrapper {
-  max-height: 400px;   /* tinggi container */
+  max-height: 400px;
+  /* tinggi container */
   overflow-y: auto;
   overflow-x: hidden;
   height: 100%;
