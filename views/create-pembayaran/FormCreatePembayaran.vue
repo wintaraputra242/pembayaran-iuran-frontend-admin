@@ -5,11 +5,11 @@ import type { MasterInformasiIuran } from '@/types/api/master-informasi-iuran';
 
 const emit = defineEmits<{
   (
-    e: 'submit', 
+    e: 'submit',
     params: {
       total: number | null,
       warga: string | null,
-      bulan: {month: number, year: number}[] | null,
+      bulan: { month: number, year: number }[] | null,
       metode_bayar: string | null
       bukti_pembayaran: File | null
     }): void;
@@ -41,7 +41,7 @@ const defaultParams = {
   bulan: [],
   metode_bayar: null
 }
-const params = reactive({...defaultParams})
+const params = reactive({ ...defaultParams })
 
 const rules = {
   required: (v: any) => !!v || "Field wajib diisi",
@@ -95,7 +95,7 @@ watch(() => props.monthPaidWarga, (newVal) => {
     const date = new Date()
     newVal.forEach((val: number | string) => {
       disableDates.value.push(new Date(date.getFullYear() + '-0' + val))
-    }) 
+    })
 
     return
   }
@@ -110,7 +110,7 @@ const adminFee = ref(0)
 // watch(() => params.metode_bayar, (newVal) => {
 //   if (newVal === 'qris') {
 //     total.value += 1000
-    
+
 //   }
 
 //   total.value = nominal.value
@@ -119,7 +119,7 @@ const adminFee = ref(0)
 // watch(() => params.bulan, (newVal) => {
 //   total.value = 5000
 //   nominal.value = 5000
-  
+
 //   if (newVal && Array.isArray(newVal) && newVal?.length === 2) {
 //     for(let i = newVal[0]?.month; i < newVal[1]?.month; i++) {
 //       nominal.value += 5000
@@ -234,7 +234,7 @@ const handleSubmit = async () => {
 
   if (params.metode_bayar === 'tunai' && !buktiPembayaran.value) isErrorSubmit.value = true
 
-  if (!formValid || (params.metode_bayar === 'tunai' && !buktiPembayaran.value)) return 
+  if (!formValid || (params.metode_bayar === 'tunai' && !buktiPembayaran.value)) return
 
   const newParams = {
     total: total.value,
@@ -261,17 +261,10 @@ watch(() => buktiPembayaran.value, (newVal) => {
       <VForm ref="form" @submit.prevent="handleSubmit">
         <VRow align="center" class="pt-1">
           <VCol cols="12">
-            <VAutocomplete
-              v-model="params.warga"
-              placeholder="Pilih warga"
-              clearable
-              item-title="nama_warga"
-              item-value="nik"
-              :loading="isLoadingDropdownWarga"
-              :items="(dropdownWargaOptions as WargaPembayaranForDropdown[])"
-              :rules="[rules.warga]"
-              @update:model-value="handleWarga"
-            >
+            <VAutocomplete v-model="params.warga" placeholder="Pilih warga" clearable item-title="nama_warga"
+              item-value="nik" :loading="isLoadingDropdownWarga"
+              :items="(dropdownWargaOptions as WargaPembayaranForDropdown[])" :rules="[rules.warga]"
+              @update:model-value="handleWarga">
               <template v-slot:item="{ props: itemProps, item }">
                 <VListItem v-bind="itemProps" :subtitle="(item.raw.regu as string) || '-'">
                 </VListItem>
@@ -279,38 +272,20 @@ watch(() => buktiPembayaran.value, (newVal) => {
             </VAutocomplete>
           </VCol>
           <VCol v-if="item?.jenis_iuran === 'bulanan'" cols="12">
-            <DatePicker
-              v-model="params.bulan"
-              placeholder="Pilih rentang bulan"
-              range
-              month-picker
-              format="MMMM"
-              :disabled-dates="disableDates"
-              :show-date-picker="false"
-              :disabled="!params.warga && !loadingMonthPaidWarga"
-              clearable
-              :rules="[rules.bulan]"
-              :is-submit="isSubmit"
+            <DatePicker v-model="params.bulan" placeholder="Pilih rentang bulan" range month-picker format="MMMM"
+              :disabled-dates="disableDates" :show-date-picker="false"
+              :disabled="!params.warga && !loadingMonthPaidWarga" clearable :rules="[rules.bulan]" :is-submit="isSubmit"
               :is-clear-message="isClearErrorMessageDatePicker"
-              @clear-error-message="isClearErrorMessageDatePicker = false"
-            />
+              @clear-error-message="isClearErrorMessageDatePicker = false" />
           </VCol>
           <VCol cols="12">
-            <VSelect
-              v-model="params.metode_bayar"
-              placeholder="Masukkan metode pembayaran"
-              :items="[
-                {label: 'QRIS', value: 'qris'},
-                {label: 'Tunai', value: 'tunai'},
-              ]"
-              item-title="label"
-              item-value="value"
-              :rules="[rules.metode_bayar]"
-              :disabled="!params.warga"
-              clearable
-            >
+            <VSelect v-model="params.metode_bayar" placeholder="Masukkan metode pembayaran" :items="[
+              { label: 'QRIS', value: 'qris' },
+              { label: 'Tunai', value: 'tunai' },
+            ]" item-title="label" item-value="value" :rules="[rules.metode_bayar]" :disabled="!params.warga" clearable>
               <template v-slot:item="{ props: itemProps, item }">
-                <VListItem v-bind="itemProps" :prepend-avatar="item.raw.value === 'qris' ? qris : ''" :prepend-icon="item.raw.value === 'tunai' ? 'ri-cash-line' : ''">
+                <VListItem v-bind="itemProps" :prepend-avatar="item.raw.value === 'qris' ? qris : ''"
+                  :prepend-icon="item.raw.value === 'tunai' ? 'ri-cash-line' : ''">
                   <template #prepend>
                     <VImg v-if="item.raw.value === 'qris'" :src="qris" width="24px" alt="qris logo" class="me-3" />
                     <VIcon v-if="item.raw.value === 'tunai'" icon="ri-cash-line" />
@@ -320,23 +295,24 @@ watch(() => buktiPembayaran.value, (newVal) => {
             </VSelect>
           </VCol>
           <VCol v-if="params.metode_bayar === 'tunai'" cols="12">
-            <CameraUpload
-              v-model="buktiPembayaran"
-              :is-error-submit="isErrorSubmit"
-              :rules="[
-                v => !!v || 'Foto Bukti Pembayaran wajib diupload',
-              ]"
-            />
+            <CameraUpload v-model="buktiPembayaran" :is-error-submit="isErrorSubmit" :rules="[
+              v => !!v || 'Foto Bukti Pembayaran wajib diupload',
+            ]" />
           </VCol>
           <VCol cols="12">
             <VDivider class="mb-3" />
             <div class="text-end">
-              <p class="ma-0 text-body-2">Biaya Iuran : <strong>{{ formatRupiah(item?.jumlah_iuran as number) }}</strong></p>
+              <p class="ma-0 text-body-2">Biaya Iuran : <strong>{{ formatRupiah(item?.jumlah_iuran as number)
+              }}</strong></p>
               <!-- bulanan -->
-              <p v-if="params.bulan?.length === 2" class="ma-0 text-body-2">{{ months[params.bulan[0]?.month] }} - {{ months[params.bulan[1]?.month] }} : <strong>{{ formatRupiah(calculateMonthRangeTotal(params.bulan, item?.jumlah_iuran as number)) }}</strong></p>
+              <p v-if="params.bulan?.length === 2" class="ma-0 text-body-2">{{ months[params.bulan[0]?.month] }} - {{
+                months[params.bulan[1]?.month] }} : <strong>{{ formatRupiah(calculateMonthRangeTotal(params.bulan,
+                  item?.jumlah_iuran as number)) }}</strong></p>
               <!-- /bulanan -->
               <!-- qris -->
-              <p v-if="params.metode_bayar === 'qris'" class="ma-0 text-body-2">Biaya Admin : <strong>{{ formatRupiah(adminFee) }}</strong></p>
+              <p v-if="params.metode_bayar === 'qris'" class="ma-0 text-body-2">Biaya Admin : <strong>{{
+                formatRupiah(adminFee)
+              }}</strong></p>
 
               <div class="d-flex justify-end py-2">
                 <VDivider style="max-width: 150px" />

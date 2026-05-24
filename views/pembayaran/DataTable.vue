@@ -52,7 +52,7 @@ const statusChipsColor: Record<
   failed: 'error',
   expired: 'secondary',
   canceled: 'secondary',
-  manual: 'primary',
+  manual: 'success',
 }
 
 const statusText: Record<
@@ -71,7 +71,7 @@ const statusText: Record<
   failed: 'Gagal',
   expired: 'Kedaluwarsa',
   canceled: 'Dibatalkan',
-  manual: 'Manual',
+  manual: 'Lunas',
 }
 
 const handleJumpToHistoryPayment = (item: Pembayaran) => {

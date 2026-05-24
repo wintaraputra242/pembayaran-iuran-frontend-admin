@@ -79,12 +79,9 @@ watch(
     </template>
 
     <template v-else>
-      <VCol
-        v-for="item in props.items"
-        :key="item.id"
-        cols="12"
-      >
-        <VCard elevation="0">
+      <VCol v-for="item in props.items" :key="item.id" cols="12" sm="6">
+        <VCard class="mb-0" rounded="lg" border="sm" variant="elevated" position="relative" height="100%"
+          style="padding-bottom: 65px;">
           <VCardTitle>
             <div class="d-flex justify-space-between gap-1">
               <div class="w-100">
@@ -93,58 +90,47 @@ watch(
                   {{ formatDateID(item.created_at) }}
                 </p>
               </div>
-  
+
               <div>
-                <VChip
-                  size="small"
-                  :color="item.jenis_iuran === 'kematian' ? 'error' : 'info'"
-                >
+                <VChip size="small" :color="item.jenis_iuran === 'kematian' ? 'error' : 'info'">
                   {{ item.jenis_iuran === 'kematian' ? 'Kematian' : 'Bulanan' }}
                 </VChip>
               </div>
             </div>
           </VCardTitle>
-  
+
           <VCardText class="px-4">
             <div class="mb-3">
-              <p
-                v-if="item.jenis_iuran === 'bulanan'"
-                class="text-caption ma-0"
-              >
+              <p v-if="item.jenis_iuran === 'bulanan'" class="text-caption ma-0">
                 Periode: {{ item.periode }}
               </p>
-  
+
               <!-- khusus jika iuran kematian -->
-              <p
-                v-if="item.jenis_iuran === 'kematian'"
-                class="text-body-2 ma-0"
-              >
+              <p v-if="item.jenis_iuran === 'kematian'" class="text-body-2 ma-0">
                 Alm: <strong>{{ item.nama_warga_meninggal || '-' }}</strong>
               </p>
-  
+
               <p v-if="item.jenis_iuran === 'kematian'" class="text-body-2 ma-0">
-                PJ: <strong>{{ item.warga?.nama_warga || '-' }}</strong>
+                PJ: <strong>{{ item.penanggung_jawab?.nama_warga || '-' }}</strong>
               </p>
             </div>
-  
+
             <p class="pa-0 ma-0 text-caption">
               {{ item.keterangan }}
             </p>
-  
-            <p class="pa-0 ma-0 mt-3 text-end font-weight-bold">
-              Rp. {{ Number(item.jumlah_iuran).toLocaleString('id-ID') }}
-            </p>
-  
-            <div class="d-flex justify-end mt-4">
-              <VBtn
-                variant="flat"
-                size="small"
-                color="primary"
-                @click="router.push('/create-pembayaran/form/' + item.id)"
-              >
-                <VIcon icon="ri-bank-card-line" class="me-2" />
-                Bayar Sekarang
-              </VBtn>
+
+            <div class="position-absolute" style="bottom: 12px; right: 12px;">
+              <p class="pa-0 ma-0 mb-2 text-end font-weight-bold">
+                Rp. {{ Number(item.jumlah_iuran).toLocaleString('id-ID') }}
+              </p>
+
+              <div class="d-flex justify-end">
+                <VBtn variant="flat" size="small" color="primary"
+                  @click="router.push('/create-pembayaran/form/' + item.id)">
+                  <VIcon icon="ri-bank-card-line" class="me-2" />
+                  Bayar Sekarang
+                </VBtn>
+              </div>
             </div>
           </VCardText>
         </VCard>
@@ -152,11 +138,7 @@ watch(
     </template>
   </VRow>
 
-  <div
-    v-if="(props.items as []).length > 0 && hasMore"
-    ref="mobileSentinel"
-    style="height: 1px"
-  />
+  <div v-if="(props.items as []).length > 0 && hasMore" ref="mobileSentinel" style="height: 1px" />
 
   <div v-if="(props.items as []).length > 0 && loading" class="text-center py-4">
     <VProgressCircular indeterminate size="26" />

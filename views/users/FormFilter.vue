@@ -33,23 +33,14 @@ const handleReload = () => {
     <VCardItem>
       <VForm @submit.prevent="emit('filter', filters)">
         <VRow align="center">
-          <VCol cols="12">
-            <VTextField
-              v-model="filters.keyword"
-              placeholder="Cari pengguna"
-            />
+          <VCol cols="12" sm="6">
+            <VTextField v-model="filters.keyword" placeholder="Cari pengguna" />
           </VCol>
-          <VCol cols="12">
-            <VSelect
-              v-model="filters.role"
-              placeholder="Pilih role"
-              item-title="label"
-              item-value="value"
-              :items="[
-                {label: 'Admin', value: 'admin'},
-                {label: 'Ketua Regu', value: 'ketua_regu'},
-              ]"
-            />
+          <VCol cols="12" sm="6">
+            <VSelect v-model="filters.role" placeholder="Pilih role" item-title="label" item-value="value" :items="[
+              { label: 'Admin', value: 'admin' },
+              { label: 'Ketua Regu', value: 'ketua_regu' },
+            ]" />
           </VCol>
           <VCol cols="12">
             <div class="d-flex flex-wrap gap-2">

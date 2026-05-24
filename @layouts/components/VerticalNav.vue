@@ -1,8 +1,8 @@
 <script lang="ts" setup>
+import logo from '@images/logo.svg?raw'
 import type { Component } from 'vue'
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 import { useDisplay } from 'vuetify'
-import logo from '@images/logo.svg?raw'
 
 interface Props {
   tag?: string | Component
@@ -18,10 +18,6 @@ const { mdAndDown } = useDisplay()
 
 const refNav = ref()
 
-/*
-  ℹ️ Close overlay side when route is changed
-  Close overlay vertical nav when link is clicked
-*/
 const route = useRoute()
 
 watch(
@@ -36,34 +32,57 @@ const updateIsVerticalNavScrolled = (val: boolean) => isVerticalNavScrolled.valu
 const handleNavScroll = (evt: Event) => {
   isVerticalNavScrolled.value = (evt.target as HTMLElement).scrollTop > 0
 }
+
+const navLeft = ref('0px')
+
+// const updateNavPosition = () => {
+//   const wrapper = document.querySelector('.layout-wrapper')
+//   if (wrapper) {
+//     const rect = wrapper.getBoundingClientRect()
+//     navLeft.value = `${rect.left}px`
+//   }
+// }
+
+// onMounted(() => {
+//   updateNavPosition()
+//   window.addEventListener('resize', updateNavPosition)
+// })
+
+// onUnmounted(() => {
+//   window.removeEventListener('resize', updateNavPosition)
+// })
+
+const updateNavLeft = () => {
+  const wrapper = document.querySelector('.layout-wrapper')
+  if (wrapper) {
+    const rect = wrapper.getBoundingClientRect()
+    document.documentElement.style.setProperty('--nav-left', `${rect.left}px`)
+  }
+}
+
+onMounted(() => {
+  updateNavLeft()
+  window.addEventListener('resize', updateNavLeft)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', updateNavLeft)
+})
+
 </script>
 
 <template>
-  <!-- eslint-disable vue/no-v-html -->
-  <Component
-    :is="props.tag"
-    ref="refNav"
-    data-allow-mismatch
-    class="layout-vertical-nav"
-    :class="[
-      {
-        'visible': isOverlayNavActive,
-        'scrolled': isVerticalNavScrolled,
-        'overlay-nav': mdAndDown,
-      },
-    ]"
-  >
-    <!-- 👉 Header -->
+  <Component :is="props.tag" ref="refNav" data-allow-mismatch class="layout-vertical-nav"
+    :style="{ insetInlineStart: navLeft }" :class="[{
+      'visible': isOverlayNavActive,
+      'scrolled': isVerticalNavScrolled,
+      'overlay-nav': mdAndDown,
+    }]">
+
     <div class="nav-header">
       <slot name="nav-header">
-        <NuxtLink
-          to="/"
-          class="app-logo app-title-wrapper"
-        >
-          <div
-            class="d-flex"
-            v-html="logo"
-          />
+        <NuxtLink to="/" class="app-logo app-title-wrapper">
+          <div class="d-flex" v-html="logo" />
 
           <h1 class="font-weight-medium leading-normal text-xl text-uppercase">
             Materio
@@ -74,16 +93,9 @@ const handleNavScroll = (evt: Event) => {
     <slot name="before-nav-items">
       <div class="vertical-nav-items-shadow" />
     </slot>
-    <slot
-      name="nav-items"
-      :update-is-vertical-nav-scrolled="updateIsVerticalNavScrolled"
-    >
-      <PerfectScrollbar
-        tag="ul"
-        class="nav-items"
-        :options="{ wheelPropagation: false }"
-        @ps-scroll-y="handleNavScroll"
-      >
+    <slot name="nav-items" :update-is-vertical-nav-scrolled="updateIsVerticalNavScrolled">
+      <PerfectScrollbar tag="ul" class="nav-items" :options="{ wheelPropagation: false }"
+        @ps-scroll-y="handleNavScroll">
         <slot />
       </PerfectScrollbar>
     </slot>
@@ -110,18 +122,29 @@ const handleNavScroll = (evt: Event) => {
 @use "@configured-variables" as variables;
 @use "@layouts/styles/mixins";
 
-// 👉 Vertical Nav
 .layout-vertical-nav {
-  position: fixed;
-  z-index: variables.$layout-vertical-nav-z-index;
-  display: flex;
-  flex-direction: column;
-  block-size: 100%;
-  inline-size: variables.$layout-vertical-nav-width;
-  inset-block-start: 0;
-  inset-inline-start: 0;
-  transition: inline-size 0.25s ease-in-out, box-shadow 0.25s ease-in-out;
-  will-change: transform, inline-size;
+  // position: fixed;
+  // z-index: variables.$layout-vertical-nav-z-index;
+  // display: flex;
+  // flex-direction: column;
+  // block-size: 100%;
+  // inline-size: variables.$layout-vertical-nav-width;
+  // inset-block-start: 0;
+  // inset-inline-start: 0;
+  // transition: inline-size 0.25s ease-in-out, box-shadow 0.25s ease-in-out;
+  // will-change: transform, inline-size;
+
+  position: fixed !important;
+  inset-inline-start: var(--nav-left, 0px) !important;
+  inset-block-start: 0 !important;
+  block-size: 100dvh !important; // pastikan full height
+  z-index: 9999;
+  max-width: 768px;
+  margin-inline: auto;
+
+  &:not(.visible) {
+    transform: translateX(-#{variables.$layout-vertical-nav-width}) !important;
+  }
 
   .nav-header {
     display: flex;
@@ -132,6 +155,7 @@ const handleNavScroll = (evt: Event) => {
 
       @at-root {
         #{variables.$selector-vertical-nav-mini} .nav-header .header-action {
+
           &.nav-pin,
           &.nav-unpin {
             display: none !important;
@@ -148,11 +172,7 @@ const handleNavScroll = (evt: Event) => {
   .nav-items {
     block-size: 100%;
 
-    // ℹ️ We no loner needs this overflow styles as perfect scrollbar applies it
-    // overflow-x: hidden;
 
-    // // ℹ️ We used `overflow-y` instead of `overflow` to mitigate overflow x. Revert back if any issue found.
-    // overflow-y: auto;
   }
 
   .nav-item-title {
@@ -162,7 +182,6 @@ const handleNavScroll = (evt: Event) => {
     white-space: nowrap;
   }
 
-  // 👉 Collapsed
   .layout-vertical-nav-collapsed & {
     &:not(.hovered) {
       inline-size: variables.$layout-vertical-nav-collapsed-width;
@@ -170,18 +189,18 @@ const handleNavScroll = (evt: Event) => {
   }
 }
 
-// Small screen vertical nav transition
-@media (max-width: 1279px) {
-  .layout-vertical-nav {
-    &:not(.visible) {
-      transform: translateX(-#{variables.$layout-vertical-nav-width});
+// @media (max-width: 1279px) {
+.layout-vertical-nav {
+  &:not(.visible) {
+    transform: translateX(calc(-#{variables.$layout-vertical-nav-width} - var(--nav-left, 0px))) !important;
 
-      @include mixins.rtl {
-        transform: translateX(variables.$layout-vertical-nav-width);
-      }
+    @include mixins.rtl {
+      transform: translateX(variables.$layout-vertical-nav-width);
     }
-
-    transition: transform 0.25s ease-in-out;
   }
+
+  transition: transform 0.25s ease-in-out;
 }
+
+// }
 </style>

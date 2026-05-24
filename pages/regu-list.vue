@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import type { MasterInformasiIuran } from '@/types/api/master-informasi-iuran';
 import type { AnggotaRegu } from '@/types/api/master-regu';
-import type { PembayaranByRegu, UnpaidWarga } from '@/types/api/pembayaran';
+import type { PembayaranByRegu } from '@/types/api/pembayaran';
 import DataTableAnggotaReguList from '@/views/regu-list/DataTableAnggota.vue';
 import DataTableNoPaymentReguList from '@/views/regu-list/DataTableNoPayment.vue';
 import DataTablePayment from '@/views/regu-list/DataTablePayment.vue';
@@ -39,11 +40,11 @@ const successTitle = ref('')
 const successMessage = ref('')
 const showSuccessConfirm = ref(false)
 
-const handleSendNotif = async (item: UnpaidWarga) => {
+const handleSendNotif = async (item: MasterInformasiIuran) => {
   try {
     await pembayaranStore.fetchNotifyResident({
-      id_informasi_iuran: Number(item),
-      nik: String(filters.nik),
+      id_informasi_iuran: Number(item.id),
+      nik: String((filters.nik as any)?.nik),
       month: null
     })
 

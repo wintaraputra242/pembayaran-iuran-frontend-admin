@@ -37,8 +37,8 @@ onMounted(async () => {
   const fromPath = useCookie('from-path')
 
   if (uiStore.isLoading && fromPath.value === '/login') {
-      uiStore.endLoading()
-      fromPath.value = null
+    uiStore.endLoading()
+    fromPath.value = null
   }
 })
 </script>
@@ -47,15 +47,16 @@ onMounted(async () => {
   <div>
     <div class="mb-3">
       <h2>Dashboard</h2>
-      <span class="text-body-2">Ringkasan data utama sistem, termasuk statistik warga, regu, iuran, dan aktivitas terbaru.</span>
+      <span class="text-body-2">Ringkasan data utama sistem, termasuk statistik warga, regu, iuran, dan aktivitas
+        terbaru.</span>
     </div>
-    
+
     <VRow class="match-height">
 
       <!-- 🔥 MINI CARDS -->
       <VCol cols="12">
         <VRow>
-          <VCol cols="6">
+          <VCol cols="12" sm="6">
             <VCard class="pa-3">
               <div class="d-flex align-center justify-space-between">
                 <div>
@@ -69,13 +70,13 @@ onMounted(async () => {
             </VCard>
           </VCol>
 
-          <VCol cols="6">
+          <VCol cols="12" sm="6">
             <VCard class="pa-3">
               <div class="d-flex align-center justify-space-between">
                 <div>
                   <div class="text-caption">Bayar Hari Ini</div>
                   <div class="text-h6 font-weight-bold">
-                    {{ dashboardStore.totalPembayaranHariIni }}
+                    {{ formatRupiah(dashboardStore.totalPembayaranHariIni) }}
                   </div>
                 </div>
                 <div><i class="ri-money-dollar-circle-line text-h5"></i></div>
@@ -85,22 +86,13 @@ onMounted(async () => {
         </VRow>
       </VCol>
 
-      <VCol
-        cols="12"
-      >
+      <VCol cols="12">
         <FormFilterDashboard @change="handleFilter" />
       </VCol>
-  
-      <VCol
-        cols="12"
-        md="4"
-      >
-        <DataTableDashboard
-          :type="selectedType"
-          :data="tableData"
-          :loading="dashboardStore.loading"
-          :hasFilter="false"
-        />
+
+      <VCol cols="12">
+        <DataTableDashboard :type="selectedType" :data="tableData" :loading="dashboardStore.loading"
+          :hasFilter="false" />
       </VCol>
     </VRow>
   </div>

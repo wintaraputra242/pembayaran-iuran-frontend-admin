@@ -62,73 +62,39 @@ const statusOptions = [
 
           <!-- DESKTOP -->
           <template v-if="!smAndDown">
-            <VCol cols="12" md="4">
-              <DatePicker
-                v-model="filters.date"
-                placeholder="Rentang tanggal bayar"
-                range
-                :enable-time="false"
-              />
+            <VCol cols="12" sm="6">
+              <DatePicker v-model="filters.date" placeholder="Rentang tanggal bayar" range :enable-time="false" />
             </VCol>
 
-            <VCol cols="12" md="4">
-              <VSelect
-                v-model="filters.jenis_iuran"
-                placeholder="Jenis iuran"
-                item-title="label"
-                item-value="value"
-                clearable
-                :items="[
-                  {label: 'Kematian', value: 'kematian'},
-                  {label: 'Bulanan', value: 'bulanan'},
-                ]"
-              />
+            <VCol cols="12" sm="6">
+              <VSelect v-model="filters.jenis_iuran" placeholder="Jenis iuran" item-title="label" item-value="value"
+                clearable :items="[
+                  { label: 'Kematian', value: 'kematian' },
+                  { label: 'Bulanan', value: 'bulanan' },
+                ]" />
             </VCol>
 
-            <VCol cols="12" md="4">
-              <VSelect
-                v-model="filters.metode_bayar"
-                placeholder="Metode pembayaran"
-                :items="['Tunai', 'QRIS', 'Transfer']"
-                clearable
-              />
+            <VCol cols="12" sm="6">
+              <VSelect v-model="filters.metode_bayar" placeholder="Metode pembayaran"
+                :items="['Tunai', 'QRIS', 'Transfer']" clearable />
             </VCol>
 
-            <VCol cols="12" md="4">
-              <VSelect
-                v-model="filters.status_bayar"
-                placeholder="Status pembayaran"
-                :items="statusOptions"
-                item-title="label"
-                item-value="value"
-                clearable
-              />
+            <VCol cols="12" sm="6">
+              <VSelect v-model="filters.status_bayar" placeholder="Status pembayaran" :items="statusOptions"
+                item-title="label" item-value="value" clearable />
             </VCol>
 
-            <VCol cols="12" md="4">
-              <VAutocomplete
-                v-model="filters.regu"
-                placeholder="Regu"
-                :loading="loadingReguOptions"
-                :items="reguOptions"
-                item-title="nama_regu"
-                item-value="id"
-                clearable
-                @click:clear="filters.regu = null; laporanStore.setFilter('regu', '')"
-              />
+            <VCol cols="12" sm="6">
+              <VAutocomplete v-model="filters.regu" placeholder="Regu" :loading="loadingReguOptions"
+                :items="reguOptions" item-title="nama_regu" item-value="id" clearable
+                @click:clear="filters.regu = null; laporanStore.setFilter('regu', '')" />
             </VCol>
 
-            <VCol cols="12" md="4">
-              <VAutocomplete
-                v-model="filters.informasi_iuran"
-                placeholder="Informasi Iuran"
-                :loading="loadingInformasiIuranOptions"
-                :items="informasiIuranOptions"
-                item-title="judul_iuran"
-                item-value="id"
-                clearable
-                @click:clear="filters.informasi_iuran = null; laporanStore.setFilter('informasi_iuran', '')"
-              />
+            <VCol cols="12" sm="6">
+              <VAutocomplete v-model="filters.informasi_iuran" placeholder="Informasi Iuran"
+                :loading="loadingInformasiIuranOptions" :items="informasiIuranOptions" item-title="judul_iuran"
+                item-value="id" clearable
+                @click:clear="filters.informasi_iuran = null; laporanStore.setFilter('informasi_iuran', '')" />
             </VCol>
           </template>
 
@@ -136,39 +102,21 @@ const statusOptions = [
           <VCol cols="12">
             <div class="d-flex flex-wrap gap-2">
 
-              <VBtn
-                v-if="smAndDown"
-                color="primary"
-                @click="showDialog = true"
-              >
+              <VBtn v-if="smAndDown" color="primary" @click="showDialog = true">
                 <VIcon icon="ri-filter-3-line" class="me-2" />
                 Filter
               </VBtn>
 
-              <VBtn
-                v-else
-                type="submit"
-                variant="flat"
-                color="primary"
-              >
+              <VBtn v-else type="submit" variant="flat" color="primary">
                 <VIcon icon="ri-search-line" class="me-2" />
                 Filter
               </VBtn>
 
-              <IconBtn
-                variant="flat"
-                color="primary"
-                @click="handleReload"
-              >
+              <IconBtn variant="flat" color="primary" @click="handleReload">
                 <VIcon icon="ri-restart-line" />
               </IconBtn>
 
-              <VBtn
-                variant="flat"
-                color="success"
-                :loading="loadingExportExcel"
-                @click="emit('exportExcel')"
-              >
+              <VBtn variant="flat" color="success" :loading="loadingExportExcel" @click="emit('exportExcel')">
                 <VIcon icon="ri-export-line" class="me-2" />
                 Export Excel
               </VBtn>
@@ -198,80 +146,42 @@ const statusOptions = [
           <VRow>
 
             <VCol cols="12">
-              <DatePicker
-                v-model="filters.date"
-                placeholder="Rentang tanggal bayar"
-                range
-                :enable-time="false"
-              />
+              <DatePicker v-model="filters.date" placeholder="Rentang tanggal bayar" range :enable-time="false" />
             </VCol>
 
             <VCol cols="12">
-              <VSelect
-                v-model="filters.jenis_iuran"
-                placeholder="Jenis iuran"
-                item-title="label"
-                item-value="value"
-                clearable
-                :items="[
-                  {label: 'Kematian', value: 'kematian'},
-                  {label: 'Bulanan', value: 'bulanan'},
-                ]"
-              />
+              <VSelect v-model="filters.jenis_iuran" placeholder="Jenis iuran" item-title="label" item-value="value"
+                clearable :items="[
+                  { label: 'Kematian', value: 'kematian' },
+                  { label: 'Bulanan', value: 'bulanan' },
+                ]" />
             </VCol>
 
             <VCol cols="12">
-              <VSelect
-                v-model="filters.metode_bayar"
-                placeholder="Metode pembayaran"
-                :items="['Tunai', 'QRIS', 'Transfer']"
-                clearable
-              />
+              <VSelect v-model="filters.metode_bayar" placeholder="Metode pembayaran"
+                :items="['Tunai', 'QRIS', 'Transfer']" clearable />
             </VCol>
 
             <VCol cols="12">
-              <VSelect
-                v-model="filters.status_bayar"
-                placeholder="Status pembayaran"
-                :items="statusOptions"
-                item-title="label"
-                item-value="value"
-                clearable
-              />
-            </VCol>
-
-            <VCol cols="12" md="4">
-              <VAutocomplete
-                v-model="filters.regu"
-                placeholder="Regu"
-                :loading="loadingReguOptions"
-                :items="reguOptions"
-                item-title="nama_regu"
-                item-value="id"
-                clearable
-                @click:clear="filters.regu = null; laporanStore.setFilter('regu', '')"
-              />
-            </VCol>
-
-            <VCol cols="12" md="4">
-              <VAutocomplete
-                v-model="filters.informasi_iuran"
-                placeholder="Informasi Iuran"
-                :loading="loadingInformasiIuranOptions"
-                :items="informasiIuranOptions"
-                item-title="judul_iuran"
-                item-value="id"
-                clearable
-                @click:clear="filters.informasi_iuran = null; laporanStore.setFilter('informasi_iuran', '')"
-              />
+              <VSelect v-model="filters.status_bayar" placeholder="Status pembayaran" :items="statusOptions"
+                item-title="label" item-value="value" clearable />
             </VCol>
 
             <VCol cols="12">
-              <VBtn
-                block
-                color="primary"
-                type="submit"
-              >
+              <VAutocomplete v-model="filters.regu" placeholder="Regu" :loading="loadingReguOptions"
+                :items="reguOptions" item-title="nama_regu" item-value="id" clearable
+                @click:clear="filters.regu = null; laporanStore.setFilter('regu', '')" />
+            </VCol>
+
+            <VCol cols="12">
+              <VAutocomplete v-model="filters.informasi_iuran" placeholder="Informasi Iuran"
+                :loading="loadingInformasiIuranOptions" :items="informasiIuranOptions" item-title="judul_iuran"
+                item-value="id" clearable
+                @click:clear="filters.informasi_iuran = null; laporanStore.setFilter('informasi_iuran', '')" />
+            </VCol>
+
+            <VCol cols="12">
+              <VBtn block color="primary" type="submit">
                 <VIcon icon="ri-search-line" class="me-2" />
                 Filter
               </VBtn>

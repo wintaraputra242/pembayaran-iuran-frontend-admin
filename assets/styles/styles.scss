@@ -1,10 +1,17 @@
 // Write your overrides
+
+// html, body {
+//   background-color: #f0f0f0; // warna luar
+//   min-height: 100%;
+// }
+
 .clamp-2 {
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
 
 .v-table__wrapper {
   padding: 0 !important;

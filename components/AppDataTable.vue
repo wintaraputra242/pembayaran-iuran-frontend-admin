@@ -79,7 +79,7 @@ watch(
 
 <template>
   <!-- ================= DESKTOP ================= -->
-  <VTable v-if="!display.smAndDown" fixed-header height="400px" class="my-table">
+  <!-- <VTable v-if="!display.smAndDown" fixed-header height="400px" class="my-table">
     <thead>
       <tr>
         <th v-for="header in headers" :key="header.key" :style="{ width: header.width }"
@@ -125,56 +125,61 @@ watch(
         </td>
       </tr>
     </tbody>
-  </VTable>
+  </VTable> -->
 
   <!-- ================= MOBILE ================= -->
-  <div v-else class="list-data">
-    <VCard v-for="(item, i) in items" :key="item.id" class="mb-4" rounded="lg" border="sm" :variant="props.variant"
-      position="relative">
-      <VCardText class="d-flex flex-column gap-2">
-        <div class="text-caption text-medium-emphasis">
-          #{{ i + 1 }}
-        </div>
+  <div class="list-data">
+    <VRow>
+      <VCol v-for="(item, i) in items" :key="item.id" cols="12" sm="6">
+        <VCard class="mb-0" rounded="lg" border="sm" :variant="props.variant" position="relative" height="100%">
+          <VCardText class="d-flex flex-column gap-2">
+            <div class="text-caption text-medium-emphasis">
+              #{{ i + 1 }}
+            </div>
 
-        <div v-for="header in headers.slice(1)" :key="header.key">
-          <div class="text-caption text-medium-emphasis">
-            <slot :name="`label-${header.key}`" :item="item" :label="header.label">
-              {{ header.label }}
-            </slot>
-          </div>
+            <div v-for="header in headers.slice(1)" :key="header.key">
+              <div class="text-caption text-medium-emphasis">
+                <slot :name="`label-${header.key}`" :item="item" :label="header.label">
+                  {{ header.label }}
+                </slot>
+              </div>
 
-          <div v-if="header.key === 'is_deleted'" class="font-weight-medium">
-          </div>
+              <div v-if="header.key === 'is_deleted'" class="font-weight-medium" />
 
-          <div v-else-if="header.key !== 'actions'" class="font-weight-medium">
-            <slot :name="`cell-${header.key}`" :item="item">
-              {{ item[header.key] || '-' }}
-            </slot>
-          </div>
+              <div v-else-if="header.key !== 'actions'" class="font-weight-medium">
+                <slot :name="`cell-${header.key}`" :item="item" :index="i">
+                  {{ item[header.key] || '-' }}
+                </slot>
+              </div>
 
-          <div v-else class="d-flex justify-end gap-2 mt-2">
-            <slot :name="`cell-${header.key}`" :item="item">
-              {{ item[header.key] }}
-            </slot>
-          </div>
+              <div v-else class="position-absolute" style="bottom: 12px; right: 12px;">
+                <div class="d-flex justify-end gap-2">
+                  <slot :name="`cell-${header.key}`" :item="item" :index="i">
+                    {{ item[header.key] }}
+                  </slot>
+                </div>
+              </div>
 
-          <div v-if="header.key === 'is_deleted' && item?.is_deleted" class="d-flex justify-end gap-2 mt-2">
-            <VChip class="position-absolute" variant="flat" style="top: 10px; right: 10px;" size="small" color="error">
-              Dihapus
-            </VChip>
-          </div>
-        </div>
-      </VCardText>
-    </VCard>
+              <div v-if="header.key === 'is_deleted' && item?.is_deleted" class="d-flex justify-end gap-2 mt-2">
+                <VChip class="position-absolute" variant="flat" style="top: 10px; right: 10px;" size="small"
+                  color="error">
+                  Dihapus
+                </VChip>
+              </div>
+            </div>
+          </VCardText>
+        </VCard>
+      </VCol>
+    </VRow>
 
-    <!-- 🔥 MOBILE SENTINEL -->
+    <!-- sentinel & loading tetap sama -->
     <div v-if="hasMore" ref="mobileSentinel" style="height: 1px" />
 
     <div v-if="loading" class="text-center py-4">
       <VProgressCircular indeterminate size="26" />
     </div>
 
-    <div v-if="props.items.length === 0 && !props.loading" class="text-center py-4">
+    <div v-if="props.items.length === 0 && !props.loading" class="text-center py-6">
       <p class="text-center ma-0">{{ props.hasFilter ? 'Data tidak ditemukan' : props.noDataText }}</p>
     </div>
   </div>

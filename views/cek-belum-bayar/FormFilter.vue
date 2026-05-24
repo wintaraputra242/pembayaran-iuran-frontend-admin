@@ -29,13 +29,13 @@ const filters = reactive({
 
 const handleReload = () => {
   filters.date = '',
-  filters.metode_bayar = null,
-  filters.status = null,
-  filters.jenis_iuran = null,
-  filters.regu = null,
-  filters.nama_warga = '',
+    filters.metode_bayar = null,
+    filters.status = null,
+    filters.jenis_iuran = null,
+    filters.regu = null,
+    filters.nama_warga = '',
 
-  emit('reload')
+    emit('reload')
 }
 </script>
 
@@ -45,68 +45,38 @@ const handleReload = () => {
       <VForm @submit.prevent="emit('filter', filters); showDialog = false">
         <VRow align="center">
           <template v-if="!smAndDown">
-            <VCol cols="12" md="4">
-              <DatePicker
-                v-model="filters.date"
-                placeholder="Rentang tanggal bayar"
-                range
-                :enable-time="false"
-              />
+            <VCol cols="12" sm="6">
+              <DatePicker v-model="filters.date" placeholder="Rentang tanggal bayar" range :enable-time="false" />
             </VCol>
-  
-            <VCol cols="12" md="4">
-              <VSelect
-                v-model="filters.jenis_iuran"
-                placeholder="Jenis iuran"
-                :items="['Bulanan', 'Kematian']"
-                clearable
-              />  
+
+            <VCol cols="12" sm="6">
+              <VSelect v-model="filters.jenis_iuran" placeholder="Jenis iuran" :items="['Bulanan', 'Kematian']"
+                clearable />
             </VCol>
-  
-            <VCol cols="12" md="4">
-              <VSelect
-                v-model="filters.metode_bayar"
-                placeholder="Metode pembayaran"
-                :items="['Tunai', 'QRIS', 'Transfer']"
-                clearable
-              />
+
+            <VCol cols="12" sm="6">
+              <VSelect v-model="filters.metode_bayar" placeholder="Metode pembayaran"
+                :items="['Tunai', 'QRIS', 'Transfer']" clearable />
             </VCol>
-  
-            <VCol cols="12" md="4">
-              <VSelect
-                v-model="filters.status"
-                placeholder="Status pembayaran"
-                :items="['Sudah Bayar', 'Belum Bayar']"
-                clearable
-              />
+
+            <VCol cols="12" sm="6">
+              <VSelect v-model="filters.status" placeholder="Status pembayaran" :items="['Sudah Bayar', 'Belum Bayar']"
+                clearable />
             </VCol>
-  
-            <VCol cols="12" md="4">
-              <VSelect
-                v-model="filters.regu"
-                placeholder="Regu"
-                :items="['Regu A', 'Regu B', 'Regu C']"
-                clearable
-              />
+
+            <VCol cols="12" sm="6">
+              <VSelect v-model="filters.regu" placeholder="Regu" :items="['Regu A', 'Regu B', 'Regu C']" clearable />
             </VCol>
-  
-            <VCol cols="12" md="4">
-              <VTextField
-                v-model="filters.nama_warga"
-                placeholder="Cari nama warga"
-                prepend-inner-icon="ri-search-2-line"
-                clearable
-              />
+
+            <VCol cols="12" sm="6">
+              <VTextField v-model="filters.nama_warga" placeholder="Cari nama warga"
+                prepend-inner-icon="ri-search-2-line" clearable />
             </VCol>
           </template>
 
           <VCol cols="12">
             <div class="d-flex flex-wrap gap-2">
-              <VBtn
-                v-if="smAndDown"
-                color="primary"
-                @click="showDialog = true"
-              >
+              <VBtn v-if="smAndDown" color="primary" @click="showDialog = true">
                 <VIcon icon="ri-filter-3-line" class="me-2" />
                 Filter
               </VBtn>
@@ -116,28 +86,16 @@ const handleReload = () => {
                 Filter
               </VBtn>
 
-              <IconBtn
-                variant="flat"
-                color="primary"
-                @click="handleReload"
-              >
+              <IconBtn variant="flat" color="primary" @click="handleReload">
                 <VIcon icon="ri-restart-line" />
               </IconBtn>
 
-              <VBtn
-                variant="flat"
-                color="success"
-                @click="emit('showFormData')"
-              >
+              <VBtn variant="flat" color="success" @click="emit('showFormData')">
                 <VIcon icon="ri-add-large-line" class="me-2" />
                 Tambah Pembayaran
               </VBtn>
 
-              <VBtn
-                variant="flat"
-                color="secondary"
-                @click="emit('showNoPayment')"
-              >
+              <VBtn variant="flat" color="secondary" @click="emit('showNoPayment')">
                 <VIcon icon="ri-list-check-2" class="me-2" />
                 Cek Belum Bayar
               </VBtn>
@@ -148,9 +106,7 @@ const handleReload = () => {
     </VCardItem>
   </VCard>
 
-  <VDialog
-    v-model="showDialog"
-  >
+  <VDialog v-model="showDialog">
     <VCard>
       <VCardTitle class="pt-3 position-sticky top-0" style="background-color: #fff !important; z-index: 10;">
         <div class="d-flex align-center justify-space-between">
@@ -164,69 +120,37 @@ const handleReload = () => {
       <VCardItem>
         <VForm @submit.prevent="emit('filter', filters); showDialog = false">
           <VRow align="center">
-            <VCol cols="12" md="4">
-              <DatePicker
-                v-model="filters.date"
-                placeholder="Rentang tanggal bayar"
-                range
-                :enable-time="false"
-              />
+            <VCol cols="12">
+              <DatePicker v-model="filters.date" placeholder="Rentang tanggal bayar" range :enable-time="false" />
             </VCol>
 
-            <VCol cols="12" md="4">
-              <VSelect
-                v-model="filters.jenis_iuran"
-                placeholder="Jenis iuran"
-                :items="['Bulanan', 'Kematian']"
-                clearable
-              />  
+            <VCol cols="12">
+              <VSelect v-model="filters.jenis_iuran" placeholder="Jenis iuran" :items="['Bulanan', 'Kematian']"
+                clearable />
             </VCol>
 
-            <VCol cols="12" md="4">
-              <VSelect
-                v-model="filters.metode_bayar"
-                placeholder="Metode pembayaran"
-                :items="['Tunai', 'QRIS', 'Transfer']"
-                clearable
-              />
+            <VCol cols="12">
+              <VSelect v-model="filters.metode_bayar" placeholder="Metode pembayaran"
+                :items="['Tunai', 'QRIS', 'Transfer']" clearable />
             </VCol>
 
-            <VCol cols="12" md="4">
-              <VSelect
-                v-model="filters.status"
-                placeholder="Status pembayaran"
-                :items="['Sudah Bayar', 'Belum Bayar']"
-                clearable
-              />
+            <VCol cols="12">
+              <VSelect v-model="filters.status" placeholder="Status pembayaran" :items="['Sudah Bayar', 'Belum Bayar']"
+                clearable />
             </VCol>
 
-            <VCol cols="12" md="4">
-              <VSelect
-                v-model="filters.regu"
-                placeholder="Regu"
-                :items="['Regu A', 'Regu B', 'Regu C']"
-                clearable
-              />
+            <VCol cols="12">
+              <VSelect v-model="filters.regu" placeholder="Regu" :items="['Regu A', 'Regu B', 'Regu C']" clearable />
             </VCol>
 
-            <VCol cols="12" md="4">
-              <VTextField
-                v-model="filters.nama_warga"
-                placeholder="Cari nama warga"
-                prepend-inner-icon="ri-search-2-line"
-                clearable
-              />
+            <VCol cols="12">
+              <VTextField v-model="filters.nama_warga" placeholder="Cari nama warga"
+                prepend-inner-icon="ri-search-2-line" clearable />
             </VCol>
 
             <VCol cols="12">
               <div class="d-flex flex-wrap gap-2">
-                <VBtn
-                  v-if="smAndDown"
-                  block
-                  color="primary"
-                  class="mb-3"
-                  type="submit"
-                >
+                <VBtn v-if="smAndDown" block color="primary" class="mb-3" type="submit">
                   <VIcon icon="ri-search-line" class="me-2" />
                   Filter
                 </VBtn>

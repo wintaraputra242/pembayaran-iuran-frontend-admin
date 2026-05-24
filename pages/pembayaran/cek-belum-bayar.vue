@@ -6,12 +6,14 @@ import DialogFormDataCekBelumBayar from '@/views/cek-belum-bayar/DialogFormData.
 import DialogHistoryPaymentWargaCekBelumBayar from '@/views/cek-belum-bayar/DialogHistoryPaymentWarga.vue'
 import DialogNoPaymentCekBelumBayar from '@/views/cek-belum-bayar/DialogNoPayment.vue'
 import eCommerce2 from '@images/eCommerce/2.png'
+import { useDisplay } from 'vuetify'
 
 definePageMeta({ onlyAdmin: true })
 
 const pembayaranStore = usePembayaranStore()
 const dropdownStore = useDropdownStore()
 const router = useRouter()
+const display = useDisplay()
 
 const page = ref(1)
 
@@ -268,28 +270,37 @@ onMounted(() => {
       <VCol cols="12">
         <VCard>
           <VCardItem>
-            <VAutocomplete v-model="filters.informasi_iuran" placeholder="Pilih informasi iuran"
-              :items="dropdownStore.itemInformasiIuranForDropdown" return-object item-title="judul_iuran"
-              item-value="id" clearable class="mb-3" :loading="dropdownStore.loading.informasiIuranForDropdown"
-              @click:clear="filters.bulan = null" />
+            <VRow>
+              <VCol cols="12" sm="6">
+                <VAutocomplete v-model="filters.informasi_iuran" placeholder="Pilih informasi iuran"
+                  :items="dropdownStore.itemInformasiIuranForDropdown" return-object item-title="judul_iuran"
+                  item-value="id" clearable :loading="dropdownStore.loading.informasiIuranForDropdown"
+                  @click:clear="filters.bulan = null" />
+              </VCol>
 
-            <VSelect v-if="filters.informasi_iuran?.jenis_iuran === 'bulanan'" v-model="filters.bulan"
-              placeholder="Pilih Bulan" :items="bulanOptions" item-title="label" item-value="value" clearable
-              class="mb-3" :loading="dropdownStore.loading.informasiIuranForDropdown" />
+              <VCol v-if="filters.informasi_iuran?.jenis_iuran === 'bulanan'" cols="12" sm="6">
+                <VSelect v-model="filters.bulan" placeholder="Pilih Bulan" :items="bulanOptions" item-title="label"
+                  item-value="value" clearable :loading="dropdownStore.loading.informasiIuranForDropdown" />
+              </VCol>
 
-            <VTextField v-if="pembayaranStore.unpaidWarga.length > 0 || filters.nama_warga" v-model="filters.nama_warga"
-              placeholder="Cari Nama Warga" clearable class="mb-3" />
+              <VCol v-if="pembayaranStore.unpaidWarga.length > 0 || filters.nama_warga" cols="12" sm="6">
+                <VTextField v-model="filters.nama_warga" placeholder="Cari Nama Warga" clearable />
+              </VCol>
 
-            <VBtn v-if="pembayaranStore.unpaidWarga.length > 0" type="submit" variant="flat" color="primary" block
-              :loading="pembayaranStore.loadingSendNotifToAll" @click="handleSendNotifToAll">
-              <VIcon icon="ri-send-plane-fill" class="me-2" />
-              Kirim Notif ke Semua Warga
-            </VBtn>
+              <VCol v-if="pembayaranStore.unpaidWarga.length > 0" cols="12" class="d-flex align-center">
+                <VBtn type="submit" variant="flat" color="primary" :block="display.smAndDown.value"
+                  :loading="pembayaranStore.loadingSendNotifToAll" @click="handleSendNotifToAll">
+                  <VIcon icon="ri-send-plane-fill" class="me-2" />
+                  Kirim Notif ke Semua Warga
+                </VBtn>
+              </VCol>
+
+            </VRow>
           </VCardItem>
         </VCard>
       </VCol>
 
-      <VCol cols="12" md="4">
+      <VCol cols="12">
         <DataTableCekBelumBayar :data="pembayaranStore.unpaidWarga" :loading="pembayaranStore.loading"
           :loading-send-notif="pembayaranStore.loadingSendNotif" :has-more="pembayaranStore.hasMoreUnpaidWarga"
           :has-filter="hasFilterUnpaidWarga" :jml-iuran="filters.informasi_iuran?.jumlah_iuran"

@@ -46,7 +46,7 @@ const statusChipsColor: Record<
   failed: 'error',
   expired: 'secondary',
   canceled: 'secondary',
-  manual: 'primary',
+  manual: 'success',
 }
 
 const statusText: Record<
@@ -65,18 +65,13 @@ const statusText: Record<
   failed: 'Gagal',
   expired: 'Kedaluwarsa',
   canceled: 'Dibatalkan',
-  manual: 'Manual',
+  manual: 'Lunas',
 }
 </script>
 
 <template>
-  <AppDataTable
-    :headers="headers"
-    :items="data"
-    :loading="loading"
-    :has-more="hasMore"
-    no-data-text="Belum ada transaksi pembayaran yang telah berhasil dilakukan"
-  >
+  <AppDataTable :headers="headers" :items="data" :loading="loading" :has-more="hasMore"
+    no-data-text="Belum ada transaksi pembayaran yang telah berhasil dilakukan">
 
     <!-- ID Transaksi -->
     <template #cell-transaksi_id="{ item }">
@@ -96,16 +91,9 @@ const statusText: Record<
     <!-- Metode Bayar -->
     <template #cell-metode_bayar="{ item }">
       <div class="d-flex align-center gap-1">
-        <VIcon
-          v-if="item.metode_bayar !== 'QRIS'"
-          :icon="item.metode_bayar === 'Transfer' ? 'ri-exchange-line' : 'ri-cash-line'"
-          size="20"
-        />
-        <VImg
-          v-if="item.metode_bayar === 'QRIS'"
-          :src="qris"
-          max-width="20"
-        />
+        <VIcon v-if="item.metode_bayar !== 'QRIS'"
+          :icon="item.metode_bayar === 'Transfer' ? 'ri-exchange-line' : 'ri-cash-line'" size="20" />
+        <VImg v-if="item.metode_bayar === 'QRIS'" :src="qris" max-width="20" />
         {{ item.metode_bayar }}
       </div>
     </template>
@@ -123,10 +111,7 @@ const statusText: Record<
     <!-- Status -->
     <template #cell-status="{ item }">
       <div class="text-capitalize">
-        <VChip
-          size="small"
-          :color="statusChipsColor[item.status_bayar as keyof typeof statusChipsColor]"
-        >
+        <VChip size="small" :color="statusChipsColor[item.status_bayar as keyof typeof statusChipsColor]">
           {{ statusText[item.status_bayar as keyof typeof statusText] }}
         </VChip>
       </div>
@@ -135,13 +120,10 @@ const statusText: Record<
     <!-- Bukti -->
     <template #cell-bukti="{ item }">
       <div class="d-flex">
-        <div
-          v-ripple
-          class="pa-2 rounded-lg cursor-pointer"
-          @click="emit('showBuktiBayar', item)"
-        >
+        <div v-ripple class="pa-2 rounded-lg cursor-pointer" @click="emit('showBuktiBayar', item)">
           <!-- <VImg :src="item.bukti_pembayaran || eCommerce2" width="50" /> -->
-          <VImg v-if="item.bukti_pembayaran" :src="config.public.backendUrl + '/storage/' + item.bukti_pembayaran" width="50" />
+          <VImg v-if="item.bukti_pembayaran" :src="config.public.backendUrl + '/storage/' + item.bukti_pembayaran"
+            width="50" />
           <span v-else>-</span>
         </div>
       </div>
@@ -152,7 +134,8 @@ const statusText: Record<
 
 <style scoped>
 .table-scroll-wrapper {
-  max-height: 400px;   /* tinggi container */
+  max-height: 400px;
+  /* tinggi container */
   overflow-y: auto;
   overflow-x: hidden;
   height: 100%;

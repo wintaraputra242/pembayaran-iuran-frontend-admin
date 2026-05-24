@@ -30,7 +30,7 @@ const loadData = async (type: 'kematian' | 'bulanan') => {
   masterStore.filters.keyword = filters[type] || ''
 
   page.value = 1
-  
+
   await masterStore.fetchInformasiIuranActive({
     page: page.value,
     limit: 10,
@@ -85,8 +85,8 @@ onMounted(() => {
   const fromPath = useCookie('from-path')
 
   if (authStore.user?.role === 'ketua_regu' && uiStore.isLoading && fromPath.value === '/login') {
-      uiStore.endLoading()
-      fromPath.value = null
+    uiStore.endLoading()
+    fromPath.value = null
   }
 
   loadData('kematian')
@@ -115,23 +115,19 @@ onMounted(() => {
     <VTabsWindow v-model="tab">
       <VTabsWindowItem class="py-5" value="kematian">
         <div class="mb-3">
-          <VTextField
-            v-model="filters.kematian"
-            placeholder="Cari informasi iuran kematian"
-            prepend-inner-icon="ri-search-2-line"
-          />
+          <VTextField v-model="filters.kematian" placeholder="Cari informasi iuran kematian"
+            prepend-inner-icon="ri-search-2-line" />
         </div>
-        <ListInformasiIuranCreatePembayaran :has-more="masterStore.hasMore" :loading="masterStore.loading" :items="kematianItems" @load-more="handleLoadMore" />
+        <ListInformasiIuranCreatePembayaran :has-more="masterStore.hasMore" :loading="masterStore.loading"
+          :items="kematianItems" @load-more="handleLoadMore" />
       </VTabsWindowItem>
       <VTabsWindowItem class="py-5" value="bulanan">
         <div class="mb-3">
-          <VTextField
-            v-model="filters.bulanan"
-            placeholder="Cari informasi iuran bulanan"
-            prepend-inner-icon="ri-search-2-line"
-          />
+          <VTextField v-model="filters.bulanan" placeholder="Cari informasi iuran bulanan"
+            prepend-inner-icon="ri-search-2-line" />
         </div>
-        <ListInformasiIuranCreatePembayaran :has-more="masterStore.hasMore" :loading="masterStore.loading" :items="bulananItems" @load-more="handleLoadMore" />
+        <ListInformasiIuranCreatePembayaran :has-more="masterStore.hasMore" :loading="masterStore.loading"
+          :items="bulananItems" @load-more="handleLoadMore" />
       </VTabsWindowItem>
     </VTabsWindow>
   </div>

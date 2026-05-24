@@ -28,22 +28,13 @@ const handleReload = () => {
     <VCardItem>
       <VForm @submit.prevent="emit('filter', filters)">
         <VRow align="center">
-          <VCol cols="12">
-            <VTextField
-              v-model="filters.user"
-              placeholder="Masukkan nama user"
-              prepend-inner-icon="ri-user-line"
-              clearable
-            />
+          <VCol cols="12" sm="6">
+            <VTextField v-model="filters.user" placeholder="Masukkan nama user" prepend-inner-icon="ri-user-line"
+              clearable />
           </VCol>
 
-          <VCol cols="12">
-            <VSelect
-              v-model="filters.action"
-              placeholder="Pilih aksi"
-              item-title="label"
-              item-value="value"
-              clearable
+          <VCol cols="12" sm="6">
+            <VSelect v-model="filters.action" placeholder="Pilih aksi" item-title="label" item-value="value" clearable
               :items="[
                 { label: 'Tambah', value: 'create' },
                 { label: 'Ubah', value: 'update' },
@@ -52,17 +43,11 @@ const handleReload = () => {
                 { label: 'Logout', value: 'logout' },
                 { label: 'Export', value: 'export' },
                 { label: 'Kirim Notifikasi', value: 'send_notification' },
-              ]"
-            />
+              ]" />
           </VCol>
 
-          <VCol cols="12">
-            <DatePicker
-              v-model="filters.date"
-              placeholder="Pilih rentang tanggal"
-              range
-              :enable-time="false"
-            />
+          <VCol cols="12" sm="6">
+            <DatePicker v-model="filters.date" placeholder="Pilih rentang tanggal" range :enable-time="false" />
           </VCol>
 
           <VCol cols="12">

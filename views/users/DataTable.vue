@@ -25,14 +25,8 @@ const headers = [
 </script>
 
 <template>
-  <AppDataTable
-    :headers="headers"
-    :items="props.data"
-    :loading="props.loading"
-    :has-more="props.hasMore"
-    :has-filter="props.hasFilter"
-    @loadMore="emit('loadMore')"
-  >
+  <AppDataTable :headers="headers" :items="props.data" :loading="props.loading" :has-more="props.hasMore"
+    :has-filter="props.hasFilter" @loadMore="emit('loadMore')">
     <template #cell-role="{ item }">
       <VChip size="small" :color="item.role === 'admin' ? 'success' : 'info'">
         {{ item.role === 'admin' ? 'Admin' : 'Ketua Regu' }}
@@ -43,7 +37,8 @@ const headers = [
 
 <style scoped>
 .table-scroll-wrapper {
-  max-height: 400px;   /* tinggi container */
+  max-height: 400px;
+  /* tinggi container */
   overflow-y: auto;
   overflow-x: hidden;
   height: 100%;

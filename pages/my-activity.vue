@@ -67,19 +67,10 @@ onMounted(async () => {
       <span>Informasi terkait dengan aktivitas yang sudah pernah Anda lakukan sebelumnya</span>
     </div>
     <VRow class="match-height">
-  
-      <VCol
-        cols="12"
-        md="4"
-      >
-        <DataTableActivity
-          :data="activityStore.activities"
-          :meta="activityStore.meta"
-          :loading="activityStore.loading"
-          :has-more="activityStore.hasMore"
-          :has-filter="activityStore.hasFilter"
-          @load-more="handleLoadMore"
-        />
+
+      <VCol cols="12">
+        <DataTableActivity :data="activityStore.activities" :meta="activityStore.meta" :loading="activityStore.loading"
+          :has-more="activityStore.hasMore" :has-filter="activityStore.hasFilter" @load-more="handleLoadMore" />
       </VCol>
     </VRow>
   </div>

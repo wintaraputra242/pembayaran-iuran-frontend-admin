@@ -247,7 +247,7 @@ onBeforeRouteLeave(() => {
         </div>
       </VCol>
 
-      <VCol cols="12" md="4">
+      <VCol cols="12">
         <DataTablePembayaran :data="pembayaranStore.pembayaran" :meta="pembayaranStore.meta"
           :loading="pembayaranStore.loading" :has-more="pembayaranStore.hasMore" :has-filter="pembayaranStore.hasFilter"
           @delete="handleDeleteData" @show-anggota="handleShowAnggota" @show-bukti-bayar="handleShowBuktiBayar"

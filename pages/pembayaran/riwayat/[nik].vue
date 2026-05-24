@@ -173,7 +173,7 @@ const bulanOptions = [
   { label: 'Desember', value: 12 },
 ]
 
-const hasFilterUnpaidWarga = ref(false) 
+const hasFilterUnpaidWarga = ref(false)
 
 watch(() => filters.informasi_iuran, async (val: any) => {
   if (!val || !filters.bulan) {
@@ -188,7 +188,7 @@ watch(() => filters.informasi_iuran, async (val: any) => {
 
   if ((val && val.jenis_iuran === 'kematian') || filters.bulan) {
     hasFilterUnpaidWarga.value = true
-    
+
     pembayaranStore.setFilter('idInformasiIuran', val.id)
     pembayaranStore.setFilter('bulan', filters.bulan as number)
 
@@ -202,7 +202,7 @@ watch(() => filters.informasi_iuran, async (val: any) => {
   }
 
   pembayaranStore.setFilter('idInformasiIuran', 0)
-  
+
   hasFilterUnpaidWarga.value = false
 })
 
@@ -233,7 +233,7 @@ watch(() => filters.bulan, async (val) => {
   pembayaranStore.setFilter('idInformasiIuran', 0)
   pembayaranStore.setFilter('bulan', 0)
   pembayaranStore.setFilter('namaWarga', '')
-  
+
   hasFilterUnpaidWarga.value = false
 })
 
@@ -256,11 +256,11 @@ const handleSendNotifToAll = async () => {
   try {
     if ('nik' in route.params) {
       await pembayaranStore.fetchNotifyResidentAllUnpaid(route.params.nik)
-  
+
       successTitle.value = 'Kirim Notif Berhasil'
       successMessage.value =
         'Notifikasi terkait seluruh pembayaran dari warga, berhasil dikirim.'
-  
+
       showSuccessConfirm.value = true
     }
   } catch (error) {
@@ -311,7 +311,8 @@ onMounted(() => {
 
     <div class="mb-3">
       <h2>Riwayat Pembayaran</h2>
-      <span v-if="!pembayaranStore.loadingDetail" class="text-body-2">Nama: {{ pembayaranStore.itemSelected?.warga.nama_warga || '-' }}</span>
+      <span v-if="!pembayaranStore.loadingDetail" class="text-body-2">Nama: {{
+        pembayaranStore.itemSelected?.warga.nama_warga || '-' }}</span>
     </div>
 
     <div v-if="pembayaranStore.loadingDetail" class="text-center py-4">
@@ -319,7 +320,7 @@ onMounted(() => {
     </div>
 
     <VRow v-else class="match-height">
-      <VCol cols="12" md="4">
+      <VCol cols="12">
         <VTabs v-model="tab" color="primary">
           <VTab value="history">Riwayat</VTab>
           <VTab value="no-payment">Belum Bayar</VTab>
@@ -327,90 +328,52 @@ onMounted(() => {
 
         <VDivider />
 
-        <VTabsWindow v-model="tab" class="mt-5">
+        <VTabsWindow v-model="tab" class="mt-5 pt-5">
 
           <!-- ================= HISTORY ================= -->
           <VTabsWindowItem value="history">
-            <DataTableRiwayat
-              :data="pembayaranStore.historyPaid"
-              :loading="pembayaranStore.loading"
-              :has-more="pembayaranStore.hasMoreHistoryPaid"
-              @load-more="handleLoadMoreHistoryPaid"
-              @show-bukti-bayar="handleShowBuktiBayar"
-            />
+            <DataTableRiwayat :data="pembayaranStore.historyPaid" :loading="pembayaranStore.loading"
+              :has-more="pembayaranStore.hasMoreHistoryPaid" @load-more="handleLoadMoreHistoryPaid"
+              @show-bukti-bayar="handleShowBuktiBayar" />
           </VTabsWindowItem>
 
           <!-- ================= BELUM BAYAR ================= -->
           <VTabsWindowItem value="no-payment">
             <div v-if="pembayaranStore.historyUnpaid.length > 0" class="mb-3">
-              <VBtn
-                variant="flat"
-                color="info"
-                :loading="pembayaranStore.loadingSendNotifToAll"
-                @click="handleSendNotifToAll"
-              >
+              <VBtn variant="flat" color="info" :loading="pembayaranStore.loadingSendNotifToAll"
+                @click="handleSendNotifToAll">
                 <VIcon icon="ri-bell-line" class="me-2" />
                 Kirim Semua Notif
               </VBtn>
             </div>
 
-            <DataTableBelumBayarRiwayat
-              :data="pembayaranStore.historyUnpaid"
-              :loading="pembayaranStore.loading"
-              :loading-send-notif="pembayaranStore.loadingSendNotif"
-              :has-more="pembayaranStore.hasMoreUnpaidWarga"
-              @send-notif="handleSendNotif"
-              @load-more="handleLoadMoreHistoryUnpaid"
-            />
+            <DataTableBelumBayarRiwayat :data="pembayaranStore.historyUnpaid" :loading="pembayaranStore.loading"
+              :loading-send-notif="pembayaranStore.loadingSendNotif" :has-more="pembayaranStore.hasMoreUnpaidWarga"
+              @send-notif="handleSendNotif" @load-more="handleLoadMoreHistoryUnpaid" />
           </VTabsWindowItem>
         </VTabsWindow>
       </VCol>
     </VRow>
 
-    <DialogFormDataRiwayat
-      :is-show="showFormData"
-      :is-edit="isEdit"
-      :item="itemSelected"
-      @close="handleCloseFormData"
-    />
+    <DialogFormDataRiwayat :is-show="showFormData" :is-edit="isEdit" :item="itemSelected"
+      @close="handleCloseFormData" />
 
-    <ConfirmDialog
-      v-model="showConfirmation"
-      :title="confirmOptions.title"
-      :message="confirmOptions.message"
-      :confirm-text="confirmOptions.confirmText"
-      :cancel-text="confirmOptions.cancelText"
-      :confirm-color="confirmOptions.confirmColor"
-      :confirm-icon="confirmOptions.confirmIcon"
-      :loading="isLoadingConfirm"
-      @confirm="deleteItem"
-    />
+    <ConfirmDialog v-model="showConfirmation" :title="confirmOptions.title" :message="confirmOptions.message"
+      :confirm-text="confirmOptions.confirmText" :cancel-text="confirmOptions.cancelText"
+      :confirm-color="confirmOptions.confirmColor" :confirm-icon="confirmOptions.confirmIcon"
+      :loading="isLoadingConfirm" @confirm="deleteItem" />
 
-    <PaymentProofImageDialog
-      v-model="showPaymentProof"
-      :judul-iuran="itemSelected?.informasi_iuran.judul_iuran"
+    <PaymentProofImageDialog v-model="showPaymentProof" :judul-iuran="itemSelected?.informasi_iuran.judul_iuran"
       :src="config.public.backendUrl + '/storage/' + itemSelected?.bukti_pembayaran"
-      :item="(itemSelected as Pembayaran)"
-    />
+      :item="(itemSelected as Pembayaran)" />
 
-    <DialogHistoryPaymentWargaRiwayat
-      :is-show="showHistoryPayment"
-      @close="handleCloseShowHistoryPaymentWarga"
-      @show-bukti-bayar="handleShowBuktiBayarHistoryPayment"
-      @send-notif="handleSendNotif"
-    />
+    <DialogHistoryPaymentWargaRiwayat :is-show="showHistoryPayment" @close="handleCloseShowHistoryPaymentWarga"
+      @show-bukti-bayar="handleShowBuktiBayarHistoryPayment" @send-notif="handleSendNotif" />
 
-    <DialogNoPaymentRiwayat
-      :is-show="showNoPaymentList"
-      @close="showNoPaymentList = false"
-      @send-notif="handleSendNotif"
-    />
+    <DialogNoPaymentRiwayat :is-show="showNoPaymentList" @close="showNoPaymentList = false"
+      @send-notif="handleSendNotif" />
 
-    <SuccessDialog
-      v-model="showSuccessConfirm"
-      :title="successTitle"
-      :message="successMessage"
-    />
+    <SuccessDialog v-model="showSuccessConfirm" :title="successTitle" :message="successMessage" />
   </div>
 </template>
 
@@ -420,4 +383,3 @@ onMounted(() => {
   border-radius: 5px;
 }
 </style>
-

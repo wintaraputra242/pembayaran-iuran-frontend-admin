@@ -251,8 +251,8 @@ const handleDownloadTemplate = async () => {
             <VForm ref="form" @submit.prevent="handleSubmit">
               <VRow align="center" class="pt-1">
                 <VCol cols="12">
-                  <VTextField v-model="params.nik" label="NIK" placeholder="Masukkan nik warga" :rules="[rules.nik]"
-                    maxlength="16" />
+                  <VTextField v-model="params.nik" label="NIK" placeholder="Masukkan nik warga"
+                    :rules="props.isEdit ? [] : [rules.nik]" :disabled="props.isEdit" />
                 </VCol>
                 <VCol cols="12">
                   <VTextField v-model="params.nama_warga" label="Nama" placeholder="Masukkan nama warga"

@@ -25,11 +25,19 @@ const headers = [
   { label: 'Jumlah Iuran yang Harus Dibayar', key: 'jumlah_iuran', width: '180px' },
   { key: 'actions' },
 ]
+
+const indexSelected = ref<number | null>(null)
+
+const handleSendNotif = (item: UnpaidWarga, index: number) => {
+  indexSelected.value = index
+
+  emit('sendNotif', item)
+}
 </script>
 
 <template>
   <AppDataTable :headers="headers" :items="data" :loading="loading" :has-more="false"
-    :no-data-text="!hasFilter ? 'Data harus difilter terlebih dahulu' : 'Tidak ada data iuran'">
+    :no-data-text="!hasFilter ? 'Data harus difilter terlebih dahulu' : 'Warga sudah membayar semua iuran'">
 
     <!-- Judul Iuran -->
     <template #cell-judul_iuran="{ item }">
@@ -56,9 +64,11 @@ const headers = [
     </template>
 
     <!-- Aksi -->
-    <template #cell-actions="{ item }">
+    <template #cell-actions="{ item, index }">
       <div class="d-flex justify-center">
-        <IconBtn variant="outlined" class="rounded-lg" size="small" color="secondary" @click="emit('sendNotif', item)">
+        <IconBtn variant="outlined" class="rounded-lg" size="small" color="secondary"
+          :loading="index === indexSelected && loadingSendNotif"
+          @click="handleSendNotif(item as UnpaidWarga, index as number)">
           <VIcon icon="ri-bell-line" />
         </IconBtn>
       </div>

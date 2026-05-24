@@ -23,24 +23,15 @@ const handleReload = () => {
     <VCardItem>
       <VForm @submit.prevent="emit('filter', filters)">
         <VRow align="center">
-          <VCol cols="12">
-            <VTextField
-              v-model="filters.keyword"
-              placeholder="Cari warga"
-            />
+          <VCol cols="12" sm="6">
+            <VTextField v-model="filters.keyword" placeholder="Cari warga" />
           </VCol>
-          <VCol cols="12">
-            <VSelect
-              v-model="filters.status_keaktifan"
-              placeholder="Pilih status keaktifan"
-              item-title="label"
-              item-value="value"
-              clearable
-              :items="[
-                {label: 'Aktif', value: 'aktif'},
-                {label: 'Tidak Aktif', value: 'tidak_aktif'},
-              ]"
-            />
+          <VCol cols="12" sm="6">
+            <VSelect v-model="filters.status_keaktifan" placeholder="Pilih status keaktifan" item-title="label"
+              item-value="value" clearable :items="[
+                { label: 'Aktif', value: 'aktif' },
+                { label: 'Tidak Aktif', value: 'tidak_aktif' },
+              ]" />
           </VCol>
           <VCol cols="12">
             <div class="d-flex flex-wrap gap-2">

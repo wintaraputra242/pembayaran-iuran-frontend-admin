@@ -22,7 +22,7 @@ const handleCloseFormData = () => {
 const itemSelected = ref<object | null>(null)
 
 const handleEditData = (item: object) => {
-  showFormData.value = true 
+  showFormData.value = true
   isEdit.value = true
   itemSelected.value = item
 }
@@ -103,29 +103,21 @@ onMounted(async () => {
       <span class="text-body-2">Kelola data akun pengguna yang memiliki akses ke sistem beserta perannya.</span>
     </div>
     <VRow class="match-height">
-      <VCol
-        cols="12"
-      >
-        <FormFilterUsers :loading-download="masterUsersStore.loadingDownload" @download-credentials="handleDownloadCredentials" @filter="handleFilter" @reload="handleReload" />
+      <VCol cols="12">
+        <FormFilterUsers :loading-download="masterUsersStore.loadingDownload"
+          @download-credentials="handleDownloadCredentials" @filter="handleFilter" @reload="handleReload" />
       </VCol>
-  
-      <VCol
-        cols="12"
-      >
-        <DataTableUsers :data="masterUsersStore.users" :meta="masterUsersStore.meta" :loading="masterUsersStore.loading" :has-more="masterUsersStore.hasMore" :has-filter="masterUsersStore.hasFilter" @get-password="handleGetPassword" @load-more="handleLoadMore" />
+
+      <VCol cols="12">
+        <DataTableUsers :data="masterUsersStore.users" :meta="masterUsersStore.meta" :loading="masterUsersStore.loading"
+          :has-more="masterUsersStore.hasMore" :has-filter="masterUsersStore.hasFilter"
+          @get-password="handleGetPassword" @load-more="handleLoadMore" />
       </VCol>
     </VRow>
 
-    <ConfirmDialog
-      v-model="showConfirmation"
-      :title="confirmOptions.title"
-      :message="confirmOptions.message"
-      :confirm-text="confirmOptions.confirmText"
-      :cancel-text="confirmOptions.cancelText"
-      :confirm-color="confirmOptions.confirmColor"
-      :confirm-icon="confirmOptions.confirmIcon"
-      :loading="isLoadingConfirm"
-      @confirm="deleteItem"
-    />
+    <ConfirmDialog v-model="showConfirmation" :title="confirmOptions.title" :message="confirmOptions.message"
+      :confirm-text="confirmOptions.confirmText" :cancel-text="confirmOptions.cancelText"
+      :confirm-color="confirmOptions.confirmColor" :confirm-icon="confirmOptions.confirmIcon"
+      :loading="isLoadingConfirm" @confirm="deleteItem" />
   </div>
 </template>

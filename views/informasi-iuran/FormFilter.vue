@@ -25,38 +25,23 @@ const handleReload = () => {
     <VCardItem>
       <VForm @submit.prevent="emit('filter', filters)">
         <VRow align="center">
-          <VCol cols="12">
-            <VTextField
-              v-model="filters.keyword"
-              placeholder="Masukkan pencaharian"
-              prepend-inner-icon="ri-search-line"
-            />
+          <VCol cols="12" sm="6">
+            <VTextField v-model="filters.keyword" placeholder="Masukkan pencaharian"
+              prepend-inner-icon="ri-search-line" />
           </VCol>
-          <VCol cols="12">
-            <VSelect
-              v-model="filters.status_aktif"
-              placeholder="Pilih status keaktifan"
-              item-title="label"
-              item-value="value"
-              clearable
-              :items="[
-                {label: 'Aktif', value: 1},
-                {label: 'Tidak Aktif', value: 0},
-              ]"
-            />
+          <VCol cols="12" sm="6">
+            <VSelect v-model="filters.status_aktif" placeholder="Pilih status keaktifan" item-title="label"
+              item-value="value" clearable :items="[
+                { label: 'Aktif', value: 1 },
+                { label: 'Tidak Aktif', value: 0 },
+              ]" />
           </VCol>
-          <VCol cols="12">
-            <VSelect
-              v-model="filters.jenis_iuran"
-              placeholder="Pilih jenis iuran"
-              item-title="label"
-              item-value="value"
-              clearable
-              :items="[
-                {label: 'Kematian', value: 'kematian'},
-                {label: 'Bulanan', value: 'bulanan'},
-              ]"
-            />
+          <VCol cols="12" sm="6">
+            <VSelect v-model="filters.jenis_iuran" placeholder="Pilih jenis iuran" item-title="label" item-value="value"
+              clearable :items="[
+                { label: 'Kematian', value: 'kematian' },
+                { label: 'Bulanan', value: 'bulanan' },
+              ]" />
           </VCol>
           <VCol cols="12">
             <div class="d-flex flex-wrap gap-2">

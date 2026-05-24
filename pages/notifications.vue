@@ -7,6 +7,7 @@ import { useDisplay } from 'vuetify'
 const notificationStore = useNotificationStore()
 const display = useDisplay()
 const router = useRouter()
+const authStore = useAuthStore()
 
 const page = ref(1)
 
@@ -85,48 +86,41 @@ watch(
 <template>
   <VRow class="mb-2" align="center" justify="space-between">
     <VCol cols="auto">
+      <div v-if="authStore.user?.role === 'ketua_regu'" class="mb-7">
+        <VBtn class="px-0 py-1" variant="text" size="large" :to="'/create-pembayaran'">
+          <VIcon icon="ri-arrow-left-s-line" class="me-2" />
+          Keluar
+        </VBtn>
+      </div>
+
       <div>
         <h2>Notifikasi</h2>
-        <span class="text-body-2">Menampilkan informasi dan pemberitahuan terkait aktivitas serta update penting dalam sistem.</span>
+        <span class="text-body-2">Menampilkan informasi dan pemberitahuan terkait aktivitas serta update penting dalam
+          sistem.</span>
       </div>
     </VCol>
   </VRow>
 
   <!-- LOADING -->
   <div v-if="notificationStore.loading && !notificationStore.hasData" class="text-center">
-    <VProgressCircular
-      size="26"
-      indeterminate
-    />
+    <VProgressCircular size="26" indeterminate />
   </div>
 
   <!-- EMPTY -->
-  <VAlert
-    v-if="!notificationStore.hasData && !notificationStore.loading"
-    type="info"
-    variant="tonal"
-  >
+  <VAlert v-if="!notificationStore.hasData && !notificationStore.loading" type="info" variant="tonal">
     Tidak ada notifikasi
   </VAlert>
 
   <!-- LIST -->
   <VRow v-if="notificationStore.hasData">
-    <VCol
-      cols="12"
-      v-for="notif in notificationStore.notifications"
-      :key="notif.id"
-    >
-      <VCard
-        elevation="1"
-        rounded="lg"
-        :class="{ 'bg-blue-lighten-5': !notif.is_read }"
-      >
+    <VCol cols="12" sm="6" v-for="notif in notificationStore.notifications" :key="notif.id">
+      <VCard elevation="1" rounded="lg" :class="{ 'bg-blue-lighten-5': !notif.is_read }">
         <VCardText>
 
           <div class="d-flex align-start ga-4">
 
-            <VAvatar color="success" variant="tonal">
-              <VIcon>ri-cash-line</VIcon>
+            <VAvatar color="secondary" variant="tonal">
+              <VIcon>ri-notification-line</VIcon>
             </VAvatar>
 
             <div class="flex-grow-1">
@@ -152,12 +146,7 @@ watch(
         <!-- ACTION -->
         <VCardActions class="justify-end mr-2 mb-2">
 
-          <VBtn
-            color="primary"
-            variant="tonal"
-            size="small"
-            @click="goToPayment(notif)"
-          >
+          <VBtn color="primary" variant="tonal" size="small" @click="goToPayment(notif)">
             <VIcon start>ri-eye-line</VIcon>
             Lihat Pembayaran
           </VBtn>
@@ -169,11 +158,7 @@ watch(
   </VRow>
 
   <!-- SENTINEL -->
-  <div
-    v-if="notificationStore.hasMore"
-    ref="mobileSentinel"
-    style="height: 1px"
-  />
+  <div v-if="notificationStore.hasMore" ref="mobileSentinel" style="height: 1px" />
 
   <!-- LOADING MORE -->
   <div v-if="notificationStore.hasMore && notificationStore.loading" class="text-center py-4">

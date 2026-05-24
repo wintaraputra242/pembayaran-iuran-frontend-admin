@@ -42,7 +42,7 @@ const tab = ref('table')
 const defaultParamsAddAnggota = {
   warga: null,
 }
-const params = reactive({...defaultParamsAddAnggota})
+const params = reactive({ ...defaultParamsAddAnggota })
 
 const rules = {
   required: (v: any) => !!v || "Field wajib diisi",
@@ -65,14 +65,14 @@ const handleDetailAnggota = (item: AnggotaRegu) => {
 
 const handleCloseAddAnggota = () => {
   if (tab.value === 'form') form.value.reset()
-  
+
   tab.value = 'table'
 }
 
 const btnTabStyle: any = {
   table: {
     color: 'success',
-    action: () => { 
+    action: () => {
       tab.value = 'form'
       emit('fetchDropdownAddAnggota')
     },
@@ -114,11 +114,11 @@ watch(() => props.isFetchSuccess, (newVal) => {
   if (newVal) {
     handleCloseAddAnggota()
   }
-}, {immediate: true})
+}, { immediate: true })
 </script>
 
 <template>
-  <VDialog v-model="props.isShow">
+  <VDialog max-width="700px" v-model="props.isShow">
     <VCard class="pa-0">
       <VCardTitle class="pt-3">
         <div class="d-flex align-center justify-space-between">
@@ -130,7 +130,8 @@ watch(() => props.isFetchSuccess, (newVal) => {
       </VCardTitle>
       <VCardText class="pb-0 py-1">
         <div class="d-flex justify-end flex-wrap gap-2">
-          <VBtn :disabled="props.loading && tab === 'form'" variant="flat" :color="btnTabStyle[tab].color" @click="btnTabStyle[tab].action">
+          <VBtn :disabled="props.loading && tab === 'form'" variant="flat" :color="btnTabStyle[tab].color"
+            @click="btnTabStyle[tab].action">
             <VIcon :icon="btnTabStyle[tab].icon" />
             {{ btnTabStyle[tab].content }}
           </VBtn>
@@ -145,39 +146,37 @@ watch(() => props.isFetchSuccess, (newVal) => {
           <VTabsWindowItem value="table">
             <div class="text-center my-5 font-weight-bold">Jml. Anggota: {{ data?.length || '0' }}</div>
 
-            <div
-              class="table-scroll-wrapper pa-2"
-            >
-              <AppDataTable
-                :headers="headers"
-                :items="props.data"
-                :loading="props.loading"
-                no-data-text="Tidak ada anggota"
-                variant="outlined"
-              >
+            <div class="table-scroll-wrapper pa-2">
+              <AppDataTable :headers="headers" :items="props.data" :loading="props.loading"
+                no-data-text="Tidak ada anggota" variant="outlined">
                 <template #cell-nama_anggota="{ item }">
                   <span>{{ item.warga.nama_warga }}</span>
                 </template>
 
                 <template #cell-status_anggota="{ item }">
-                  <VChip size="small" :color="item.is_leader ? 'info' : ''" :prepend-icon="item.is_leader ? 'ri-vip-crown-line' : ''">
+                  <VChip size="small" :color="item.is_leader ? 'info' : ''"
+                    :prepend-icon="item.is_leader ? 'ri-vip-crown-line' : ''">
                     {{ item.is_leader ? 'Ketua Regu' : 'Anggota' }}
                   </VChip>
                 </template>
 
                 <template #cell-actions="{ item }">
                   <div style="width: 34px;">
-                    <IconBtn v-if="item.is_leader !== 1 && props.isLeaderAvailable" variant="outlined" class="rounded-lg" size="small" color="secondary" @click="emit('setLeader', item)">
+                    <IconBtn v-if="item.is_leader !== 1 && props.isLeaderAvailable" variant="outlined"
+                      class="rounded-lg" size="small" color="secondary" @click="emit('setLeader', item)">
                       <VIcon icon="ri-loop-left-line" />
                     </IconBtn>
                   </div>
-                  <IconBtn v-if="!props.isLeaderAvailable" variant="outlined" class="rounded-lg" size="small" color="secondary" @click="emit('setLeader', item)">
+                  <IconBtn v-if="!props.isLeaderAvailable" variant="outlined" class="rounded-lg" size="small"
+                    color="secondary" @click="emit('setLeader', item)">
                     <VIcon icon="ri-vip-crown-line" />
                   </IconBtn>
-                  <IconBtn variant="outlined" class="rounded-lg" size="small" color="secondary" @click="handleDetailAnggota(item)">
+                  <IconBtn variant="outlined" class="rounded-lg" size="small" color="secondary"
+                    @click="handleDetailAnggota(item)">
                     <VIcon icon="ri-info-card-line" />
                   </IconBtn>
-                  <IconBtn variant="outlined" class="rounded-lg" size="small" color="error" @click="emit('resetAnggota', item)">
+                  <IconBtn variant="outlined" class="rounded-lg" size="small" color="error"
+                    @click="emit('resetAnggota', item)">
                     <VIcon icon="ri-delete-bin-line" />
                   </IconBtn>
                 </template>
@@ -188,23 +187,17 @@ watch(() => props.isFetchSuccess, (newVal) => {
             <VForm ref="form" @submit.prevent="handleSubmitAddAnggota">
               <VRow align="center" class="pt-1 pa-2">
                 <VCol cols="12">
-                  <VAutocomplete
-                    v-model="params.warga"
-                    label="Pilih Warga"
-                    placeholder="Pilih warga yang ingin dijadikan anggota"
-                    multiple
-                    item-title="nama_warga"
-                    item-value="nik"
-                    :items="props.itemDropdownAddAnggota"
-                    :loading="props.loadingDropdownAddAnggota"
+                  <VAutocomplete v-model="params.warga" label="Pilih Warga"
+                    placeholder="Pilih warga yang ingin dijadikan anggota" multiple item-title="nama_warga"
+                    item-value="nik" :items="props.itemDropdownAddAnggota" :loading="props.loadingDropdownAddAnggota"
                     :rules="[
                       (v: string[]) => (!!v && v.length > 0) || 'Pilih warga terlebih dahulu'
-                    ]"
-                  ></VAutocomplete>
+                    ]"></VAutocomplete>
                 </VCol>
                 <VCol cols="12">
                   <div class="d-flex justify-end flex-wrap gap-2">
-                    <VBtn :disabled="props.loading" variant="text" color="secondary" size="small" @click="handleCloseAddAnggota">
+                    <VBtn :disabled="props.loading" variant="text" color="secondary" size="small"
+                      @click="handleCloseAddAnggota">
                       <VIcon icon="ri-close-line" class="me-1" />
                       Batal
                     </VBtn>
@@ -217,13 +210,14 @@ watch(() => props.isFetchSuccess, (newVal) => {
               </VRow>
             </VForm>
           </VTabsWindowItem>
-          <VTabsWindowItem value="detail-warga">  
+          <VTabsWindowItem value="detail-warga">
             <div class="py-2">
               <div class="d-flex justify-center">
                 <div class="text-center">
                   <VIcon icon="ri-account-circle-fill" size="45" />
                   <h4>{{ itemSelected?.warga.nama_warga }}</h4>
-                  <VChip size="small" :color="itemSelected?.is_leader ? 'info' : ''" :prepend-icon="itemSelected?.is_leader ? 'ri-vip-crown-line' : ''">
+                  <VChip size="small" :color="itemSelected?.is_leader ? 'info' : ''"
+                    :prepend-icon="itemSelected?.is_leader ? 'ri-vip-crown-line' : ''">
                     {{ itemSelected?.is_leader ? 'Ketua Regu' : 'Anggota' }}
                   </VChip>
                 </div>
@@ -255,7 +249,8 @@ watch(() => props.isFetchSuccess, (newVal) => {
                     <tr>
                       <td class="font-weight">
                         <p class="ma-0 font-weight-bold">Status Warga :</p>
-                        <VChip size="small" :color="masterWargaStore.detailWarga?.status_keaktifan === 'aktif' ? 'success' : 'error'">
+                        <VChip size="small"
+                          :color="masterWargaStore.detailWarga?.status_keaktifan === 'aktif' ? 'success' : 'error'">
                           {{ masterWargaStore.detailWarga?.status_keaktifan === 'aktif' ? 'Aktif' : 'Tidak Aktif' }}
                         </VChip>
                       </td>
@@ -273,7 +268,7 @@ watch(() => props.isFetchSuccess, (newVal) => {
 
 <style scoped>
 .table-scroll-wrapper {
-  max-height: 400px;   
+  max-height: 400px;
   overflow-y: auto;
   overflow-x: hidden;
   height: 100%;

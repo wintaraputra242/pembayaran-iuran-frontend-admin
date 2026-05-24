@@ -140,4 +140,9 @@ export default {
   VNavigationDrawer: {
     touchless: true,
   },
+  VDialog: {
+    maxWidth: '500px',
+    scrollable: true,
+    // tambah default props lainnya di sini
+  },
 }

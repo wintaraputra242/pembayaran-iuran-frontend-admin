@@ -15,7 +15,11 @@ export interface MasterInformasiIuran {
   created_at: string
   updated_at: string
   deleted_at: string | null
-  warga: {
+  warga?: {
+    nik: string
+    nama_warga: string
+  }
+  penanggung_jawab?: {
     nik: string
     nama_warga: string
   }

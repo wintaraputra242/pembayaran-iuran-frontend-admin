@@ -21,7 +21,7 @@ const itemSelected = ref<MasterWarga | null>(null)
 const handleEditData = async (item: MasterWarga) => {
   isEdit.value = false
 
-  showFormData.value = true 
+  showFormData.value = true
   itemSelected.value = item
 
   await nextTick()
@@ -29,7 +29,6 @@ const handleEditData = async (item: MasterWarga) => {
 }
 
 const showConfirmation = ref(false)
-const isLoadingConfirm = ref(false)
 
 const confirmOptions = {
   title: '',
@@ -38,7 +37,7 @@ const confirmOptions = {
   cancelText: '',
   confirmColor: '',
   confirmIcon: '',
-  action: () => {},
+  action: () => { },
 }
 
 const handleDelete = async () => {
@@ -63,7 +62,7 @@ const handleShowConfirmDelData = (item: MasterWarga) => {
   confirmOptions.confirmIcon = 'ri-delete-bin-line'
   confirmOptions.action = handleDelete
 
-  showConfirmation.value = true 
+  showConfirmation.value = true
   itemSelected.value = item
 }
 
@@ -87,7 +86,7 @@ const handleShowConfirmUpdateStatus = (item: MasterWarga) => {
     if (item.is_deleted) return `Sebelumnya data warga dengan nama ${item?.nama_warga} sudah anda hapus, Yakin ingin mengaktifkan kembali data warga ini?.`
 
     if (statusAktif) return `Apakah Anda yakin ingin mengaktifkan kembali data warga atas nama ${item?.nama_warga}?.`
-  } 
+  }
 
   confirmOptions.title = statusAktif === 'aktif' ? 'Nonaktif Warga?' : 'Aktifkan Kembali?'
   confirmOptions.message = statusAktif === 'aktif' ? `Apakah Anda yakin ingin menonaktifkan data warga atas nama ${item?.nama_warga}?.` : setMessageWhenToActive() as string
@@ -97,7 +96,7 @@ const handleShowConfirmUpdateStatus = (item: MasterWarga) => {
   confirmOptions.confirmIcon = statusAktif === 'aktif' ? 'ri-eye-off-line' : 'ri-eye-line'
   confirmOptions.action = handleUpdateStatus
 
-  showConfirmation.value = true 
+  showConfirmation.value = true
   itemSelected.value = item
 }
 
@@ -192,35 +191,29 @@ onMounted(async () => {
   <div>
     <div class="mb-3">
       <h2>Data Warga</h2>
-      <span class="text-body-2">Kelola data warga sebagai objek utama dalam sistem, termasuk identitas dan informasi dasar.</span>
+      <span class="text-body-2">Kelola data warga sebagai objek utama dalam sistem, termasuk identitas dan informasi
+        dasar.</span>
     </div>
     <VRow class="match-height">
-      <VCol
-        cols="12"
-      >
+      <VCol cols="12">
         <FormFilterWarga @show-form-data="handleShowFormData" @filter="handleFilter" @reload="handleReload" />
       </VCol>
-  
-      <VCol
-        cols="12"
-        md="4"
-      >
-        <DataTableWarga :data="masterWargaStore.warga" :meta="masterWargaStore.meta" :loading="masterWargaStore.loading" :has-more="masterWargaStore.hasMore" :has-filter="masterWargaStore.hasFilter" @edit="handleEditData" @delete="handleShowConfirmDelData" @update-status="handleShowConfirmUpdateStatus" @load-more="handleLoadMore" />
+
+      <VCol cols="12">
+        <DataTableWarga :data="masterWargaStore.warga" :meta="masterWargaStore.meta" :loading="masterWargaStore.loading"
+          :has-more="masterWargaStore.hasMore" :has-filter="masterWargaStore.hasFilter" @edit="handleEditData"
+          @delete="handleShowConfirmDelData" @update-status="handleShowConfirmUpdateStatus"
+          @load-more="handleLoadMore" />
       </VCol>
     </VRow>
 
-    <DialogFormDataWarga :is-fetch-success="isFetchSuccess" :loading="masterWargaStore.loading" :is-show="showFormData" :is-edit="isEdit" :item="itemSelected" @close="handleCloseFormData" @submit="isEdit ? handleUpdate($event) : handleAddData($event)" @import="handleImport" />
+    <DialogFormDataWarga :is-fetch-success="isFetchSuccess" :loading="masterWargaStore.loading" :is-show="showFormData"
+      :is-edit="isEdit" :item="itemSelected" @close="handleCloseFormData"
+      @submit="isEdit ? handleUpdate($event) : handleAddData($event)" @import="handleImport" />
 
-    <ConfirmDialog
-      v-model="showConfirmation"
-      :title="confirmOptions.title"
-      :message="confirmOptions.message"
-      :confirm-text="confirmOptions.confirmText"
-      :cancel-text="confirmOptions.cancelText"
-      :confirm-color="confirmOptions.confirmColor"
-      :confirm-icon="confirmOptions.confirmIcon"
-      :loading="masterWargaStore.loading"
-      @confirm="confirmOptions.action"
-    />
+    <ConfirmDialog v-model="showConfirmation" :title="confirmOptions.title" :message="confirmOptions.message"
+      :confirm-text="confirmOptions.confirmText" :cancel-text="confirmOptions.cancelText"
+      :confirm-color="confirmOptions.confirmColor" :confirm-icon="confirmOptions.confirmIcon"
+      :loading="masterWargaStore.loading" @confirm="confirmOptions.action" />
   </div>
 </template>

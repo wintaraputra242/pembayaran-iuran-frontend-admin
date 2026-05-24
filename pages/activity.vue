@@ -62,31 +62,17 @@ onMounted(async () => {
   <div>
     <div class="mb-3">
       <h2>Aktivitas</h2>
-      <span class="text-body-2">Menampilkan riwayat aktivitas pengguna dalam sistem untuk keperluan audit dan tracking.</span>
+      <span class="text-body-2">Menampilkan riwayat aktivitas pengguna dalam sistem untuk keperluan audit dan
+        tracking.</span>
     </div>
     <VRow class="match-height">
-      <VCol
-        cols="12"
-      >
-        <FormFilterActivity
-          :loading="activityStore.loading"
-          @filter="handleFilter"
-          @reload="handleReload"
-        />
+      <VCol cols="12">
+        <FormFilterActivity :loading="activityStore.loading" @filter="handleFilter" @reload="handleReload" />
       </VCol>
-  
-      <VCol
-        cols="12"
-        md="4"
-      >
-        <DataTableActivity
-          :data="activityStore.activities"
-          :meta="activityStore.meta"
-          :loading="activityStore.loading"
-          :has-more="activityStore.hasMore"
-          :has-filter="activityStore.hasFilter"
-          @load-more="handleLoadMore"
-        />
+
+      <VCol cols="12">
+        <DataTableActivity :data="activityStore.activities" :meta="activityStore.meta" :loading="activityStore.loading"
+          :has-more="activityStore.hasMore" :has-filter="activityStore.hasFilter" @load-more="handleLoadMore" />
       </VCol>
     </VRow>
   </div>

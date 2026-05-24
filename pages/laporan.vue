@@ -30,19 +30,6 @@ const exportExcel = async () => {
   showSuccessConfirm.value = true
 }
 
-const handleExportExcel = () => {
-  // confirmOptions.title = 'Export Data?'
-  // confirmOptions.message = 'Apakah Anda yakin ingin mengeksport data laporan?'
-  // confirmOptions.confirmText = 'Export'
-  // confirmOptions.cancelText = 'Batal'
-  // confirmOptions.confirmColor = 'success'
-  // confirmOptions.confirmIcon = 'ri-export-line'
-
-  // showConfirmation.value = true
-
-  exportExcel()
-}
-
 const handleLoadMore = async () => {
   page.value += 1
   await laporanStore.fetchLaporan({ limit: 10, page: page.value })
@@ -121,57 +108,34 @@ onBeforeRouteLeave(() => {
   <div>
     <div class="mb-3">
       <h2>Laporan</h2>
-      <span class="text-body-2">Menampilkan rekapitulasi dan hasil olahan data untuk kebutuhan monitoring dan evaluasi.</span>
+      <span class="text-body-2">Menampilkan rekapitulasi dan hasil olahan data untuk kebutuhan monitoring dan
+        evaluasi.</span>
     </div>
 
     <VRow class="match-height">
       <VCol cols="12">
-        <FormFilterLaporan
-          :informasi-iuran-options="dropdownStore.itemInformasiIuranForDropdown"
+        <FormFilterLaporan :informasi-iuran-options="dropdownStore.itemInformasiIuranForDropdown"
           :loading-informasi-iuran-options="dropdownStore.loading.informasiIuranForDropdown"
-          :regu-options="dropdownStore.reguForDropdown"
-          :loading-regu-options="dropdownStore.loading.reguForDropdown"
-          :loading-export-excel="laporanStore.loadingExport"
-          @filter="handleFilter"
-          @reload="handleReload"
-          @exportExcel="exportExcel"
-        />
+          :regu-options="dropdownStore.reguForDropdown" :loading-regu-options="dropdownStore.loading.reguForDropdown"
+          :loading-export-excel="laporanStore.loadingExport" @filter="handleFilter" @reload="handleReload"
+          @exportExcel="exportExcel" />
       </VCol>
 
       <VCol cols="12" md="12">
-        <DataTableLaporan
-          :data="laporanStore.laporan"
-          :meta="laporanStore.meta"
-          :loading="laporanStore.loading"
-          :has-more="laporanStore.hasMore"
-          :has-filter="laporanStore.hasFilter"
-          @show-bukti-bayar="showPaymentProof = true"
-          @load-more="handleLoadMore"
-        />
+        <DataTableLaporan :data="laporanStore.laporan" :meta="laporanStore.meta" :loading="laporanStore.loading"
+          :has-more="laporanStore.hasMore" :has-filter="laporanStore.hasFilter"
+          @show-bukti-bayar="showPaymentProof = true" @load-more="handleLoadMore" />
       </VCol>
     </VRow>
 
-    <ConfirmDialog
-      v-model="showConfirmation"
-      :title="confirmOptions.title"
-      :message="confirmOptions.message"
-      :confirm-text="confirmOptions.confirmText"
-      :cancel-text="confirmOptions.cancelText"
-      :confirm-color="confirmOptions.confirmColor"
-      :confirm-icon="confirmOptions.confirmIcon"
-      :loading="laporanStore.loadingExport"
-      @confirm=""
-    />
+    <ConfirmDialog v-model="showConfirmation" :title="confirmOptions.title" :message="confirmOptions.message"
+      :confirm-text="confirmOptions.confirmText" :cancel-text="confirmOptions.cancelText"
+      :confirm-color="confirmOptions.confirmColor" :confirm-icon="confirmOptions.confirmIcon"
+      :loading="laporanStore.loadingExport" @confirm="" />
 
-    <PaymentProofImageDialog
-      v-model="showPaymentProof"
-      :src="eCommerce2"
-    />
+    <PaymentProofImageDialog v-model="showPaymentProof" :src="eCommerce2" />
 
-    <SuccessDialog
-      v-model="showSuccessConfirm"
-      title="Export Data Berhasil"
-      message="File berupa Excel berhasil diunduh dan tersimpan di penyimpanan lokal Anda"
-    />
+    <SuccessDialog v-model="showSuccessConfirm" title="Export Data Berhasil"
+      message="File berupa Excel berhasil diunduh dan tersimpan di penyimpanan lokal Anda" />
   </div>
 </template>
