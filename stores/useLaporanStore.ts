@@ -65,7 +65,7 @@ export const useLaporanStore = defineStore('laporan', {
 
         const { data, ...meta } = res.data
         this.meta = meta
-        
+
         this.page = params?.page as number
       } finally {
         this.loading = false
