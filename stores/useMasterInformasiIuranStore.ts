@@ -11,7 +11,7 @@ export const useMasterInformasiIuranStore = defineStore('master-informasi-iuran'
     loading: false,
     reload: false,
     page: 0,
-    
+
     filters: {
       keyword: '',
       status_aktif: '',
@@ -142,14 +142,14 @@ export const useMasterInformasiIuranStore = defineStore('master-informasi-iuran'
       }
 
       Object.entries(params).forEach(([key, value]) => {
-        if (key === 'periode' && params.jenis_iuran === 'kematian' ) return
-        if ((key === 'nama_warga_meninggal' || key === 'nik_penanggung_jawab') && params.jenis_iuran === 'bulanan' ) return
-        
+        if (key === 'periode' && params.jenis_iuran === 'kematian') return
+        if ((key === 'nama_warga_meninggal' || key === 'nik_penanggung_jawab') && params.jenis_iuran === 'bulanan') return
+
         if (key === 'jumlah_iuran') {
           newParams[key] = changeToNumber()
           return
         }
-        
+
         newParams[key] = value
       })
 
@@ -177,14 +177,14 @@ export const useMasterInformasiIuranStore = defineStore('master-informasi-iuran'
       }
 
       Object.entries(params).forEach(([key, value]) => {
-        if (key === 'periode' && params.jenis_iuran === 'kematian' ) return
-        if ((key === 'nama_warga_meninggal' || key === 'nik_penanggung_jawab') && params.jenis_iuran === 'bulanan' ) return
-        
+        if (key === 'periode' && params.jenis_iuran === 'kematian') return
+        if ((key === 'nama_warga_meninggal' || key === 'nik_penanggung_jawab') && params.jenis_iuran === 'bulanan') return
+
         if (key === 'jumlah_iuran') {
           newParams[key] = changeToNumber()
           return
         }
-        
+
         newParams[key] = value
       })
 

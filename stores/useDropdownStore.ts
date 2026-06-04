@@ -57,14 +57,14 @@ export const useDropdownStore = defineStore('dropdown', {
         this.itemWargaForDropdown = res.data
 
         // console.log(this.itemWargaForDropdown);
-        
+
 
         return res
       } finally {
         this.loading.wargaForDropdown = false
       }
     },
-    
+
     async fetchWargaForPembayaran(id_informasi_iuran: number, regu_id?: number | string) {
 
       const api = useDropdown()
@@ -77,7 +77,7 @@ export const useDropdownStore = defineStore('dropdown', {
         this.itemWargaForPembayaran = res.data
 
         // console.log(this.itemWargaForPembayaran);
-        
+
 
         return res
       } finally {

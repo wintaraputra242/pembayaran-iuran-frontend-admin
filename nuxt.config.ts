@@ -42,12 +42,23 @@ export default defineNuxtConfig({
             "(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3)",
         },
         { rel: 'apple-touch-startup-image', href: '/icons/safari-pinned-tab.svg', color: '#003366' },
+        { rel: 'manifest', href: '/manifest.webmanifest' }
       ],
 
       script: [
         {
           src: 'https://app.sandbox.midtrans.com/snap/snap.js',
           'data-client-key': process.env.NUXT_PUBLIC_MIDTRANS_CLIENT_KEY,
+        },
+        {
+          innerHTML: `
+            self.FIREBASE_API_KEY = '${process.env.NUXT_PUBLIC_FIREBASE_API_KEY}';
+            self.FIREBASE_AUTH_DOMAIN = '${process.env.NUXT_PUBLIC_FIREBASE_AUTH_DOMAIN}';
+            self.FIREBASE_PROJECT_ID = '${process.env.NUXT_PUBLIC_FIREBASE_PROJECT_ID}';
+            self.FIREBASE_STORAGE_BUCKET = '${process.env.NUXT_PUBLIC_FIREBASE_STORAGE_BUCKET}';
+            self.FIREBASE_MESSAGING_SENDER_ID = '${process.env.NUXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID}';
+            self.FIREBASE_APP_ID = '${process.env.NUXT_PUBLIC_FIREBASE_APP_ID}';
+          `,
         },
       ],
     },
@@ -161,9 +172,9 @@ export default defineNuxtConfig({
   },
 
   modules: [
-    '@vueuse/nuxt', 
-    '@nuxtjs/device', 
-    '@pinia/nuxt', 
+    '@vueuse/nuxt',
+    '@nuxtjs/device',
+    '@pinia/nuxt',
     '@vite-pwa/nuxt'
   ],
 
@@ -173,73 +184,80 @@ export default defineNuxtConfig({
     public: {
       apiBase: process.env.NUXT_PUBLIC_API_BASE,
       backendUrl: process.env.NUXT_PUBLIC_BACKEND_URL,
+      firebaseApiKey: process.env.NUXT_PUBLIC_FIREBASE_API_KEY,
+      firebaseAuthDomain: process.env.NUXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+      firebaseProjectId: process.env.NUXT_PUBLIC_FIREBASE_PROJECT_ID,
+      firebaseStorageBucket: process.env.NUXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+      firebaseMessagingSenderId: process.env.NUXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+      firebaseAppId: process.env.NUXT_PUBLIC_FIREBASE_APP_ID,
+      firebaseVapidKey: process.env.NUXT_PUBLIC_FIREBASE_VAPID_KEY,
+      measurementId: process.env.NUXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
     },
   },
 
   pwa: {
     registerType: 'autoUpdate',
-    devOptions: {
-      enabled: false
-    },
+    injectRegister: 'auto',
 
     manifest: {
-      name: 'Admin App Pembayaran Iuran',
-      short_name: 'Admin',
-      description: 'Aplikasi admin untuk pembayaran iuran di Banjar Trijata.',
-      theme_color: '#1E3A8A',
-      background_color: '#FFFFFF',
+      name: 'Pembayaran Iuran Br. Trijata Admin',
+      short_name: 'Iuran Trijata',
+      description: 'Aplikasi pembayaran iuran Banjar Trijata disisi Admin',
+      theme_color: '#ffffff',
+      background_color: '#ffffff',
       display: 'standalone',
       orientation: 'portrait',
+      scope: '/',
       start_url: '/',
       lang: 'id',
       icons: [
         {
-          "src": "icons/icon-48x48.png",
+          "src": "/icons/icon-48x48.png",
           "sizes": "48x48",
           "type": "image/png"
         },
         {
-          "src": "icons/icon-72x72.png",
+          "src": "/icons/icon-72x72.png",
           "sizes": "72x72",
           "type": "image/png"
         },
         {
-          "src": "icons/icon-96x96.png",
+          "src": "/icons/icon-96x96.png",
           "sizes": "96x96",
           "type": "image/png"
         },
         {
-          "src": "icons/icon-128x128.png",
+          "src": "/icons/icon-128x128.png",
           "sizes": "128x128",
           "type": "image/png"
         },
         {
-          "src": "icons/icon-144x144.png",
+          "src": "/icons/icon-144x144.png",
           "sizes": "144x144",
           "type": "image/png"
         },
         {
-          "src": "icons/icon-152x152.png",
+          "src": "/icons/icon-152x152.png",
           "sizes": "152x152",
           "type": "image/png"
         },
         {
-          "src": "icons/icon-192x192.png",
+          "src": "/icons/icon-192x192.png",
           "sizes": "192x192",
           "type": "image/png"
         },
         {
-          "src": "icons/icon-256x256.png",
+          "src": "/icons/icon-256x256.png",
           "sizes": "256x256",
           "type": "image/png"
         },
         {
-          "src": "icons/icon-384x384.png",
+          "src": "/icons/icon-384x384.png",
           "sizes": "384x384",
           "type": "image/png"
         },
         {
-          "src": "icons/icon-512x512.png",
+          "src": "/icons/icon-512x512.png",
           "sizes": "512x512",
           "type": "image/png"
         }
@@ -247,7 +265,14 @@ export default defineNuxtConfig({
     },
 
     workbox: {
-      globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
+      navigateFallback: '/',
+      globPatterns: ['**/*.{js,css,html,png,svg,ico}'],
+    },
+
+    devOptions: {
+      enabled: true,
+      type: 'module',
+      navigateFallbackAllowlist: [/^\//, /^\//]
     },
   },
 })

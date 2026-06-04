@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { MetodeBayar } from '@/types/api/pembayaran';
-import DialogTakeFotoBuktiPembayaran from '@/views/create-pembayaran/DialogTakeFotoBuktiPembayaran.vue';
 import FormCreatePembayaran from '@/views/create-pembayaran/FormCreatePembayaran.vue';
 
 definePageMeta({ adminAndKetuaRegu: true })
@@ -36,7 +35,7 @@ const handleCloseSuccessDialog = () => {
   confirmOptions.confirmColor = 'primary'
   confirmOptions.confirmIcon = 'ri-check-line'
 
-  showConfirmation.value = true 
+  showConfirmation.value = true
 }
 
 const confirmOptions = {
@@ -49,7 +48,7 @@ const confirmOptions = {
 }
 
 const deleteItem = () => {
-  showConfirmation.value = false 
+  showConfirmation.value = false
 }
 
 const handleGetMonthPaid = async (nik: string | null) => {
@@ -68,11 +67,11 @@ const fileBuktiPembayaran = ref<File>()
 const paramsCreate = ref<{
   total: number | null,
   warga: string | null,
-  bulan: {month: number, year: number}[] | null,
+  bulan: { month: number, year: number }[] | null,
   metode_bayar: string | null
 } | null>(null)
 
-const  generateBulanRange = (
+const generateBulanRange = (
   bulanParams: { month: number; year: number }[] | null
 ): number[] | null => {
 
@@ -96,74 +95,41 @@ const  generateBulanRange = (
 const handleCreatePembayaran = async (params: {
   total: number | null,
   warga: string | null,
-  bulan: {month: number, year: number}[] | null,
+  bulan: { month: number, year: number }[] | null,
   metode_bayar: string | null
   bukti_pembayaran: File | null
 }) => {
-  // if (params.metode_bayar === 'tunai') {
-  //   paramsCreate.value = params
-  //   showTakeFoto.value = true
-  //   return
-  // }
-
   isClearForm.value = false
 
   const informasiIuranItem = masterInformasiIuranStore.detailInformasiIuran
 
+  // Ambil langsung array month number dari bulan yang dikirim
+  const bulanArr = params.bulan && params.bulan.length > 0
+    ? params.bulan.map(b => b.month)  // ✅ langsung ambil month-nya saja
+    : null
+
   const newParams = {
     nik: params.warga as string,
     id_informasi_iuran: informasiIuranItem.id,
-    tanggal_bayar: getTodayDate(), // format: YYYY-MM-DD
+    tanggal_bayar: getTodayDate(),
     total_bayar: params.total as number,
-    bulan: informasiIuranItem.jenis_iuran === 'kematian'
-    ? null
-    : generateBulanRange(params.bulan),
+    bulan: informasiIuranItem.jenis_iuran === 'kematian' ? null : bulanArr,
     metode_bayar: params.metode_bayar as MetodeBayar,
-    bukti_pembayaran: params.metode_bayar === 'tunai' ? params.bukti_pembayaran : null
+    bukti_pembayaran: params.bukti_pembayaran,
   }
 
   const res = await pembayaranStore.fetchAddPembayaran(newParams)
 
   if (!res.success) return
 
-  if (params.metode_bayar !== 'tunai') {
-    const snapToken = res.data?.snap_token
-  
-    if (snapToken && process.client) {
-      // @ts-ignore
-      window.snap.pay(snapToken, {
-        onSuccess: async () => {
-          uiStore.showSuccess(res.message)
-  
-          isClearForm.value = true
-  
-          if('id' in route.params) {
-            await dropdownStore.fetchWargaForPembayaran(Number(route.params.id))
-          }
-        },
-        // onPending: () => {
-        //   uiStore.showInfo('Menunggu pembayaran.')
-        // },
-        onError: () => {
-          uiStore.showError('Terjadi kesalahan pembayaran.')
-        },
-      })
-    } 
-    
-    else {
-      uiStore.showSuccess(res.message)
-    }
-  } else {
-    uiStore.showSuccess(res.message)
+  uiStore.showSuccess(res.message)
+  isClearForm.value = true
 
-    isClearForm.value = true
-
-    if('id' in route.params) {
-      await dropdownStore.fetchWargaForPembayaran(Number(route.params.id))
-    }
+  if ('id' in route.params) {
+    await dropdownStore.fetchWargaForPembayaran(Number(route.params.id))
   }
-
 }
+
 
 const handleCreatePembayaranTunai = async (file: File) => {
   isClearForm.value = false
@@ -176,8 +142,8 @@ const handleCreatePembayaranTunai = async (file: File) => {
     tanggal_bayar: getTodayDate(), // format: YYYY-MM-DD
     total_bayar: paramsCreate.value?.total as number,
     bulan: informasiIuranItem.jenis_iuran === 'kematian'
-    ? null
-    : generateBulanRange(paramsCreate.value?.bulan as any),
+      ? null
+      : generateBulanRange(paramsCreate.value?.bulan as any),
     metode_bayar: paramsCreate.value?.metode_bayar as MetodeBayar,
     bukti_pembayaran:
       paramsCreate.value?.metode_bayar === 'tunai'
@@ -191,10 +157,14 @@ const handleCreatePembayaranTunai = async (file: File) => {
 
   uiStore.showSuccess(res.message)
 
-  isClearForm.value = true 
+  isClearForm.value = true
 
-  if('id' in route.params) {
-    await dropdownStore.fetchWargaForPembayaran(Number(route.params.id))
+  if ('id' in route.params) {
+    const idIuran = masterInformasiIuranStore.detailInformasiIuran.id  // ✅ pakai ini
+    await dropdownStore.fetchWargaForPembayaran(idIuran)
+
+    console.log('id_informasi_iuran dikirim:', masterInformasiIuranStore.detailInformasiIuran.id)
+    console.log('route.params.id:', route.params.id)
   }
 }
 
@@ -202,16 +172,20 @@ onMounted(async () => {
   if ('id' in route.params) {
     await masterInformasiIuranStore.fetchDetailInformasiIuran(route.params.id)
 
-    await dropdownStore.fetchWargaForPembayaran(Number(route.params.id))
-  }
+    const idIuran = masterInformasiIuranStore.detailInformasiIuran.id
+    await dropdownStore.fetchWargaForPembayaran(idIuran)
 
+    console.log('id_informasi_iuran dikirim:', masterInformasiIuranStore.detailInformasiIuran.id)
+    console.log('route.params.id:', route.params.id)
+  }
 })
 </script>
 
 <template>
   <div class="mt-n5">
     <div class="mb-7">
-      <VBtn class="px-0 py-1" variant="text" size="large" :to="'/create-pembayaran?jenis_iuran=' + masterInformasiIuranStore.detailInformasiIuran.jenis_iuran">
+      <VBtn class="px-0 py-1" variant="text" size="large"
+        :to="'/create-pembayaran?jenis_iuran=' + masterInformasiIuranStore.detailInformasiIuran.jenis_iuran">
         <VIcon icon="ri-arrow-left-s-line" class="me-2" />
         Keluar
       </VBtn>
@@ -225,39 +199,40 @@ onMounted(async () => {
 
     <template v-else>
       <div class="mb-4">
-        <VChip
-          size="small"
+        <VChip size="small"
           :color="masterInformasiIuranStore.detailInformasiIuran.jenis_iuran === 'kematian' ? 'error' : 'info'"
-          class="mb-1"
-        >
+          class="mb-1">
           {{ masterInformasiIuranStore.detailInformasiIuran.jenis_iuran === 'kematian' ? 'Kematian' : 'Bulanan' }}
         </VChip>
         <div class="mb-1">
-          <h3 class="">{{ masterInformasiIuranStore.detailInformasiIuran.judul_iuran }} <span v-if="masterInformasiIuranStore.detailInformasiIuran.jenis_iuran === 'bulanan'">(Periode {{ masterInformasiIuranStore.detailInformasiIuran.periode }})</span></h3>
+          <h3>
+            {{ masterInformasiIuranStore.detailInformasiIuran.judul_iuran }}
+            <span v-if="masterInformasiIuranStore.detailInformasiIuran.jenis_iuran === 'bulanan'">
+              (Periode {{ masterInformasiIuranStore.detailInformasiIuran.periode }})
+            </span>
+          </h3>
           <p class="text-caption ma-0">
             {{ formatDateID(masterInformasiIuranStore.detailInformasiIuran.created_at) }}
           </p>
         </div>
         <p class="text-body-1">Isi form berikut untuk membuat pembayaran baru.</p>
       </div>
-      
-      <FormCreatePembayaran :is-clear-form="isClearForm" :month-paid-warga="pembayaranStore.monthPaidPaymentWarga" :loading-month-paid-warga="pembayaranStore.loadingGetPaidMonthWarga" :item="masterInformasiIuranStore.detailInformasiIuran" :is-loading-dropdown-warga="dropdownStore.loading.wargaForPembayaran" :dropdown-warga-options="dropdownStore.itemWargaForPembayaran" :loading-submit="pembayaranStore.loading" @submit="handleCreatePembayaran" @get-month-paid="handleGetMonthPaid" />
-  
-      <DialogTakeFotoBuktiPembayaran :is-show="showTakeFoto" @close="showTakeFoto = false" @submit="handleCreatePembayaranTunai" />
-  
-      <SuccessDialog v-model="showSuccessConfirm" title="Pembayaran Berhasil" message="Pembayaran Iuran A dengan warga atas nama A, berhasil dilakukan" @close="handleCloseSuccessDialog" />
-  
-      <ConfirmDialog
-        v-model="showConfirmation"
-        :title="confirmOptions.title"
-        :message="confirmOptions.message"
-        :confirm-text="confirmOptions.confirmText"
-        :cancel-text="confirmOptions.cancelText"
-        :confirm-color="confirmOptions.confirmColor"
-        :confirm-icon="confirmOptions.confirmIcon"
-        :loading="isLoadingConfirm"
-        @confirm="deleteItem"
-      />
+
+      <FormCreatePembayaran :is-clear-form="isClearForm" :month-paid-warga="pembayaranStore.monthPaidPaymentWarga"
+        :loading-month-paid-warga="pembayaranStore.loadingGetPaidMonthWarga"
+        :item="masterInformasiIuranStore.detailInformasiIuran"
+        :is-loading-dropdown-warga="dropdownStore.loading.wargaForPembayaran"
+        :dropdown-warga-options="dropdownStore.itemWargaForPembayaran" :loading-submit="pembayaranStore.loading"
+        @submit="handleCreatePembayaran" @get-month-paid="handleGetMonthPaid" />
+
+      <SuccessDialog v-model="showSuccessConfirm" title="Pembayaran Berhasil"
+        :message="`Pembayaran ${masterInformasiIuranStore.detailInformasiIuran.judul_iuran} berhasil ditambahkan.`"
+        @close="handleCloseSuccessDialog" />
+
+      <ConfirmDialog v-model="showConfirmation" :title="confirmOptions.title" :message="confirmOptions.message"
+        :confirm-text="confirmOptions.confirmText" :cancel-text="confirmOptions.cancelText"
+        :confirm-color="confirmOptions.confirmColor" :confirm-icon="confirmOptions.confirmIcon"
+        :loading="isLoadingConfirm" @confirm="deleteItem" />
     </template>
   </div>
 </template>

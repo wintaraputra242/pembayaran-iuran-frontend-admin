@@ -5,6 +5,7 @@ import type {
   GetPaidPembayaranByWargaResponse,
   GetPembayaranByReguResponse,
   GetPembayaranResponse,
+  GetQrisResponse,
   GetUnpaidPembayaranResponse,
   NotifyResidentPayload,
   NotifyResidentResponse,
@@ -31,6 +32,15 @@ export const usePembayaran = () => {
   }): Promise<GetPembayaranResponse> => {
     return await api<GetPembayaranResponse>('/pembayaran', {
       query: params,
+    })
+  }
+
+  const getPendingPembayaran = async (params?: { page?: number; per_page?: number }): Promise<GetPembayaranResponse> => {
+    return await api<GetPembayaranResponse>('/pembayaran', {
+      query: {
+        ...params,
+        status_bayar: 'pending',
+      },
     })
   }
 
@@ -137,9 +147,29 @@ export const usePembayaran = () => {
     })
   }
 
+  const getQris = async (): Promise<GetQrisResponse> => {
+    return await api('/qris/active', {
+      method: 'GET',
+    })
+  }
+
+  const approvePembayaran = async (id: number): Promise<BaseResponse> => {
+    return await api<BaseResponse>(`/pembayaran/${id}/approve`, {
+      method: 'POST',
+    })
+  }
+
+  const rejectPembayaran = async (id: number, rejection_reason: string): Promise<BaseResponse> => {
+    return await api<BaseResponse>(`/pembayaran/${id}/reject`, {
+      method: 'POST',
+      body: { rejection_reason },
+    })
+  }
+
   return {
     getPembayaran,
     getDetailPembayaran,
+    getQris,
     addPembayaran,
     getUnpaidPembayaran,
     getMonthPaidPembayaran,
@@ -151,5 +181,8 @@ export const usePembayaran = () => {
     notifyResident,
     notifyResidentAllUnpaid,
     notifyResidentUnpaidOneByOne,
+    approvePembayaran,
+    rejectPembayaran,
+    getPendingPembayaran
   }
 }

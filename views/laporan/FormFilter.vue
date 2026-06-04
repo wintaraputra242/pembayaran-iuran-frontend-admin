@@ -17,7 +17,7 @@ const emit = defineEmits<{
     informasi_iuran: string | null
   }): void
   (e: 'reload'): void
-  (e: 'exportExcel'): void
+  (e: 'exportPdf'): void
 }>()
 
 const props = withDefaults(defineProps<{
@@ -49,8 +49,9 @@ const handleReload = () => {
 }
 
 const statusOptions = [
-  { label: 'Lunas', value: 'paid' },
-  { label: 'Belum Lunas', value: 'unpaid' },
+  { label: 'Menunggu Validasi', value: 'pending' },
+  { label: 'Diterima', value: 'approved' },
+  { label: 'Ditolak', value: 'rejected' },
 ]
 </script>
 
@@ -116,9 +117,9 @@ const statusOptions = [
                 <VIcon icon="ri-restart-line" />
               </IconBtn>
 
-              <VBtn variant="flat" color="success" :loading="loadingExportExcel" @click="emit('exportExcel')">
-                <VIcon icon="ri-export-line" class="me-2" />
-                Export Excel
+              <VBtn variant="flat" color="error" :loading="loadingExportExcel" @click="emit('exportPdf')">
+                <VIcon icon="ri-file-pdf-line" class="me-2" />
+                Export Laporan
               </VBtn>
             </div>
           </VCol>

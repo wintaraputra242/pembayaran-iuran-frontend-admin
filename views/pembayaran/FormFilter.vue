@@ -11,11 +11,12 @@ const emit = defineEmits<{
   (e: 'reload'): void;
   (e: 'showFormData'): void;
   (e: 'showNoPayment'): void;
+  (e: 'showNoValidation'): void;
   (e: 'filter', item: {
     date: [string, string] | string | null
     jenis_iuran: string | null
     metode_bayar: string | null
-    status: string | null
+    status_bayar: string | null
     regu: string | null
     nama_warga: string | null
   }): void;
@@ -29,7 +30,7 @@ const props = withDefaults(defineProps<{
 const filters = reactive({
   date: '',
   metode_bayar: null,
-  status: null,
+  status_bayar: null,
   jenis_iuran: null,
   regu: null,
   nama_warga: '',
@@ -38,7 +39,7 @@ const filters = reactive({
 const handleReload = () => {
   filters.date = '',
     filters.metode_bayar = null,
-    filters.status = null,
+    filters.status_bayar = null,
     filters.jenis_iuran = null,
     filters.regu = null,
     filters.nama_warga = '',
@@ -57,8 +58,9 @@ const handleReload = () => {
 // ]
 
 const statusOptions = [
-  { label: 'Lunas', value: 'paid' },
-  { label: 'Belum Lunas', value: 'unpaid' },
+  { label: 'Menunggu Validasi', value: 'pending' },
+  { label: 'Diterima', value: 'approved' },
+  { label: 'Ditolak', value: 'rejected' },
 ]
 </script>
 
@@ -86,7 +88,7 @@ const statusOptions = [
             </VCol>
 
             <VCol cols="12" sm="6">
-              <VSelect v-model="filters.status" placeholder="Status pembayaran" :items="statusOptions"
+              <VSelect v-model="filters.status_bayar" placeholder="Status pembayaran" :items="statusOptions"
                 item-title="label" item-value="value" clearable />
             </VCol>
 
@@ -127,6 +129,11 @@ const statusOptions = [
                 <VIcon icon="ri-list-check-2" class="me-2" />
                 Cek Belum Bayar
               </VBtn>
+
+              <VBtn variant="flat" color="secondary" @click="emit('showNoValidation')">
+                <VIcon icon="ri-list-check-2" class="me-2" />
+                Cek Belum Validasi
+              </VBtn>
             </div>
           </VCol>
         </VRow>
@@ -166,7 +173,7 @@ const statusOptions = [
             </VCol>
 
             <VCol cols="12">
-              <VSelect v-model="filters.status" placeholder="Status pembayaran" :items="statusOptions"
+              <VSelect v-model="filters.status_bayar" placeholder="Status pembayaran" :items="statusOptions"
                 item-title="label" item-value="value" clearable />
             </VCol>
 

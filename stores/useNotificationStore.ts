@@ -104,5 +104,11 @@ export const useNotificationStore = defineStore('notification', {
         type: '',
       }
     },
+
+    resetState() {
+      this.notifications = []
+      this.meta = null
+      this.reload = true
+    },
   },
 })

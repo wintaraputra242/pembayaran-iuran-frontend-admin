@@ -65,7 +65,7 @@ export const useLaporanStore = defineStore('laporan', {
 
         const { data, ...meta } = res.data
         this.meta = meta
-        
+
         this.page = params?.page as number
       } finally {
         this.loading = false
@@ -91,36 +91,22 @@ export const useLaporanStore = defineStore('laporan', {
       }
     },
 
-    async fetchExportExcelLaporan() {
+    async fetchExportPdfLaporan(id_informasi_iuran: number) {
       const api = useLaporan()
       this.loadingExport = true
 
       try {
-        const params: Record<string, any> = {}
-
-        if (this.filters.start_date && this.filters.end_date) {
-          params.start_date = this.filters.start_date
-          params.end_date = this.filters.end_date
-        }
-
-        if (this.filters.metode_bayar) params.metode_bayar = this.filters.metode_bayar
-        if (this.filters.status_bayar) params.status = this.filters.status_bayar
-        if (this.filters.jenis_iuran) params.jenis_iuran = this.filters.jenis_iuran
-        if (this.filters.regu) params.regu = this.filters.regu
-        if (this.filters.informasi_iuran) params.informasi_iuran = this.filters.informasi_iuran
-
-        const blob = await api.exportExcelLaporan(params)
+        const blob = await api.exportPdfLaporan({ id_informasi_iuran })
 
         const url = window.URL.createObjectURL(blob)
         const link = document.createElement('a')
         link.href = url
-        link.download = `laporan-pembayaran-${Date.now()}.xlsx`
+        link.download = `laporan-pembayaran-${Date.now()}.pdf`
         link.click()
-
         window.URL.revokeObjectURL(url)
       } finally {
         this.loadingExport = false
       }
-    }
+    },
   },
 })

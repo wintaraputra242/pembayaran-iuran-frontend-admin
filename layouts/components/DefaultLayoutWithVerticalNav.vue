@@ -9,6 +9,7 @@ import UserProfile from '@/layouts/components/UserProfile.vue';
 import { useScrollStatus } from '@/composables/useScrollNavbar';
 
 const authStore = useAuthStore()
+const notificationStore = useNotificationStore()
 
 const { isMobile } = useDevice()
 const { isScrolled } = useScrollStatus(20)
@@ -27,9 +28,13 @@ const { isScrolled } = useScrollStatus(20)
 
           <VSpacer />
 
-          <IconBtn class="me-2" to="/notifications">
-            <VIcon icon="ri-notification-line" />
-          </IconBtn>
+          <VBadge :content="notificationStore.unreadCount > 99 ? '99+' : notificationStore.unreadCount"
+            :model-value="notificationStore.unreadCount > 0" color="error" location="top end" offset-x="10"
+            offset-y="5">
+            <IconBtn class="me-2" to="/notifications">
+              <VIcon icon="ri-notification-line" />
+            </IconBtn>
+          </VBadge>
 
           <UserProfile />
         </div>

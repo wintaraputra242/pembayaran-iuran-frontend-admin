@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { InformasiIuranForDropdown } from '@/types/api/dropdown'
-import type { Pembayaran, UnpaidWarga } from '@/types/api/pembayaran'
+import type { Pembayaran } from '@/types/api/pembayaran'
 import DataTableRiwayat from '@/views/riwayat-pembayaran/DataTable.vue'
 import DataTableBelumBayarRiwayat from '@/views/riwayat-pembayaran/DataTableBelumBayar.vue'
 import DialogFormDataRiwayat from '@/views/riwayat-pembayaran/DialogFormData.vue'
@@ -97,14 +97,16 @@ const handleShowBuktiBayarHistoryPayment = () => {
 
 const itemSelectForSendNotif = ref<string | null>(null)
 
-const handleSendNotif = async (item?: UnpaidWarga) => {
+const handleSendNotif = async (item?: import('@/types/api/master-informasi-iuran').MasterInformasiIuran) => {
+  console.log(item);
+
   const newItem = pembayaranStore.itemSelected
 
   try {
     await pembayaranStore.fetchNotifyResident({
+      id_informasi_iuran: Number(item?.id),
       nik: newItem?.warga.nik as string,
-      title: 'Pengingat Pembayaran Iuran',
-      message: `Halo ${newItem?.warga.nama_warga}, mohon segera melakukan pembayaran iuran.`,
+      month: filters.bulan as number
     })
 
     successTitle.value = 'Kirim Notif Berhasil'

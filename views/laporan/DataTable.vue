@@ -19,7 +19,6 @@ const props = withDefaults(defineProps<{
 
 const headers = [
   { key: 'no', label: 'No.', width: '70px' },
-  { key: 'transaction_id', label: 'ID Transaksi', width: '200px' },
   { key: 'tanggal_bayar', label: 'Tanggal Bayar', width: '180px' },
   { key: 'warga', label: 'Warga', width: '200px' },
   { key: 'regu', label: 'Regu', width: '180px' },
@@ -33,23 +32,15 @@ const headers = [
 ]
 
 const statusChipsColor: Record<string, string> = {
-  pending: 'warning',
-  waiting_payment: 'info',
-  paid: 'success',
-  failed: 'error',
-  expired: 'secondary',
-  canceled: 'secondary',
-  manual: 'success',
+  approved: 'warning',
+  pending: 'info',
+  rejected: 'success',
 }
 
 const statusText: Record<string, string> = {
-  pending: 'Pending',
-  waiting_payment: 'Menunggu Pembayaran',
-  paid: 'Lunas',
-  failed: 'Gagal',
-  expired: 'Kadaluarsa',
-  canceled: 'Dibatalkan',
-  manual: 'Lunas',
+  approved: 'Diterima',
+  pending: 'Menunggu Validasi',
+  rejected: 'Ditolak',
 }
 
 const bulanMap: Record<number, string> = {

@@ -21,8 +21,11 @@ export const usePembayaranStore = defineStore('pembayaran', {
     loadingSendNotifToAll: false,
     loadingGetPaidMonthWarga: false,
     loading: false,
+    loadingQris: false,
     loadingDetail: false,
+    loadingAction: false,
     reload: false,
+    needsReload: false,
     isReloadDataUnpaidWarga: false,
     isReloadDataHistoryUnpaid: false,
     isReloadDataPembayaranByRegu: false,
@@ -33,7 +36,7 @@ export const usePembayaranStore = defineStore('pembayaran', {
       regu: '',
       jenis_iuran: '',
       metode_bayar: '',
-      status: '',
+      status_bayar: '',
       start_date: '',
       end_date: '',
     },
@@ -51,6 +54,9 @@ export const usePembayaranStore = defineStore('pembayaran', {
     pembayaranByRegu: [] as PembayaranByRegu[],
     loadingByRegu: false,
     metaByRegu: {} as Record<string, any>,
+    pendingPembayaran: [] as Pembayaran[],
+
+    qrisData: null as { image: string; nama_rekening: string; nomor_rekening: string; keterangan: string } | null,
   }),
 
   getters: {
@@ -61,7 +67,7 @@ export const usePembayaranStore = defineStore('pembayaran', {
       !!state.filters.regu ||
       !!state.filters.jenis_iuran ||
       !!state.filters.metode_bayar ||
-      !!state.filters.status ||
+      !!state.filters.status_bayar ||
       !!state.filters.start_date ||
       !!state.filters.end_date,
 
@@ -127,7 +133,7 @@ export const usePembayaranStore = defineStore('pembayaran', {
         regu: '',
         jenis_iuran: '',
         metode_bayar: '',
-        status: '',
+        status_bayar: '',
         start_date: '',
         end_date: '',
       }
@@ -318,6 +324,18 @@ export const usePembayaranStore = defineStore('pembayaran', {
       }
     },
 
+    async fetchQris() {
+      const composable = usePembayaran()
+      this.loadingQris = true
+
+      try {
+        const res = await composable.getQris()
+        this.qrisData = res?.data
+      } finally {
+        this.loadingQris = false
+      }
+    },
+
     async fetchHistoryUnpaid(params?: { page?: number; limit?: number }) {
       if (!this.nikWarga) return
 
@@ -372,6 +390,57 @@ export const usePembayaranStore = defineStore('pembayaran', {
         this.metaByRegu = meta
       } finally {
         this.loadingByRegu = false
+      }
+    },
+
+    async fetchPendingPembayaran(params?: { page?: number; per_page?: number }) {
+      if (this.reload) {
+        this.pendingPembayaran = []
+        this.reload = false
+      }
+
+      const composable = usePembayaran()
+      this.loading = true
+
+      try {
+        const res = await composable.getPendingPembayaran({
+          page: params?.page,
+          per_page: params?.per_page ?? 10,
+        })
+
+        this.pendingPembayaran = params?.page && params.page > 1
+          ? [...this.pendingPembayaran, ...res.data.data]
+          : res.data.data
+
+        const { data, ...meta } = res.data
+        this.meta = meta
+        this.page = params?.page ?? 1
+      } finally {
+        this.loading = false
+      }
+    },
+
+    async fetchApprovePembayaran(id: number) {
+      const api = usePembayaran()
+      this.loadingAction = true
+
+      try {
+        const res = await api.approvePembayaran(id)
+        return res
+      } finally {
+        this.loadingAction = false
+      }
+    },
+
+    async fetchRejectPembayaran(id: number, rejection_reason: string) {
+      const api = usePembayaran()
+      this.loadingAction = true
+
+      try {
+        const res = await api.rejectPembayaran(id, rejection_reason)
+        return res
+      } finally {
+        this.loadingAction = false
       }
     },
 

@@ -12,6 +12,7 @@ export default [
             { type: 'link', title: 'Informasi Iuran', to: '/master-data/informasi-iuran' },
         ],
     },
+    { type: 'link', title: 'Atur QRIS', icon: 'ri-qr-code-line', to: '/qris-setting' },
     { type: 'link', title: 'Pembayaran', icon: 'ri-cash-line', to: '/pembayaran' },
     { type: 'link', title: 'Laporan', icon: 'ri-table-line', to: '/laporan' },
     { type: 'link', title: 'Aktivitas', icon: 'ri-time-line', to: '/activity' },

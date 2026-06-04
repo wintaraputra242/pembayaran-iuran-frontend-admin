@@ -6,6 +6,9 @@ export interface Notification {
   title: string
   message: string
   is_read: boolean
+  type: string
+  period: string
+  action: string
   created_at: string
   updated_at: string
 }

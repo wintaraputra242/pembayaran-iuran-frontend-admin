@@ -1,20 +1,18 @@
 <script setup lang="ts">
 import { useNotificationStore } from '@/stores/useNotificationStore'
-import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { useRouter } from 'vue-router'
-import { useDisplay } from 'vuetify'
 
 const notificationStore = useNotificationStore()
-const display = useDisplay()
 const router = useRouter()
-const authStore = useAuthStore()
 
 const page = ref(1)
+const sentinel = ref<HTMLElement | null>(null)
 
-const mobileSentinel = ref<HTMLElement | null>(null)
-let observer: IntersectionObserver | null = null
+const loadNotifications = async (reset = false) => {
+  if (reset) {
+    notificationStore.reload = true
+    page.value = 1
+  }
 
-const loadNotifications = async () => {
   await notificationStore.fetchNotifications({
     page: page.value,
     per_page: 10,
@@ -23,145 +21,131 @@ const loadNotifications = async () => {
 
 const loadMore = async () => {
   if (!notificationStore.hasMore || notificationStore.loading) return
-
   page.value++
   await loadNotifications()
 }
 
-const setupObserver = async () => {
-  if (!display.smAndDown.value) return
-  if (!notificationStore.hasMore || notificationStore.loading) return
-
-  await nextTick()
-
-  if (!mobileSentinel.value) return
-
-  observer?.disconnect()
-
-  observer = new IntersectionObserver(
-    ([entry]) => {
-      if (entry.isIntersecting && !notificationStore.loading) {
-        loadMore()
-      }
-    },
-    {
-      rootMargin: '100px',
-    }
-  )
-
-  observer.observe(mobileSentinel.value)
-}
-
-const goToPayment = (notif: any) => {
+const goToPayment = (notif: Notification) => {
   // asumsi backend mengirim payment_id di data notification
-  if (notif.data?.payment_id) {
-    router.push(`/pembayaran/${notif.data.payment_id}`)
+  if (notif.data) {
+    const data = JSON.parse(notif.data)
+
+    router.push(`/pembayaran`)
   }
 }
 
 onMounted(async () => {
-  await loadNotifications()
+  notificationStore.resetState() // ← reset bersih sebelum fetch
+  page.value = 1
 
-  // langsung tandai semua sebagai read
+  await loadNotifications(true)
   await notificationStore.markAllAsRead()
 
-  setupObserver()
+  const observer = new IntersectionObserver(([entry]) => {
+    if (entry.isIntersecting) loadMore()
+  }, { rootMargin: '100px' })
+
+  if (sentinel.value) observer.observe(sentinel.value)
 })
 
-onBeforeUnmount(() => {
-  observer?.disconnect()
-})
+// Config tampilan berdasarkan type notifikasi
+const notifTypeConfig: Record<string, { color: string; icon: string; label: string }> = {
+  reminder: { color: 'warning', icon: 'ri-alarm-line', label: 'Pengingat' },
+  pengingat: { color: 'warning', icon: 'ri-alarm-line', label: 'Pengingat' },
+  manual: { color: 'info', icon: 'ri-notification-line', label: 'Informasi' },
+  payment: { color: 'success', icon: 'ri-cash-line', label: 'Pembayaran' },
+  kematian: { color: 'error', icon: 'ri-heart-2-line', label: 'Kematian' },
+  bulanan: { color: 'info', icon: 'ri-calendar-line', label: 'Bulanan' },
+}
 
-watch(
-  () => notificationStore.notifications.length,
-  () => setupObserver()
-)
-
-watch(
-  () => display.smAndDown.value,
-  () => setupObserver()
-)
+const getNotifConfig = (type: string) =>
+  notifTypeConfig[type] ?? { color: 'secondary', icon: 'ri-notification-line', label: type }
 </script>
 
 <template>
-  <VRow class="mb-2" align="center" justify="space-between">
-    <VCol cols="auto">
-      <div v-if="authStore.user?.role === 'ketua_regu'" class="mb-7">
-        <VBtn class="px-0 py-1" variant="text" size="large" :to="'/create-pembayaran'">
-          <VIcon icon="ri-arrow-left-s-line" class="me-2" />
-          Keluar
-        </VBtn>
-      </div>
+  <div>
+    <!-- Header -->
+    <div class="mb-4">
+      <h2>Notifikasi</h2>
+      <span class="text-body-2 text-medium-emphasis">
+        Berisi informasi dan pemberitahuan penting yang diterima oleh pengguna.
+      </span>
+    </div>
 
-      <div>
-        <h2>Notifikasi</h2>
-        <span class="text-body-2">Menampilkan informasi dan pemberitahuan terkait aktivitas serta update penting dalam
-          sistem.</span>
-      </div>
-    </VCol>
-  </VRow>
+    <!-- Loading awal -->
+    <div v-if="notificationStore.loading && !notificationStore.hasData" class="d-flex justify-center py-6">
+      <VProgressCircular size="26" indeterminate />
+    </div>
 
-  <!-- LOADING -->
-  <div v-if="notificationStore.loading && !notificationStore.hasData" class="text-center">
-    <VProgressCircular size="26" indeterminate />
-  </div>
+    <!-- Empty -->
+    <VAlert v-else-if="!notificationStore.hasData && !notificationStore.loading" type="info" variant="tonal"
+      rounded="lg">
+      Tidak ada notifikasi
+    </VAlert>
 
-  <!-- EMPTY -->
-  <VAlert v-if="!notificationStore.hasData && !notificationStore.loading" type="info" variant="tonal">
-    Tidak ada notifikasi
-  </VAlert>
+    <!-- List -->
+    <VRow v-if="notificationStore.hasData">
+      <VCol v-for="notif in notificationStore.notifications" :key="notif.id" cols="12" sm="6">
+        <VCard rounded="lg" border="sm" height="100%" :color="!notif.is_read ? 'blue-lighten-5' : undefined"
+          class="position-relative pb-10">
+          <VCardItem class="pa-4">
+            <div class="d-flex align-start gap-3">
 
-  <!-- LIST -->
-  <VRow v-if="notificationStore.hasData">
-    <VCol cols="12" sm="6" v-for="notif in notificationStore.notifications" :key="notif.id">
-      <VCard elevation="1" rounded="lg" :class="{ 'bg-blue-lighten-5': !notif.is_read }">
-        <VCardText>
+              <!-- Icon -->
+              <VAvatar :color="getNotifConfig(notif.type).color" variant="tonal" size="40">
+                <VIcon size="20">{{ getNotifConfig(notif.type).icon }}</VIcon>
+              </VAvatar>
 
-          <div class="d-flex align-start ga-4">
+              <div class="flex-grow-1 min-width-0">
+                <!-- Type chip & badge baru -->
+                <div class="d-flex align-center justify-space-between mb-1">
+                  <VChip :color="getNotifConfig(notif.type).color" size="x-small" variant="tonal">
+                    {{ getNotifConfig(notif.type).label }}
+                  </VChip>
 
-            <VAvatar color="secondary" variant="tonal">
-              <VIcon>ri-notification-line</VIcon>
-            </VAvatar>
+                  <VChip v-if="!notif.is_read" color="primary" size="x-small" variant="flat">
+                    Baru
+                  </VChip>
+                </div>
 
-            <div class="flex-grow-1">
+                <!-- Title -->
+                <p class="font-weight-semibold text-body-2 mb-1 mt-1">
+                  {{ notif.title }}
+                </p>
 
-              <div class="font-weight-medium mb-1">
-                {{ notif.title }}
+                <!-- Message -->
+                <p class="text-caption text-medium-emphasis ma-0">
+                  {{ notif.message }}
+                </p>
+
+                <!-- Tanggal -->
+                <p class="text-caption text-medium-emphasis ma-0 mt-2">
+                  <VIcon size="12" class="me-1">ri-time-line</VIcon>
+                  {{ formatDateID(notif.created_at) }}
+                </p>
               </div>
-
-              <div class="text-body-2 text-medium-emphasis mb-2">
-                {{ notif.message }}
-              </div>
-
-              <div class="text-caption text-grey">
-                {{ formatDateID(notif.created_at) }}
-              </div>
-
             </div>
+          </VCardItem>
 
-          </div>
+          <!-- Action -->
+          <VCardActions>
+            <div class="position-absolute" style="right: 10px; bottom: 10px;">
+              <VBtn color="secondary" variant="flat" size="small" block prepend-icon="ri-eye-line"
+                @click="goToPayment(notif)">
+                Lihat Pembayaran
+              </VBtn>
+            </div>
+          </VCardActions>
+        </VCard>
+      </VCol>
+    </VRow>
 
-        </VCardText>
+    <!-- Sentinel -->
+    <div ref="sentinel" style="height: 1px;" />
 
-        <!-- ACTION -->
-        <VCardActions class="justify-end mr-2 mb-2">
-
-          <VBtn color="primary" variant="tonal" size="small" @click="goToPayment(notif)">
-            <VIcon start>ri-eye-line</VIcon>
-            Lihat Pembayaran
-          </VBtn>
-
-        </VCardActions>
-
-      </VCard>
-    </VCol>
-  </VRow>
-
-  <!-- SENTINEL -->
-  <div v-if="notificationStore.hasMore" ref="mobileSentinel" style="height: 1px" />
-
-  <!-- LOADING MORE -->
-  <div v-if="notificationStore.hasMore && notificationStore.loading" class="text-center py-4">
-    <VProgressCircular indeterminate size="26" />
+    <!-- Load more loading -->
+    <div v-if="notificationStore.hasMore && notificationStore.loading" class="d-flex justify-center py-4">
+      <VProgressCircular indeterminate size="26" />
+    </div>
   </div>
 </template>

@@ -1,141 +1,109 @@
 <script setup lang="ts">
-import DataTableLaporan from '@/views/laporan/DataTable.vue'
-import FormFilterLaporan from '@/views/laporan/FormFilter.vue'
-import eCommerce2 from '@images/eCommerce/2.png'
-
-definePageMeta({ onlyAdmin: true })
-
-const laporanStore = useLaporanStore()
 const dropdownStore = useDropdownStore()
+const laporanStore = useLaporanStore()
+const uiStore = useUiStore()
 
-const page = ref(1)
+const selectedIuranId = ref<number | null>(null)
+const selectedIuran = computed(() =>
+  dropdownStore.itemInformasiIuranForDropdown?.find(i => i.id === selectedIuranId.value) ?? null
+)
 
-const showConfirmation = ref(false)
-const showSuccessConfirm = ref(false)
-const showPaymentProof = ref(false)
-
-const confirmOptions = reactive({
-  title: '',
-  message: '',
-  confirmText: '',
-  cancelText: '',
-  confirmColor: '',
-  confirmIcon: '',
+onMounted(() => {
+  dropdownStore.fetchInformasiIuranForDropdown()
 })
 
-const exportExcel = async () => {
-  await laporanStore.fetchExportExcelLaporan()
-
-  showConfirmation.value = false
-  showSuccessConfirm.value = true
-}
-
-const handleLoadMore = async () => {
-  page.value += 1
-  await laporanStore.fetchLaporan({ limit: 10, page: page.value })
-}
-
-const handleFilter = async (filters: {
-  date: string
-  metode_bayar: string | null
-  status_bayar: string | null
-  jenis_iuran: string | null
-  regu: string | null
-  informasi_iuran: string
-}) => {
-  page.value = 1
-  laporanStore.reload = true
-
-  if (filters.date && Array.isArray(filters.date)) {
-    laporanStore.setFilter('start_date', formatDateToYMD(filters.date[0]))
-    laporanStore.setFilter('end_date', formatDateToYMD(filters.date[1]))
-  } else {
-    laporanStore.setFilter('start_date', '')
-    laporanStore.setFilter('end_date', '')
+const handleExportPdf = async () => {
+  if (!selectedIuranId.value) {
+    uiStore.showError('Pilih informasi iuran terlebih dahulu.')
+    return
   }
-
-  const mapping: Record<string, keyof typeof laporanStore.filters> = {
-    informasi_iuran: 'informasi_iuran',
-    regu: 'regu',
-    jenis_iuran: 'jenis_iuran',
-    metode_bayar: 'metode_bayar',
-    status_bayar: 'status_bayar',
-  }
-
-  Object.entries(filters).forEach(([key, value]) => {
-    if (key === 'date') return
-
-    const storeKey = mapping[key]
-    if (!storeKey) return
-
-    if (value === null || value === undefined || value === '') {
-      laporanStore.setFilter(storeKey, '')
-    } else {
-      laporanStore.setFilter(storeKey, String(value))
-    }
-  })
-
-  await laporanStore.fetchLaporan({ limit: 10, page: page.value })
+  await laporanStore.fetchExportPdfLaporan(selectedIuranId.value)
 }
-
-const handleReload = async () => {
-  page.value = 1
-  laporanStore.reload = true
-  laporanStore.resetFilter()
-  await laporanStore.fetchLaporan({ limit: 10, page: page.value })
-}
-
-onMounted(async () => {
-  if (laporanStore.page) page.value = laporanStore.page
-
-  if (laporanStore.page === 0) {
-    await laporanStore.fetchLaporan({
-      page: 1,
-      limit: 10,
-    })
-  }
-
-  await dropdownStore.fetchReguForDropdown()
-  await dropdownStore.fetchInformasiIuranForDropdown()
-})
-
-onBeforeRouteLeave(() => {
-  handleReload()
-})
 </script>
 
 <template>
   <div>
+    <!-- Header -->
     <div class="mb-3">
       <h2>Laporan</h2>
-      <span class="text-body-2">Menampilkan rekapitulasi dan hasil olahan data untuk kebutuhan monitoring dan
-        evaluasi.</span>
+      <span class="text-body-2">
+        Export laporan pembayaran iuran dalam format PDF berdasarkan informasi iuran yang dipilih.
+      </span>
     </div>
 
-    <VRow class="match-height">
-      <VCol cols="12">
-        <FormFilterLaporan :informasi-iuran-options="dropdownStore.itemInformasiIuranForDropdown"
-          :loading-informasi-iuran-options="dropdownStore.loading.informasiIuranForDropdown"
-          :regu-options="dropdownStore.reguForDropdown" :loading-regu-options="dropdownStore.loading.reguForDropdown"
-          :loading-export-excel="laporanStore.loadingExport" @filter="handleFilter" @reload="handleReload"
-          @exportExcel="exportExcel" />
-      </VCol>
+    <VRow justify="center">
+      <VCol cols="12" md="6">
+        <VCard>
+          <VCardText class="pa-5">
 
-      <VCol cols="12" md="12">
-        <DataTableLaporan :data="laporanStore.laporan" :meta="laporanStore.meta" :loading="laporanStore.loading"
-          :has-more="laporanStore.hasMore" :has-filter="laporanStore.hasFilter"
-          @show-bukti-bayar="showPaymentProof = true" @load-more="handleLoadMore" />
+            <!-- Icon & judul -->
+            <div class="d-flex flex-column align-center text-center mb-5">
+              <VAvatar size="56" color="primary" variant="tonal" class="mb-3">
+                <VIcon icon="ri-file-pdf-2-line" size="28" />
+              </VAvatar>
+              <h3 class="text-h6">Export Laporan PDF</h3>
+              <p class="text-body-2 text-medium-emphasis mt-1">
+                Pilih informasi iuran yang ingin diekspor, lalu klik tombol download.
+              </p>
+            </div>
+
+            <VDivider class="mb-5" />
+
+            <!-- Form -->
+            <VRow>
+              <VCol cols="12">
+                <VSelect v-model="selectedIuranId" :items="dropdownStore.itemInformasiIuranForDropdown"
+                  :loading="dropdownStore.loading.informasiIuranForDropdown" item-title="judul_iuran" item-value="id"
+                  label="Informasi Iuran" placeholder="Pilih informasi iuran..." clearable />
+              </VCol>
+
+              <!-- Preview info iuran terpilih -->
+              <VCol v-if="selectedIuran" cols="12">
+                <div class="rounded-lg pa-3"
+                  style="background: rgba(var(--v-theme-primary), 0.06); border: 1px dashed rgba(var(--v-theme-primary), 0.3);">
+                  <div class="d-flex flex-column gap-1">
+                    <div class="d-flex align-center gap-2">
+                      <VIcon icon="ri-price-tag-3-line" size="14" color="primary" />
+                      <span class="text-body-2 text-medium-emphasis">Judul</span>
+                      <span class="text-body-2 font-weight-medium ms-auto">{{ selectedIuran.judul_iuran }}</span>
+                    </div>
+                    <div class="d-flex align-center gap-2">
+                      <VIcon icon="ri-layout-grid-line" size="14" color="primary" />
+                      <span class="text-body-2 text-medium-emphasis">Jenis</span>
+                      <VChip size="x-small" :color="selectedIuran.jenis_iuran === 'bulanan' ? 'info' : 'warning'"
+                        class="ms-auto">
+                        {{ selectedIuran.jenis_iuran === 'bulanan' ? 'Bulanan' : 'Kematian' }}
+                      </VChip>
+                    </div>
+                    <div class="d-flex align-center gap-2">
+                      <VIcon icon="ri-money-rupee-circle-line" size="14" color="primary" />
+                      <span class="text-body-2 text-medium-emphasis">Jumlah Iuran</span>
+                      <span class="text-body-2 font-weight-medium ms-auto">
+                        Rp {{ Number(selectedIuran.jumlah_iuran ?? 0).toLocaleString('id-ID') }}
+                      </span>
+                    </div>
+                    <div v-if="selectedIuran.jenis_iuran === 'bulanan'" class="d-flex align-center gap-2">
+                      <VIcon icon="ri-calendar-line" size="14" color="primary" />
+                      <span class="text-body-2 text-medium-emphasis">Periode</span>
+                      <span class="text-body-2 font-weight-medium ms-auto">{{ (selectedIuran as any).periode ?? '-'
+                      }}</span>
+                    </div>
+                  </div>
+                </div>
+              </VCol>
+
+              <!-- Tombol export -->
+              <VCol cols="12">
+                <VBtn block variant="flat" color="primary" :loading="laporanStore.loadingExport"
+                  :disabled="!selectedIuranId" prepend-icon="ri-download-2-line" @click="handleExportPdf">
+                  Download PDF
+                </VBtn>
+              </VCol>
+            </VRow>
+
+          </VCardText>
+        </VCard>
       </VCol>
     </VRow>
-
-    <ConfirmDialog v-model="showConfirmation" :title="confirmOptions.title" :message="confirmOptions.message"
-      :confirm-text="confirmOptions.confirmText" :cancel-text="confirmOptions.cancelText"
-      :confirm-color="confirmOptions.confirmColor" :confirm-icon="confirmOptions.confirmIcon"
-      :loading="laporanStore.loadingExport" @confirm="" />
-
-    <PaymentProofImageDialog v-model="showPaymentProof" :src="eCommerce2" />
-
-    <SuccessDialog v-model="showSuccessConfirm" title="Export Data Berhasil"
-      message="File berupa Excel berhasil diunduh dan tersimpan di penyimpanan lokal Anda" />
   </div>
 </template>

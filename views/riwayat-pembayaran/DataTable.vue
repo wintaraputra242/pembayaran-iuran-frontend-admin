@@ -100,12 +100,12 @@ const statusText: Record<
 
     <!-- Nominal -->
     <template #cell-nominal="{ item }">
-      {{ formatRupiah(item.nominal) }}
+      {{ formatRupiah(item.total_bayar) }}
     </template>
 
     <!-- Petugas -->
     <template #cell-petugas="{ item }">
-      {{ item.petugas }}
+      {{ item.processed_by ?? '-' }}
     </template>
 
     <!-- Status -->

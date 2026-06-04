@@ -19,26 +19,21 @@ export const useLaporan = () => {
     end_date?: string
   }): Promise<GetPembayaranResponse> => {
     return await api<GetPembayaranResponse>('/laporan', {
-      query: params, 
+      query: params,
     })
   }
 
-  const exportExcelLaporan = async (params?: {
-    date?: [string, string]
-    metode_bayar?: string
-    status?: string
-    jenis_iuran?: string
-    regu?: string
-    nama_warga?: string
+  const exportPdfLaporan = async (params: {
+    id_informasi_iuran: number
   }): Promise<Blob> => {
-    return await api<Blob>('/laporan/export-excel', {
-      query: params,      
+    return await api<Blob>('/laporan/export-pdf', {
+      query: params,
       responseType: 'blob',
     })
   }
 
   return {
     getLaporan,
-    exportExcelLaporan,
+    exportPdfLaporan,
   }
 }

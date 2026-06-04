@@ -4,6 +4,7 @@ import DataTablePembayaran from '@/views/pembayaran/DataTable.vue'
 import DialogFormDataPembayaran from '@/views/pembayaran/DialogFormData.vue'
 import DialogHistoryPaymentWargaPembayaran from '@/views/pembayaran/DialogHistoryPaymentWarga.vue'
 import DialogNoPaymentPembayaran from '@/views/pembayaran/DialogNoPayment.vue'
+import DialogShowNote from '@/views/pembayaran/DialogShowNote.vue'
 import FormFilterPembayaran from '@/views/pembayaran/FormFilter.vue'
 
 definePageMeta({ onlyAdmin: true })
@@ -112,6 +113,12 @@ const handleShowNoPayment = () => {
   router.push('/pembayaran/cek-belum-bayar')
 }
 
+const handleShowNoValidation = () => {
+
+  // showNoPaymentList.value = true
+  router.push('/pembayaran/cek-belum-validasi')
+}
+
 const handleSendNotif = (type?: string) => {
   fromDialog.value = type || ''
   showHistoryPayment.value = false
@@ -148,7 +155,7 @@ const handleFilter = (filters: {
   date: [string, string] | string | null
   jenis_iuran: string | null
   metode_bayar: string | null
-  status: string | null
+  status_bayar: string | null
   regu: string | null
   nama_warga: string | null
 }) => {
@@ -176,7 +183,7 @@ const handleFilter = (filters: {
           regu: 'regu',
           jenis_iuran: 'jenis_iuran',
           metode_bayar: 'metode_bayar',
-          status: 'status',
+          status_bayar: 'status_bayar',
         }
 
         if (mapping[key]) {
@@ -214,7 +221,25 @@ const handleGetDropdownRegu = async () => {
   await dropdownStore.fetchReguForDropdown()
 }
 
+const showRejectionReason = ref(false)
+
+const handleShowRejectionReason = (item: Pembayaran) => {
+  itemSelected.value = item
+  showRejectionReason.value = true
+}
+
 onMounted(async () => {
+  const authStore = useAuthStore()
+  if (!authStore.token) return
+
+  if (pembayaranStore.needsReload) {
+    pembayaranStore.needsReload = false
+    pembayaranStore.pembayaran = []
+    await pembayaranStore.fetchPembayaran({ limit: 10, page: 1 })
+    page.value = 1
+    return
+  }
+
   if (pembayaranStore.page) page.value = pembayaranStore.page
 
   if (pembayaranStore.page === 0) {
@@ -225,7 +250,9 @@ onMounted(async () => {
 })
 
 onBeforeRouteLeave(() => {
-  handleReload()
+  const authStore = useAuthStore()
+  if (!authStore.token) return
+  pembayaranStore.needsReload = true  // ✅ set flag saja
 })
 </script>
 
@@ -243,7 +270,8 @@ onBeforeRouteLeave(() => {
           <FormFilterPembayaran :regu-options="dropdownStore.reguForDropdown"
             :loading-regu-options="dropdownStore.loading.reguForDropdown"
             @show-form-data="router.push('/create-pembayaran')" @filter="handleFilter" @reload="handleReload"
-            @reset-all-anggota="handleResetAllAnggota" @show-no-payment="handleShowNoPayment" />
+            @reset-all-anggota="handleResetAllAnggota" @show-no-payment="handleShowNoPayment"
+            @show-no-validation="handleShowNoValidation" />
         </div>
       </VCol>
 
@@ -251,7 +279,8 @@ onBeforeRouteLeave(() => {
         <DataTablePembayaran :data="pembayaranStore.pembayaran" :meta="pembayaranStore.meta"
           :loading="pembayaranStore.loading" :has-more="pembayaranStore.hasMore" :has-filter="pembayaranStore.hasFilter"
           @delete="handleDeleteData" @show-anggota="handleShowAnggota" @show-bukti-bayar="handleShowBuktiBayar"
-          @show-history-payment="handleHistoryPayment" @send-notif="handleSendNotif" @load-more="handleLoadMore" />
+          @show-history-payment="handleHistoryPayment" @send-notif="handleSendNotif" @load-more="handleLoadMore"
+          @show-rejection-reason="handleShowRejectionReason" />
       </VCol>
     </VRow>
 
@@ -275,5 +304,7 @@ onBeforeRouteLeave(() => {
       @send-notif="handleSendNotif" />
 
     <SuccessDialog v-model="showSuccessConfirm" :title="successTitle" :message="successMessage" />
+
+    <DialogShowNote v-model="showRejectionReason" :item="itemSelected" />
   </div>
 </template>

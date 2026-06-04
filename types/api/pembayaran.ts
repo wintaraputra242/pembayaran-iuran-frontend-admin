@@ -206,3 +206,15 @@ export interface GetPembayaranByReguResponse {
   }
   message: string
 }
+
+export interface GetQrisResponse {
+  code: number
+  success: boolean
+  message: string
+  data: {
+    image: string,
+    nama_rekening: string,
+    nomor_rekening: string,
+    keterangan: string,
+  }
+}

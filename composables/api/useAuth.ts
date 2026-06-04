@@ -7,7 +7,7 @@ export const useAuth = () => {
   const uiStore = useUiStore()
   const router = useRouter()
 
-  const login = async (payload: { username: string; password: string }): Promise<LoginResponse> => {
+  const login = async (payload: { username: string; password: string, fcm_token?: string, platform?: string }): Promise<LoginResponse> => {
     const res = await api<LoginResponse>('/auth/login', {
       method: 'POST',
       body: payload,

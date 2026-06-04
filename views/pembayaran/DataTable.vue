@@ -1,5 +1,4 @@
 <script setup lang="ts">
-// import qris from '@images/pages/qris.png'
 import type { Pembayaran } from '@/types/api/pembayaran';
 import type { PaginationMeta } from '@/types/common';
 import qris from '@images/pages/qris.png';
@@ -13,75 +12,48 @@ const props = withDefaults(defineProps<{
 }>(), {})
 
 const emit = defineEmits<{
-  (e: 'showHistoryPayment', item: Pembayaran): void;
-  (e: 'showBuktiBayar', item: Pembayaran): void;
-  (e: 'loadMore'): void;
-}>();
+  (e: 'showRejectionReason', item: Pembayaran): void
+  (e: 'showHistoryPayment', item: Pembayaran): void
+  (e: 'showBuktiBayar', item: Pembayaran): void
+  (e: 'loadMore'): void
+  (e: 'approved', item: Pembayaran): void
+  (e: 'reject', item: Pembayaran): void
+}>()
 
-const router = useRouter()
 const config = useRuntimeConfig()
 
 const headers = [
   { label: 'No.', key: 'no', width: '70px', sortable: false },
-  { label: 'ID Transaksi', key: 'transaction_id', width: '200px' },
   { label: 'Warga', key: 'warga', width: '200px' },
   { label: 'Regu', key: 'regu', width: '180px' },
   { label: 'Judul Iuran', key: 'judul_iuran', width: '220px' },
-  { label: 'Jenis Iuran', key: 'jenis_iuran', width: '220px' },
+  { label: 'Jenis Iuran', key: 'jenis_iuran', width: '150px' },
   { label: 'Nominal Bayar', key: 'nominal', width: '160px' },
   { label: 'Tanggal Bayar', key: 'tanggal_bayar', width: '180px' },
   { label: 'Metode Bayar', key: 'metode_bayar', width: '160px' },
   { label: 'Petugas/Admin', key: 'petugas', width: '200px' },
   { label: 'Status', key: 'status', width: '150px', align: 'center' },
-  { label: 'Bukti Pembayaran', key: 'bukti_bayar', width: '200px', align: 'center', sortable: false },
+  { label: 'Bukti Pembayaran', key: 'bukti_bayar', width: '160px', align: 'center', sortable: false },
+  { label: 'Aksi', key: 'aksi', width: '120px', align: 'center', sortable: false },
 ]
 
-const statusChipsColor: Record<
-  'pending' |
-  'waiting_payment' |
-  'paid' |
-  'failed' |
-  'expired' |
-  'canceled' |
-  'manual',
-  string
-> = {
-  pending: 'info',
-  waiting_payment: 'warning',
-  paid: 'success',
-  failed: 'error',
-  expired: 'secondary',
-  canceled: 'secondary',
-  manual: 'success',
+const statusChipsColor: Record<string, string> = {
+  pending: 'warning',
+  approved: 'success',
+  rejected: 'error',
 }
 
-const statusText: Record<
-  'pending' |
-  'waiting_payment' |
-  'paid' |
-  'failed' |
-  'expired' |
-  'canceled' |
-  'manual',
-  string
-> = {
-  pending: 'Menunggu',
-  waiting_payment: 'Menunggu Pembayaran',
-  paid: 'Lunas',
-  failed: 'Gagal',
-  expired: 'Kedaluwarsa',
-  canceled: 'Dibatalkan',
-  manual: 'Lunas',
-}
-
-const handleJumpToHistoryPayment = (item: Pembayaran) => {
-  emit('showHistoryPayment', item)
+const statusText: Record<string, string> = {
+  pending: 'Menunggu Validasi',
+  approved: 'Disetujui',
+  rejected: 'Ditolak',
 }
 </script>
 
 <template>
   <AppDataTable :headers="headers" :items="props.data" :loading="props.loading" :has-more="props.hasMore"
     :has-filter="props.hasFilter" @loadMore="emit('loadMore')">
+
     <!-- Tanggal Bayar -->
     <template #cell-tanggal_bayar="{ item }">
       {{ formatDateID(item.tanggal_bayar) }}
@@ -89,39 +61,34 @@ const handleJumpToHistoryPayment = (item: Pembayaran) => {
 
     <!-- Warga -->
     <template #cell-warga="{ item }">
-      <span class="text-info hover-text cursor-pointer" @click="handleJumpToHistoryPayment(item)">
+      <span class="text-info hover-text cursor-pointer" @click="emit('showHistoryPayment', item)">
         {{ item.warga.nama_warga }}
         <VIcon icon="ri-arrow-right-up-long-line" size="16" />
       </span>
     </template>
 
+    <!-- Regu -->
     <template #cell-regu="{ item }">
-      <span>
-        {{ item.warga?.anggota_regu[0]?.regu?.nama_regu || '-' }}
-      </span>
+      {{ item.warga?.anggota_regu[0]?.regu?.nama_regu || '-' }}
     </template>
 
+    <!-- Judul Iuran -->
     <template #cell-judul_iuran="{ item }">
-      <span>
-        {{ item.informasi_iuran.judul_iuran || '-' }}
-      </span>
+      {{ item.informasi_iuran.judul_iuran || '-' }}
     </template>
 
-    <!-- Jenis -->
+    <!-- Jenis Iuran -->
     <template #cell-jenis_iuran="{ item }">
-      <div class="text-capitalize">
-        <VChip size="small" :color="item.informasi_iuran.jenis_iuran === 'bulanan' ? 'info' : 'error'">
-          {{ item.informasi_iuran.jenis_iuran }}
-        </VChip>
-      </div>
+      <VChip size="small" :color="item.informasi_iuran.jenis_iuran === 'bulanan' ? 'info' : 'error'">
+        {{ item.informasi_iuran.jenis_iuran }}
+      </VChip>
     </template>
 
     <!-- Metode Bayar -->
     <template #cell-metode_bayar="{ item }">
       <div class="d-flex align-center gap-1 text-capitalize">
-        <VIcon v-if="item.metode_bayar !== 'qris'"
-          :icon="item.metode_bayar === 'transfer' ? 'ri-exchange-line' : 'ri-cash-line'" size="20" />
         <VImg v-if="item.metode_bayar === 'qris'" :src="qris" max-width="20px" />
+        <VIcon v-else :icon="item.metode_bayar === 'transfer' ? 'ri-exchange-line' : 'ri-cash-line'" size="20" />
         {{ item.metode_bayar }}
       </div>
     </template>
@@ -133,40 +100,91 @@ const handleJumpToHistoryPayment = (item: Pembayaran) => {
 
     <!-- Status -->
     <template #cell-status="{ item }">
-      <div class="text-capitalize">
-        <VChip size="small" :color="statusChipsColor[item.status_bayar as keyof typeof statusChipsColor]">
-          {{ statusText[item.status_bayar as keyof typeof statusText] }}
-        </VChip>
-      </div>
+      <VChip size="small" :color="statusChipsColor[item.status_bayar]">
+        {{ statusText[item.status_bayar] }}
+      </VChip>
     </template>
 
     <!-- Petugas -->
     <template #cell-petugas="{ item }">
-      <span>
-        {{ item?.processed_by?.name }}
-      </span>
+      {{ item?.processed_by?.name || '-' }}
     </template>
 
     <!-- Bukti Pembayaran -->
     <template #cell-bukti_bayar="{ item }">
-      <div class="d-flex">
-        <div v-ripple class="pa-2 rounded-lg cursor-pointer" @click="emit('showBuktiBayar', item)">
-          <!-- <VImg :src="item.bukti_pembayaran || eCommerce2" width="50" /> -->
-          <VImg v-if="item.bukti_pembayaran" :src="config.public.backendUrl + '/storage/' + item.bukti_pembayaran"
-            width="50" />
-          <span v-else>-</span>
+      <div v-if="item.bukti_pembayaran" v-ripple class="cursor-pointer d-inline-flex flex-column align-center gap-1"
+        style="max-width: 70px;" @click="emit('showBuktiBayar', item)">
+        <div style="position: relative; width: 54px; height: 54px;">
+          <img :src="config.public.backendUrl + '/storage/' + item.bukti_pembayaran"
+            style="width: 54px; height: 54px; object-fit: cover; border-radius: 8px; border: 1px solid rgba(var(--v-theme-primary), 0.3);" />
+          <!-- overlay icon zoom -->
+          <div style="
+        position: absolute; inset: 0;
+        background: rgba(var(--v-theme-primary), 0.15);
+        border-radius: 8px;
+        display: flex; align-items: center; justify-content: center;
+      ">
+            <VIcon size="18" color="primary">ri-zoom-in-line</VIcon>
+          </div>
         </div>
+        <span style="font-size: 10px; color: rgb(var(--v-theme-primary)); white-space: nowrap;">
+          Lihat Bukti
+        </span>
+      </div>
+      <span v-else class="text-medium-emphasis">-</span>
+    </template>
+
+    <!-- Aksi Validasi -->
+    <template #cell-aksi="{ item }">
+      <div class="d-flex gap-1">
+
+        <!-- Pending: tampilkan approved & reject -->
+        <template v-if="item.status_bayar === 'pending'">
+          <VBtn size="small" variant="flat" color="success" @click="emit('approved', item)">
+            <VIcon icon="ri-check-line" /> &nbsp;
+            Terima
+          </VBtn>
+
+          <VBtn size="small" variant="flat" color="error" @click="emit('reject', item)">
+            <VIcon icon="ri-close-line" /> &nbsp;
+            Tolak
+          </VBtn>
+        </template>
+
+        <!-- Approved -->
+        <!-- <template v-else-if="item.status_bayar === 'approved'">
+          <VTooltip text="Disetujui">
+            <template #activator="{ props: tooltipProps }">
+              <VIcon v-bind="tooltipProps" icon="ri-checkbox-circle-line" color="success" size="22" />
+            </template>
+          </VTooltip>
+        </template> -->
+        <template v-else-if="item.status_bayar === 'approved'">
+          <VIcon icon="ri-checkbox-circle-line" color="success" size="22" />
+          <span class="text-success">Diterima</span>
+        </template>
+
+        <!-- Rejected -->
+        <!-- <template v-else-if="item.status_bayar === 'rejected'">
+          <VTooltip :text="'Ditolak: ' + (item.rejection_reason || '-')">
+            <template #activator="{ props: tooltipProps }">
+              <VIcon v-bind="tooltipProps" icon="ri-close-circle-line" color="error" size="22" />
+            </template>
+          </VTooltip>
+        </template> -->
+        <template v-else-if="item.status_bayar === 'rejected'">
+          <div v-ripple v-tooltip="'Klik untuk lihat alasan penolakan'"
+            class="d-inline-flex align-center gap-1 cursor-pointer px-2 py-1 rounded-lg"
+            style="border: 1px dashed rgb(var(--v-theme-error)); background: rgba(var(--v-theme-error), 0.08);"
+            @click="emit('showRejectionReason', item)">
+            <VIcon icon="ri-close-circle-line" color="error" size="16" />
+            <span class="text-error" style="font-size: 12px; white-space: nowrap;">Ditolak</span>
+            <VIcon icon="ri-information-line" color="error" size="14" style="opacity: 0.7;" />
+          </div>
+        </template>
+
       </div>
     </template>
+
   </AppDataTable>
 </template>
-
-<style scoped>
-.table-scroll-wrapper {
-  max-height: 400px;
-  /* tinggi container */
-  overflow-y: auto;
-  overflow-x: hidden;
-  height: 100%;
-}
-</style>

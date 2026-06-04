@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import { useAuth } from '@/composables/api/useAuth'
 
-definePageMeta({ guest: true })
+definePageMeta({ layout: 'blank', guest: true })
 
 const router = useRouter()
 const route = useRoute()
 
 const { login } = useAuth()
 const uiStore = useUiStore()
+const { requestPermissionAndGetToken } = useFirebaseMessaging()
 
 const form = ref({
   username: '',
@@ -22,18 +23,29 @@ const formComp = ref()
 const isLoadingSubmit = ref(false)
 const onSubmit = async () => {
   const { valid } = await formComp.value.validate()
-
   if (!valid) return
 
   isLoadingSubmit.value = true
 
   try {
+    const fcmToken = await requestPermissionAndGetToken().catch(() => null)
+
     const res = await login({
       username: form.value.username,
       password: form.value.password,
+      fcm_token: fcmToken ?? undefined,
+      platform: 'web',
     })
 
-    router.push(res.data.user.role === 'admin' ? '/' : '/create-pembayaran')
+    const redirect = import.meta.client
+      ? localStorage.getItem('redirect_after_login')
+      : null
+
+    localStorage.removeItem('redirect_after_login')
+
+    const defaultRoute = res.data.user.role === 'admin' ? '/' : '/create-pembayaran'
+
+    router.push(redirect ?? defaultRoute)
 
   } catch (e: any) {
     uiStore.showError(e.errors ?? 'Terjadi kesalahan saat login', 'Gagal Login')
@@ -68,47 +80,31 @@ onMounted(() => {
           Pembayaran Iuran Banjar Trijata
         </h2>
       </div>
-      <VCard
-        class="auth-card pa-4 pt-7"
-        max-width="448"
-        width="100%"
-      >
+      <VCard class="auth-card pa-4 pt-7" max-width="448" width="100%">
         <VCardItem class="justify-center">
           <h2 class="font-weight-medium text-2xl text-capitalize text-center">
             Admin
           </h2>
         </VCardItem>
-  
+
         <VCardText>
           <VForm ref="formComp" @submit.prevent="onSubmit">
             <VRow>
               <!-- username -->
               <VCol cols="12">
-                <VTextField
-                  v-model="form.username"
-                  label="Username"
-                  type="username"
-                  :rules="[
-                    (v: string) => !!v || 'Username harus diisi'
-                  ]"
-                />
+                <VTextField v-model="form.username" label="Username" type="username" :rules="[
+                  (v: string) => !!v || 'Username harus diisi'
+                ]" />
               </VCol>
-  
+
               <!-- password -->
               <VCol cols="12">
-                <VTextField
-                  v-model="form.password"
-                  label="Password"
-                  placeholder="············"
-                  :type="isPasswordVisible ? 'text' : 'password'"
-                  autocomplete="password"
-                  :rules="[
+                <VTextField v-model="form.password" label="Password" placeholder="············"
+                  :type="isPasswordVisible ? 'text' : 'password'" autocomplete="password" :rules="[
                     (v: string) => !!v || 'Password harus diisi'
-                  ]"
-                  :append-inner-icon="isPasswordVisible ? 'ri-eye-off-line' : 'ri-eye-line'"
-                  @click:append-inner="isPasswordVisible = !isPasswordVisible"
-                />
-  
+                  ]" :append-inner-icon="isPasswordVisible ? 'ri-eye-off-line' : 'ri-eye-line'"
+                  @click:append-inner="isPasswordVisible = !isPasswordVisible" />
+
                 <!-- remember me checkbox -->
                 <!-- <div class="d-flex align-center justify-space-between flex-wrap my-6">
                   <VCheckbox
@@ -123,14 +119,9 @@ onMounted(() => {
                     Forgot Password?
                   </a>
                 </div> -->
-  
+
                 <!-- login button -->
-                <VBtn
-                  block
-                  type="submit"
-                  class="mt-6"
-                  :loading="isLoadingSubmit"
-                >
+                <VBtn block type="submit" class="mt-6" :loading="isLoadingSubmit">
                   Login
                 </VBtn>
               </VCol>
