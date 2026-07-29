@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import type { NuxtError } from 'nuxt/app'
-import { useTheme } from 'vuetify'
 import misc404 from '@images/pages/404.png'
 import miscMaskDark from '@images/pages/misc-mask-dark.png'
 import miscMaskLight from '@images/pages/misc-mask-light.png'
 import tree from '@images/pages/tree.png'
+import type { NuxtError } from 'nuxt/app'
+import { useTheme } from 'vuetify'
 
 defineOptions({
   inheritAttrs: false,
@@ -15,6 +15,7 @@ const props = defineProps<{
 }>()
 
 const vuetifyTheme = useTheme()
+const authStore = useAuthStore()
 
 const authThemeMask = computed(() => {
   return vuetifyTheme.global.name.value === 'light'
@@ -25,45 +26,50 @@ const authThemeMask = computed(() => {
 const isDev = process.dev
 
 const errToShow = computed(() => {
-  const is404 = props.error?.statusCode === 404 || props.error.message?.includes('404')
+  const is404 = props.error?.statusCode === 404 || props.error?.message?.includes('404')
 
   if (is404) {
     return {
-      title: 'Page Not Found',
-      description: 'We couldn\'t find the page you are looking for.',
+      title: 'Halaman tidak ditemukan',
+      description: 'Kami tidak dapat menemukan halaman yang Anda cari.',
     }
   }
 
-  else if (isDev) {
+  if (isDev) {
     return {
       title: props.error?.statusMessage,
-      description: props.error.message,
+      description: props.error?.message,
     }
   }
 
   return {
-    title: 'Oops! Something went wrong.',
-    description: 'We are working on it and we\'ll get it fixed as soon as we can',
+    title: 'Terjadi Kesalahan',
+    description: 'Sistem sedang mengalami kendala. Silakan coba kembali beberapa saat lagi.',
   }
 })
 
-const handleError = () => clearError({ redirect: '/' })
+const roles: Record<'admin' | 'ketua_regu', string> = {
+  'admin': '/',
+  'ketua_regu': '/create-pembayaran',
+}
+
+const handleError = () => clearError({ redirect: authStore.isLoggedIn ? roles[authStore.role] : '/login' })
 </script>
 
 <template>
   <NuxtLayout name="blank">
     <div class="misc-wrapper">
       <ErrorHeader
-        :status-code="props.error.statusCode"
-        :title="errToShow.title"
-        :description="errToShow.description"
+        :status-code="props.error?.statusCode"
+        :title="errToShow?.title"
+        :description="errToShow?.description"
       />
 
       <!-- eslint-disable vue/no-v-html -->
       <div
         v-if="isDev"
         style="max-inline-size: 80dvw; overflow-x: scroll;"
-        v-html="error.stack"
+        v-html="error?.stack"
       />
       <!-- eslint-enable -->
 

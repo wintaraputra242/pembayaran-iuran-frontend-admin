@@ -1,26 +1,71 @@
 <script setup lang="ts">
-import { useTheme } from 'vuetify'
+import { useAuth } from '@/composables/api/useAuth'
 
-import authV1MaskDark from '@images/pages/auth-v1-mask-dark.png'
-import authV1MaskLight from '@images/pages/auth-v1-mask-light.png'
+definePageMeta({ layout: 'blank', guest: true })
+
+const router = useRouter()
+const route = useRoute()
+
+const { login } = useAuth()
+const uiStore = useUiStore()
+const { requestPermissionAndGetToken } = useFirebaseMessaging()
 
 const form = ref({
-  email: '',
+  username: '',
   password: '',
-  remember: false,
 })
 
-const vuetifyTheme = useTheme()
-
-const authThemeMask = computed(() => {
-  return vuetifyTheme.global.name.value === 'light'
-    ? authV1MaskLight
-    : authV1MaskDark
-})
 
 const isPasswordVisible = ref(false)
 
-definePageMeta({ layout: 'blank' })
+const formComp = ref()
+
+const isLoadingSubmit = ref(false)
+const errorMessage = ref<string | null>(null)
+const onSubmit = async () => {
+  const { valid } = await formComp.value.validate()
+  if (!valid) return
+
+  errorMessage.value = null
+  isLoadingSubmit.value = true
+
+  try {
+    const fcmToken = await requestPermissionAndGetToken().catch(() => null)
+
+    const res = await login({
+      username: form.value.username,
+      password: form.value.password,
+      fcm_token: fcmToken ?? undefined,
+      platform: 'web',
+    })
+
+    const redirect = import.meta.client
+      ? localStorage.getItem('redirect_after_login')
+      : null
+
+    localStorage.removeItem('redirect_after_login')
+
+    const defaultRoute = res.data.user.role === 'admin' ? '/' : '/create-pembayaran'
+
+    router.push(redirect ?? defaultRoute)
+
+  } catch (e: any) {
+    errorMessage.value = e.errors ?? 'Terjadi kesalahan saat login'
+  } finally {
+    isLoadingSubmit.value = false
+  }
+}
+
+const adminPhone = useRuntimeConfig().public.adminPhone
+
+onMounted(() => {
+  const fromPath = useCookie('from-path')
+
+  if (uiStore.isLoading && (fromPath.value === '/' || fromPath.value === '/dashboard' || fromPath.value === '/create-pembayaran')) {
+    uiStore.endLoading()
+    fromPath.value = null
+  }
+})
 </script>
 
 <template>
@@ -34,51 +79,49 @@ definePageMeta({ layout: 'blank' })
           v-html="logo"
         /> -->
         <VImg src="/logo.png" width="3rem" />
-        <h2 class="font-weight-medium text-xl text-uppercase ">
+        <h2 class="text-center font-weight-medium text-xl text-uppercase ">
           Pembayaran Iuran Banjar Trijata
         </h2>
       </div>
-      <VCard
-        class="auth-card pa-4 pt-7"
-        max-width="448"
-        width="100%"
-      >
+      <VCard class="auth-card pa-4 pt-7" max-width="448" width="100%">
         <VCardItem class="justify-center">
           <h2 class="font-weight-medium text-2xl text-capitalize text-center">
             Admin
           </h2>
         </VCardItem>
-  
+
         <VCardText>
-          <VForm @submit.prevent="() => {}">
+          <VAlert v-if="errorMessage" type="error" class="mb-4" density="compact">
+            {{ errorMessage }}
+          </VAlert>
+
+          <VForm ref="formComp" @submit.prevent="onSubmit">
             <VRow>
-              <!-- email -->
+              <!-- username -->
               <VCol cols="12">
-                <VTextField
-                  :id="useId()"
-                  v-model="form.email"
-                  label="Email"
-                  type="email"
-                />
+                <VTextField v-model="form.username" label="Username" type="username" :rules="[
+                  (v: string) => !!v || 'Username harus diisi'
+                ]" />
               </VCol>
-  
+
               <!-- password -->
               <VCol cols="12">
-                <VTextField
-                  :id="useId()"
-                  v-model="form.password"
-                  label="Password"
-                  placeholder="············"
-                  :type="isPasswordVisible ? 'text' : 'password'"
-                  autocomplete="password"
-                  :append-inner-icon="isPasswordVisible ? 'ri-eye-off-line' : 'ri-eye-line'"
-                  @click:append-inner="isPasswordVisible = !isPasswordVisible"
-                />
-  
+                <VTextField v-model="form.password" label="Password" placeholder="············"
+                  :type="isPasswordVisible ? 'text' : 'password'" autocomplete="password" :rules="[
+                    (v: string) => !!v || 'Password harus diisi'
+                  ]" :append-inner-icon="isPasswordVisible ? 'ri-eye-off-line' : 'ri-eye-line'"
+                  @click:append-inner="isPasswordVisible = !isPasswordVisible" />
+
+                <div class="text-end mt-1">
+                  <a :href="`https://wa.me/${adminPhone}?text=${encodeURIComponent('Halo, saya lupa password akun iuran warga. Mohon bantu reset password saya.')}`"
+                    target="_blank" class="text-caption text-primary" style="text-decoration: none;">
+                    Lupa kata sandi?
+                  </a>
+                </div>
+
                 <!-- remember me checkbox -->
                 <!-- <div class="d-flex align-center justify-space-between flex-wrap my-6">
                   <VCheckbox
-                    :id="useId()"
                     v-model="form.remember"
                     label="Remember me"
                   />
@@ -90,14 +133,9 @@ definePageMeta({ layout: 'blank' })
                     Forgot Password?
                   </a>
                 </div> -->
-  
+
                 <!-- login button -->
-                <VBtn
-                  block
-                  type="submit"
-                  to="/"
-                  class="mt-6"
-                >
+                <VBtn block type="submit" class="mt-6" :loading="isLoadingSubmit">
                   Login
                 </VBtn>
               </VCol>

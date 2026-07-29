@@ -1,59 +1,68 @@
 <script lang="ts" setup>
-import NavItems from '@/layouts/components/NavItems.vue'
-import logo from '@images/logo.svg?raw'
-import VerticalNavLayout from '@layouts/components/VerticalNavLayout.vue'
+import NavItems from '@/layouts/components/NavItems.vue';
+import logo from '@images/logo.svg?raw';
+import VerticalNavLayout from '@layouts/components/VerticalNavLayout.vue';
 
 // Components
-import Footer from '@/layouts/components/Footer.vue'
-import UserProfile from '@/layouts/components/UserProfile.vue'
+import UserProfile from '@/layouts/components/UserProfile.vue';
+
+import { useScrollStatus } from '@/composables/useScrollNavbar';
+
+const authStore = useAuthStore()
+const notificationStore = useNotificationStore()
+
+const { isMobile } = useDevice()
+const { isScrolled } = useScrollStatus(20)
 </script>
 
 <template>
   <VerticalNavLayout>
-    <!-- 👉 navbar -->
     <template #navbar="{ toggleVerticalOverlayNavActive }">
-      <div class="d-flex h-100 align-center">
-        <!-- 👉 Vertical nav toggle in overlay mode -->
-        <IconBtn
-          class="ms-n3 d-lg-none"
-          @click="toggleVerticalOverlayNavActive(true)"
-        >
-          <VIcon icon="ri-menu-line" />
-        </IconBtn>
+      <div class="transition" :class="{
+        'w-100 top-0 left-0 py-3 px-5': isMobile,
+        'h-100': !isMobile,
+        'bg-surface elevation-3': isScrolled && isMobile  // ← elevation lebih tinggi saat scroll
+      }" :style="isMobile ? {
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 1000,
+        backgroundColor: isScrolled ? 'rgb(var(--v-theme-surface))' : 'rgb(var(--v-theme-surface))',
+        transition: 'box-shadow 0.2s ease',
+        boxShadow: isScrolled ? '0 2px 8px rgba(0,0,0,0.12)' : 'none',
+      } : {}">
+        <div class="d-flex h-100 align-center">
+          <IconBtn v-if="authStore.user?.role === 'admin'" :class="{ 'ms-n3': !isMobile }"
+            @click="toggleVerticalOverlayNavActive(true)">
+            <VIcon icon="ri-menu-line" />
+          </IconBtn>
 
-        <VSpacer />
+          <VSpacer />
 
-        <IconBtn class="me-2">
-          <VIcon icon="ri-notification-line" />
-        </IconBtn>
+          <VBadge :content="notificationStore.unreadCount > 99 ? '99+' : notificationStore.unreadCount"
+            :model-value="notificationStore.unreadCount > 0" color="error" location="top end" offset-x="10"
+            offset-y="5">
+            <IconBtn class="me-2" to="/notifications">
+              <VIcon icon="ri-notification-line" />
+            </IconBtn>
+          </VBadge>
 
-        <!-- <NavbarThemeSwitcher class="me-2" /> -->
-
-        <UserProfile />
+          <UserProfile />
+        </div>
       </div>
     </template>
 
     <template #vertical-nav-header="{ toggleIsOverlayNavActive }">
-      <NuxtLink
-        to="/"
-        class="app-logo app-title-wrapper"
-      >
-        <!-- eslint-disable vue/no-v-html -->
-        <div
-          class="d-flex"
-          v-html="logo"
-        />
-        <!-- eslint-enable -->
+      <NuxtLink to="/" class="app-logo app-title-wrapper">
+        <div class="d-flex" v-html="logo" />
 
-        <h1 class="font-weight-medium leading-normal text-base text-uppercase">
+        <h1 class="font-weight-medium leading-normal text-body-2 text-uppercase">
           Pembayaran Iuran <br> Admin
         </h1>
       </NuxtLink>
 
-      <IconBtn
-        class="d-block d-lg-none"
-        @click="toggleIsOverlayNavActive(false)"
-      >
+      <IconBtn @click="toggleIsOverlayNavActive(false)">
         <VIcon icon="ri-close-line" />
       </IconBtn>
     </template>
@@ -62,13 +71,12 @@ import UserProfile from '@/layouts/components/UserProfile.vue'
       <NavItems />
     </template>
 
-    <!-- 👉 Pages -->
     <slot />
 
-    <!-- 👉 Footer -->
     <template #footer>
-      <Footer />
     </template>
+
+
   </VerticalNavLayout>
 </template>
 
@@ -93,5 +101,9 @@ import UserProfile from '@/layouts/components/UserProfile.vue'
     line-height: 1.75rem;
     text-transform: uppercase;
   }
+}
+
+.transition {
+  transition: all 0.2s ease-in !important;
 }
 </style>

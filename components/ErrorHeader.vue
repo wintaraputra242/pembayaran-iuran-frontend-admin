@@ -12,19 +12,19 @@ const props = defineProps<Props>()
   <div class="text-center mb-4">
     <!-- 👉 Title and subtitle -->
     <h1
-      v-if="props.statusCode"
+      v-if="props?.statusCode"
       class="header-title font-weight-medium"
     >
-      {{ props.statusCode }}
+      {{ props?.statusCode }}
     </h1>
     <h5
-      v-if="props.title"
+      v-if="props?.title"
       class="text-h5 font-weight-medium mb-3"
     >
-      {{ props.title }}
+      {{ props?.title }}
     </h5>
-    <p v-if="props.description">
-      {{ props.description }}
+    <p v-if="props?.description">
+      {{ props?.description }}
     </p>
   </div>
 </template>

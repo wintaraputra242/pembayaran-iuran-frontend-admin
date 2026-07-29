@@ -1,1 +1,66 @@
 // Write your overrides
+
+// html, body {
+//   background-color: #f0f0f0; // warna luar
+//   min-height: 100%;
+// }
+
+.clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+
+.v-table__wrapper {
+  padding: 0 !important;
+}
+
+.v-table--fixed-header .v-table__wrapper:nth-child(1) {
+  margin-right: calc(var(--v-scrollbar-width) * -1);
+}
+
+.v-table table {
+  table-layout: fixed !important;
+}
+
+.my-table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+th {
+  white-space: nowrap;
+}
+
+th, td {
+  padding: 8px 12px !important;
+}
+
+.v-btn__loader .v-progress-circular__overlay {
+  stroke: rgba($color: #ffff, $alpha: 0.5) !important;   /* warna loader */
+}
+
+.v-btn--variant-text .v-progress-circular__overlay {
+  stroke: currentColor !important; /* utk btn text agar warna cocok */
+}
+
+.text-primary.hover-text:hover {
+  color: #1A347A !important;
+}
+.text-secondary.hover-text:hover {
+  color: #7C7F84 !important;
+}
+.text-success.hover-text:hover {
+  color: #4DB600 !important;
+}
+.text-info.hover-text:hover {
+  color: #173a99 !important;
+}
+.text-warning.hover-text:hover {
+  color: #E6A200 !important;
+}
+.text-error.hover-text:hover {
+  color: #E64449 !important;
+}

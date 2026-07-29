@@ -1,6 +1,6 @@
 <script lang="ts">
-import { useDisplay } from 'vuetify'
-import VerticalNav from '@layouts/components/VerticalNav.vue'
+import VerticalNav from '@layouts/components/VerticalNav.vue';
+import { useDisplay } from 'vuetify';
 
 export default defineComponent({
   setup(props, { slots }) {
@@ -81,14 +81,20 @@ export default defineComponent({
           ],
         },
         [
-          verticalNav,
           h(
             'div',
-            { class: 'layout-content-wrapper' },
+            { class: 'layout-center-wrapper' },
             [
-              navbar,
-              main,
-              footer,
+              verticalNav,
+              h(
+                'div',
+                { class: 'layout-content-wrapper' },
+                [
+                  navbar,
+                  main,
+                  footer,
+                ],
+              ),
             ],
           ),
           layoutOverlay,
@@ -106,23 +112,35 @@ export default defineComponent({
 
 .layout-wrapper.layout-nav-type-vertical {
   // TODO(v2): Check why we need height in vertical nav & min-height in horizontal nav
+  max-width: 768px;
+  margin-inline: auto;
+  min-height: 100dvh;
+  background-color: #ffffff; // warna dalam
+  position: relative;
+  overflow: hidden; // penting agar sidebar tidak overflow keluar
   block-size: 100%;
 
-  .layout-content-wrapper {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-    min-block-size: 100dvh;
-    transition: padding-inline-start 0.2s ease-in-out;
-    will-change: padding-inline-start;
+  // .layout-content-wrapper {
+  //   display: flex;
+  //   flex-direction: column;
+  //   flex-grow: 1;
+  //   min-block-size: 100dvh;
+  //   transition: padding-inline-start 0.2s ease-in-out;
+  //   will-change: padding-inline-start;
 
-    @media screen and (min-width: 1280px) {
-      padding-inline-start: variables.$layout-vertical-nav-width;
-    }
+  //   @media screen and (min-width: 1280px) {
+  //     padding-inline-start: variables.$layout-vertical-nav-width;
+  //   }
+  // }
+
+  .layout-content-wrapper {
+    overflow: hidden !important;
+    padding-inline-start: 0 !important;
   }
 
   .layout-navbar {
     z-index: variables.$layout-vertical-nav-layout-navbar-z-index;
+    padding: 0;
 
     .navbar-content-container {
       block-size: variables.$layout-vertical-nav-navbar-height;
@@ -161,6 +179,8 @@ export default defineComponent({
 
   // 👉 Layout overlay
   .layout-overlay {
+    max-width: 768px;
+    margin-inline: auto;
     position: fixed;
     z-index: variables.$layout-overlay-z-index;
     background-color: rgb(0 0 0 / 60%);
@@ -191,6 +211,7 @@ export default defineComponent({
     .layout-page-content {
       display: flex;
       overflow: hidden;
+      position: relative;
 
       .page-content-container {
         inline-size: 100%;
