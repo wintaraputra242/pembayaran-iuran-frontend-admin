@@ -119,11 +119,11 @@ const handleLoadMore = async () => {
 const filters = reactive<{
   informasi_iuran: InformasiIuranForDropdown | null
   bulan: number | null
-  nama_warga: string | null
+  regu: ReguForDropdown | null
 }>({
   informasi_iuran: null,
   bulan: null,
-  nama_warga: null
+  regu: null
 })
 
 const bulanOptions = [
@@ -145,7 +145,7 @@ const hasFilterUnpaidWarga = ref(false)
 
 watch(() => filters.informasi_iuran, async (val: any) => {
   if (!val || !filters.bulan) {
-    filters.nama_warga = null
+    filters.regu = null
     pembayaranStore.unpaidWarga = []
   }
 
@@ -180,7 +180,7 @@ const handleGetDropdownInformasiIuran = async () => {
 
 watch(() => filters.bulan, async (val) => {
   if (!val) {
-    filters.nama_warga = null
+    filters.regu = null
     pembayaranStore.unpaidWarga = []
   }
 
@@ -200,7 +200,7 @@ watch(() => filters.bulan, async (val) => {
 
   pembayaranStore.setFilter('idInformasiIuran', 0)
   pembayaranStore.setFilter('bulan', 0)
-  pembayaranStore.setFilter('namaWarga', '')
+  pembayaranStore.setFilter('idRegu', '')
 
   hasFilterUnpaidWarga.value = false
 })
@@ -208,15 +208,15 @@ watch(() => filters.bulan, async (val) => {
 let debounceTimer: ReturnType<typeof setTimeout> | null = null
 
 watch(
-  () => filters.nama_warga,
+  () => filters.regu,
   (val) => {
     if (debounceTimer) clearTimeout(debounceTimer)
 
     debounceTimer = setTimeout(() => {
       pembayaranStore.isReloadDataUnpaidWarga = true
-      pembayaranStore.setFilter('namaWarga', val as string)
+      pembayaranStore.setFilter('idRegu', val?.id ?? null) // NOTE: key 'idRegu' perlu disesuaikan juga di backend
       pembayaranStore.fetchUnpaidPembayaran({ page: 1, limit: 10 })
-    }, 500) // delay 500ms setelah berhenti mengetik
+    }, 500)
   }
 )
 
@@ -242,13 +242,18 @@ const handleSendNotifToAll = async () => {
 const handleLeaveCreatePembayaran = () => {
   filters.informasi_iuran = null
   filters.bulan = null
-  filters.nama_warga = null
+  filters.regu = null
 
-  navigateTo('/pembayaran')
+  if (window.history.length > 1) {
+    router.back()
+  } else {
+    navigateTo('/pembayaran')
+  }
 }
 
 onMounted(() => {
   handleGetDropdownInformasiIuran()
+  dropdownStore.fetchReguForDropdown()
 })
 </script>
 
@@ -283,8 +288,10 @@ onMounted(() => {
                   item-value="value" clearable :loading="dropdownStore.loading.informasiIuranForDropdown" />
               </VCol>
 
-              <VCol v-if="pembayaranStore.unpaidWarga.length > 0 || filters.nama_warga" cols="12" sm="6">
-                <VTextField v-model="filters.nama_warga" placeholder="Cari Nama Warga" clearable />
+              <VCol v-if="pembayaranStore.unpaidWarga.length > 0 || filters.regu" cols="12" sm="6">
+                <VAutocomplete v-model="filters.regu" placeholder="Cari berdasarkan Regu"
+                  :items="dropdownStore.reguForDropdown" return-object item-title="nama_regu" item-value="id" clearable
+                  :loading="dropdownStore.loading.reguForDropdown" />
               </VCol>
 
               <VCol v-if="pembayaranStore.unpaidWarga.length > 0" cols="12" class="d-flex align-center">

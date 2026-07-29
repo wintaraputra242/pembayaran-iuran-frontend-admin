@@ -233,7 +233,10 @@ onMounted(async () => {
     </div>
     <VRow class="match-height">
       <VCol cols="12">
-        <FormFilterInformasiIuran @show-form-data="handleShowFormData" @filter="handleFilter" @reload="handleReload" />
+        <FormFilterInformasiIuran :initial-keyword="masterInformasiIuranStore.filters?.keyword ?? ''"
+          :initial-status-aktif="masterInformasiIuranStore.filters?.status_aktif ? masterInformasiIuranStore.filters?.status_aktif : null"
+          :initial-jenis-iuran="masterInformasiIuranStore.filters?.jenis_iuran ? masterInformasiIuranStore.filters?.jenis_iuran : null"
+          @filter="handleFilter" @reload="handleReload" @show-form-data="handleShowFormData" />
       </VCol>
 
       <VCol cols="12">

@@ -7,7 +7,9 @@ import FormFilterWarga from '@/views/warga/FormFilter.vue';
 definePageMeta({ onlyAdmin: true })
 
 const masterWargaStore = useMasterWargaStore()
+const masterReguStore = useMasterReguStore()
 const uiStore = useUiStore()
+const dropdownStore = useDropdownStore()
 
 const showFormData = ref(false)
 const isEdit = ref(false)
@@ -131,7 +133,8 @@ const handleAddData = async (params: AddWargaPayload) => {
   const res = await masterWargaStore.fetchAddWarga(params)
 
   if (res.success) {
-    showFormData.value = false
+    // Jangan tutup dialog dulu — biarkan step regu muncul
+    // showFormData.value = false  ← hapus/comment ini
     uiStore.showSuccess(res.message)
     isFetchSuccess.value = true
 
@@ -140,6 +143,7 @@ const handleAddData = async (params: AddWargaPayload) => {
     await masterWargaStore.fetchWarga({ limit: 10, page: page.value })
   }
 }
+
 
 const handleShowFormData = () => {
   isEdit.value = false
@@ -178,12 +182,39 @@ const handleUpdate = async (params: AddWargaPayload) => {
   }
 }
 
+const handleSubmitRegu = async ({ nik, id_regu }: { nik: string; id_regu: number }) => {
+  try {
+    const res = await masterReguStore.fetchAddAnggota({
+      id_regu,
+      niks: [nik],
+    })
+
+    if (res.success) {
+      uiStore.showSuccess(res.message ?? 'Warga berhasil dimasukkan ke regu')
+    }
+  } catch (e) {
+    // error sudah dihandle useApi
+  }
+}
+
+
+const handleSubmit = (params: AddWargaPayload) => {
+  if (isEdit.value) {
+    handleUpdate(params)
+  } else {
+    handleAddData(params)
+  }
+}
+
+
 onMounted(async () => {
   if (masterWargaStore.page) page.value = masterWargaStore.page
 
   if (masterWargaStore.page === 0) {
     await masterWargaStore.fetchWarga({ limit: 10, page: page.value })
   }
+
+  await dropdownStore.fetchReguForDropdown()
 })
 </script>
 
@@ -196,7 +227,9 @@ onMounted(async () => {
     </div>
     <VRow class="match-height">
       <VCol cols="12">
-        <FormFilterWarga @show-form-data="handleShowFormData" @filter="handleFilter" @reload="handleReload" />
+        <FormFilterWarga :initial-keyword="masterWargaStore.filters?.keyword ?? ''"
+          :initial-status-keaktifan="masterWargaStore.filters?.status_keaktifan ? masterWargaStore.filters?.status_keaktifan : null"
+          @filter="handleFilter" @reload="handleReload" @show-form-data="handleShowFormData" />
       </VCol>
 
       <VCol cols="12">
@@ -207,9 +240,10 @@ onMounted(async () => {
       </VCol>
     </VRow>
 
-    <DialogFormDataWarga :is-fetch-success="isFetchSuccess" :loading="masterWargaStore.loading" :is-show="showFormData"
-      :is-edit="isEdit" :item="itemSelected" @close="handleCloseFormData"
-      @submit="isEdit ? handleUpdate($event) : handleAddData($event)" @import="handleImport" />
+    <DialogFormDataWarga :is-show="showFormData" :is-edit="isEdit" :loading="masterWargaStore.loading"
+      :is-fetch-success="isFetchSuccess" :item="itemSelected" :regu-options="dropdownStore.reguForDropdown"
+      :loading-regu-options="dropdownStore.loading.reguForDropdown" @close="handleCloseFormData" @submit="handleSubmit"
+      @import="handleImport" @submit-regu="handleSubmitRegu" />
 
     <ConfirmDialog v-model="showConfirmation" :title="confirmOptions.title" :message="confirmOptions.message"
       :confirm-text="confirmOptions.confirmText" :cancel-text="confirmOptions.cancelText"

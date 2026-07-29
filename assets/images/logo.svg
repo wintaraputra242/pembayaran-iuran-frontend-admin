@@ -1,12 +1,60 @@
-<svg width="1.875em" height="1.5em" viewBox="0 0 250 196" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path fill-rule="evenodd" clip-rule="evenodd" d="M12.3002 1.25469L56.655 28.6432C59.0349 30.1128 60.4839 32.711 60.4839 35.5089V160.63C60.4839 163.468 58.9941 166.097 56.5603 167.553L12.2055 194.107C8.3836 196.395 3.43136 195.15 1.14435 191.327C0.395485 190.075 0 188.643 0 187.184V8.12039C0 3.66447 3.61061 0.0522461 8.06452 0.0522461C9.56056 0.0522461 11.0271 0.468577 12.3002 1.25469Z" fill="#9155FD"/>
-    <path opacity="0.077704" fill-rule="evenodd" clip-rule="evenodd" d="M0 65.2656L60.4839 99.9629V133.979L0 65.2656Z" fill="black"/>
-    <path opacity="0.077704" fill-rule="evenodd" clip-rule="evenodd" d="M0 65.2656L60.4839 99.0795V119.859L0 65.2656Z" fill="black"/>
-    <path fill-rule="evenodd" clip-rule="evenodd" d="M237.71 1.22393L193.355 28.5207C190.97 29.9889 189.516 32.5905 189.516 35.3927V160.631C189.516 163.469 191.006 166.098 193.44 167.555L237.794 194.108C241.616 196.396 246.569 195.151 248.856 191.328C249.605 190.076 250 188.644 250 187.185V8.09597C250 3.64006 246.389 0.027832 241.935 0.027832C240.444 0.027832 238.981 0.441882 237.71 1.22393Z" fill="#9155FD"/>
-    <path opacity="0.077704" fill-rule="evenodd" clip-rule="evenodd" d="M250 65.2656L189.516 99.8897V135.006L250 65.2656Z" fill="black"/>
-    <path opacity="0.077704" fill-rule="evenodd" clip-rule="evenodd" d="M250 65.2656L189.516 99.0497V120.886L250 65.2656Z" fill="black"/>
-    <path fill-rule="evenodd" clip-rule="evenodd" d="M12.2787 1.18923L125 70.3075V136.87L0 65.2465V8.06814C0 3.61223 3.61061 0 8.06452 0C9.552 0 11.0105 0.411583 12.2787 1.18923Z" fill="#9155FD"/>
-    <path fill-rule="evenodd" clip-rule="evenodd" d="M12.2787 1.18923L125 70.3075V136.87L0 65.2465V8.06814C0 3.61223 3.61061 0 8.06452 0C9.552 0 11.0105 0.411583 12.2787 1.18923Z" fill="white" fill-opacity="0.15"/>
-    <path fill-rule="evenodd" clip-rule="evenodd" d="M237.721 1.18923L125 70.3075V136.87L250 65.2465V8.06814C250 3.61223 246.389 0 241.935 0C240.448 0 238.99 0.411583 237.721 1.18923Z" fill="#9155FD"/>
-    <path fill-rule="evenodd" clip-rule="evenodd" d="M237.721 1.18923L125 70.3075V136.87L250 65.2465V8.06814C250 3.61223 246.389 0 241.935 0C240.448 0 238.99 0.411583 237.721 1.18923Z" fill="white" fill-opacity="0.3"/>
+<svg width="1.7em" height="1.7em" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="bgGrad" cx="35%" cy="28%" r="80%">
+      <stop offset="0%" stop-color="#2e4fb0"/>
+      <stop offset="100%" stop-color="#13245c"/>
+    </radialGradient>
+    <linearGradient id="emblemGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#dbe6fa"/>
+    </linearGradient>
+    <path id="motif" d="M256 44 C264 44 271 52 271 61 C271 70 264 78 255 78 C247 78 242 73 242 65 C242 56 249 45 256 44 Z" fill="#a9c1ef" fill-opacity="0.8"/>
+  </defs>
+
+  <!-- background badge -->
+  <circle cx="256" cy="256" r="250" fill="url(#bgGrad)"/>
+  <circle cx="256" cy="256" r="246" fill="none" stroke="#b8cef2" stroke-width="2" stroke-opacity="0.55"/>
+  <circle cx="256" cy="256" r="228" fill="none" stroke="#b8cef2" stroke-width="1" stroke-opacity="0.35"/>
+
+  <!-- ornamental ring, inspired by traditional Balinese pepatran motif -->
+  <use href="#motif" transform="rotate(0 256 256)"/>
+  <use href="#motif" transform="rotate(22.5 256 256)"/>
+  <use href="#motif" transform="rotate(45 256 256)"/>
+  <use href="#motif" transform="rotate(67.5 256 256)"/>
+  <use href="#motif" transform="rotate(90 256 256)"/>
+  <use href="#motif" transform="rotate(112.5 256 256)"/>
+  <use href="#motif" transform="rotate(135 256 256)"/>
+  <use href="#motif" transform="rotate(157.5 256 256)"/>
+  <use href="#motif" transform="rotate(180 256 256)"/>
+  <use href="#motif" transform="rotate(202.5 256 256)"/>
+  <use href="#motif" transform="rotate(225 256 256)"/>
+  <use href="#motif" transform="rotate(247.5 256 256)"/>
+  <use href="#motif" transform="rotate(270 256 256)"/>
+  <use href="#motif" transform="rotate(292.5 256 256)"/>
+  <use href="#motif" transform="rotate(315 256 256)"/>
+  <use href="#motif" transform="rotate(337.5 256 256)"/>
+
+  <!-- meru silhouette (representasi atap pura/banjar, bertingkat tiga) -->
+  <g>
+    <polygon points="256,168 234,204 278,204" fill="url(#emblemGrad)"/>
+    <rect x="233" y="204" width="46" height="4" fill="#13245c" fill-opacity="0.55"/>
+
+    <polygon points="256,196 214,240 298,240" fill="url(#emblemGrad)"/>
+    <rect x="212" y="240" width="88" height="4" fill="#13245c" fill-opacity="0.5"/>
+
+    <polygon points="256,228 190,280 322,280" fill="url(#emblemGrad)"/>
+    <rect x="188" y="280" width="136" height="4" fill="#13245c" fill-opacity="0.45"/>
+
+    <!-- badan meru -->
+    <rect x="205" y="284" width="102" height="42" fill="url(#emblemGrad)"/>
+    <path d="M238 326 A18 18 0 0 1 274 326 Z" fill="#13245c" fill-opacity="0.5"/>
+
+    <!-- pedestal -->
+    <rect x="188" y="326" width="136" height="14" rx="3" fill="#dbe6fa"/>
+  </g>
+
+  <!-- lencana centang: simbol iuran terverifikasi/terbayar -->
+  <circle cx="256" cy="368" r="27" fill="#ffffff"/>
+  <circle cx="256" cy="368" r="27" fill="none" stroke="#13245c" stroke-width="2" stroke-opacity="0.15"/>
+  <path d="M243 368 L252 378 L271 353" fill="none" stroke="#1e3a8a" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>

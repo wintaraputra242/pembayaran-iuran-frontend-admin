@@ -349,17 +349,16 @@ const handleGetDropdownForAddAnggota = async () => {
 const handleSubmitAddAnggota = async (params: { warga: string[] | null }) => {
   isFetchSuccess.value = false
 
-  const { warga } = params
-
   const res = await masterReguStore.fetchAddAnggota({
     id_regu: itemSelected.value?.id as number,
-    niks: warga as string[]
+    niks: params.warga as string[],
   })
 
-  isFetchSuccess.value = true
-  uiStore.showSuccess(res.message)
-
-  await masterReguStore.fetchAnggotaRegu(itemSelected.value?.id as number)
+  if (res?.success) {
+    isFetchSuccess.value = true
+    uiStore.showSuccess(res.message)
+    await masterReguStore.fetchAnggotaRegu(itemSelected.value?.id as number)
+  }
 }
 
 onMounted(async () => {
@@ -383,8 +382,10 @@ onMounted(async () => {
     </div>
     <VRow class="match-height">
       <VCol cols="12">
-        <FormFilterRegu @show-form-data="handleShowFormData" @filter="handleFilter"
-          @reset-all-anggota="handleResetAllAnggota" @reload="handleReload" />
+        <FormFilterRegu :initial-nama-regu="masterReguStore.filters?.nama_regu ?? ''"
+          :initial-status-keaktifan="masterReguStore.filters?.status_keaktifan ? masterReguStore.filters?.status_keaktifan : null"
+          @filter="handleFilter" @reload="handleReload" @show-form-data="handleShowFormData"
+          @reset-all-anggota="handleResetAllAnggota" />
       </VCol>
 
       <VCol cols="12">
@@ -414,7 +415,7 @@ onMounted(async () => {
       @confirm="confirmOptions.action" />
 
     <AnnouncementDialog v-model="showAnnouncement"
-      message="Pembuatan akun Ketua Regu hanya dapat dilakukan setelah data Regu baru berhasil dibuat. Ketika data Regu berhasil ditambahkan, sistem akan otomatis membuatkan akun Ketua Regu terkait."
+      message="Akun Ketua Regu tidak dapat dibuat secara manual. Sistem akan membuatkannya secara otomatis setelah data Regu baru berhasil disimpan."
       @close="showAnnouncement = false; showFormData = true" />
   </div>
 </template>

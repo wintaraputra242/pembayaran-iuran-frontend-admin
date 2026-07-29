@@ -197,6 +197,9 @@ const handleDownloadQris = async () => {
     downloadingQris.value = false
   }
 }
+
+const authStore = useAuthStore()
+const isKetuaRegu = computed(() => authStore.user?.role === 'ketua_regu')
 </script>
 
 <template>
@@ -212,7 +215,7 @@ const handleDownloadQris = async () => {
               :items="(dropdownWargaOptions as WargaPembayaranForDropdown[])" :rules="[rules.warga]"
               @update:model-value="handleWarga">
               <template #item="{ props: itemProps, item }">
-                <VListItem v-bind="itemProps" :subtitle="(item.raw.regu as string) || '-'" />
+                <VListItem v-bind="itemProps" :subtitle="isKetuaRegu ? undefined : (item.raw.regu || '-')" />
               </template>
             </VAutocomplete>
           </VCol>

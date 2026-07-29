@@ -31,7 +31,7 @@ const defaultParams = {
   nama_warga_meninggal: '',
   nik_penanggung_jawab: null
 }
-const params = reactive<AddInformasiIuranPayload>({...defaultParams})
+const params = reactive<AddInformasiIuranPayload>({ ...defaultParams })
 
 const rules = {
   required: (v: any) => !!v || "Field wajib diisi",
@@ -71,7 +71,7 @@ const rules = {
     if (!v) return "Nama Warga yang Meninggal wajib diisi"
     return true
   },
-  
+
   nik_penanggung_jawab: (v: string) => {
     if (!v) return "Warga Penanggung Jawab wajib diisi"
     return true
@@ -80,7 +80,7 @@ const rules = {
 
 const handleClose = () => {
   form.value?.reset()
-  
+
   emit('close')
 }
 
@@ -120,7 +120,7 @@ watch(
   newVal => {
 
     if (newVal) {
-      form.value.reset() 
+      form.value.reset()
     }
   }
 )
@@ -137,7 +137,8 @@ const handleSubmit = async () => {
 <template>
   <VDialog v-model="props.isShow">
     <VCard position="relative">
-      <VCardTitle class="pt-3 position-fixed top-0 left-0 w-100" style="background-color: #fff !important; z-index: 10;">
+      <VCardTitle class="pt-3 position-fixed top-0 left-0 w-100"
+        style="background-color: #fff !important; z-index: 10;">
         <div class="d-flex align-center justify-space-between">
           <h3>{{ props.isEdit ? 'Edit' : 'Tambah' }}</h3>
           <IconBtn :disabled="props.loading" variant="text" color="secondary" size="small" @click="handleClose">
@@ -149,78 +150,43 @@ const handleSubmit = async () => {
         <VForm ref="form" @submit.prevent="handleSubmit">
           <VRow align="center" class="pt-1">
             <VCol cols="12">
-              <VSelect
-                v-model="params.jenis_iuran"
-                label="Jenis Iuran"
-                placeholder="Masukkan jenis iuran"
-                item-title="label"
-                item-value="value"
-                :items="[
-                  {label: 'Bulanan', value: 'bulanan'},
-                  {label: 'Kematian', value: 'kematian'},
-                ]"
-                :rules="[rules.jenis_iuran]"
-              />
+              <VSelect v-model="params.jenis_iuran" label="Jenis Iuran" placeholder="Masukkan jenis iuran"
+                item-title="label" item-value="value" :items="[
+                  { label: 'Bulanan', value: 'bulanan' },
+                  { label: 'Kematian', value: 'kematian' },
+                ]" :rules="[rules.jenis_iuran]" />
             </VCol>
             <template v-if="params.jenis_iuran">
               <VCol cols="12">
-                <VTextField
-                  v-model="params.judul_iuran"
-                  label="Judul Iuran"
-                  placeholder="Masukkan judul iuran"
-                  :rules="[rules.judul]"
-                />
+                <VTextField v-model="params.judul_iuran" label="Judul Iuran" placeholder="Masukkan judul iuran"
+                  :rules="[rules.judul]" />
               </VCol>
               <VCol v-if="params.jenis_iuran === 'bulanan'" cols="12">
-                <VSelect
-                  v-model="params.periode"
-                  label="Periode"
-                  placeholder="Masukkan periode iuran"
-                  :items="years"
-                  :rules="[rules.periode]"
-                />
+                <VSelect v-model="params.periode" label="Periode" placeholder="Masukkan periode iuran" :items="years"
+                  :rules="[rules.periode]" />
               </VCol>
               <VCol v-if="params.jenis_iuran === 'kematian'" cols="12">
-                <VTextField
-                  v-model="params.nama_warga_meninggal"
-                  label="Nama Warga yang Meninggal"
-                  placeholder="Masukkan nama warga yang meninggal"
-                  :rules="[rules.nama_warga_meninggal]"
-                  @update:model-value="(e) => { params.nama_warga_meninggal = e.toUpperCase()}"
-                />
+                <VTextField v-model="params.nama_warga_meninggal" label="Nama Warga yang Meninggal"
+                  placeholder="Masukkan nama warga yang meninggal" :rules="[rules.nama_warga_meninggal]"
+                  @update:model-value="(e) => { params.nama_warga_meninggal = e.toUpperCase() }" />
               </VCol>
               <VCol v-if="params.jenis_iuran === 'kematian'" cols="12">
-                <VSelect
-                  v-model="params.nik_penanggung_jawab"
-                  label="Warga yang Bertanggung Jawab"
-                  placeholder="Masukkan warga yang bertanggung jawab"
-                  item-value="nik"
-                  item-title="nama_warga"
-                  :items="props.itemDropdownWarga"
-                  :loading="props.loadingDropdownWarga"
-                  :rules="[rules.nik_penanggung_jawab]"
-                />
+                <VSelect v-model="params.nik_penanggung_jawab" label="Warga yang Bertanggung Jawab"
+                  placeholder="Masukkan warga yang bertanggung jawab" item-value="nik" item-title="nama_warga"
+                  :items="props.itemDropdownWarga" :loading="props.loadingDropdownWarga"
+                  :rules="[rules.nik_penanggung_jawab]" />
               </VCol>
               <VCol cols="12">
-                <VTextField
-                  v-model="params.jumlah_iuran"
-                  label="Jumlah Iuran"
-                  placeholder="Masukkan jumlah iuran"
-                  :rules="[rules.jumlah_iuran]"
-                  @update:model-value="onInputJumlahIuran"
-                >
+                <VTextField v-model="params.jumlah_iuran" label="Jumlah Iuran" placeholder="Masukkan jumlah iuran"
+                  :rules="[rules.jumlah_iuran]" @update:model-value="onInputJumlahIuran">
                   <template #prepend-inner>
                     <span>Rp. </span>
                   </template>
                 </VTextField>
               </VCol>
               <VCol cols="12">
-                <VTextarea
-                  v-model="params.keterangan"
-                  label="Keterangan"
-                  placeholder="Masukkan keterangan iuran"
-                  :rules="[rules.keterangan]"
-                />
+                <VTextarea v-model="params.keterangan" label="Keterangan" placeholder="Masukkan keterangan iuran"
+                  :rules="[rules.keterangan]" />
               </VCol>
             </template>
             <VCol cols="12">
@@ -229,9 +195,10 @@ const handleSubmit = async () => {
                   <VIcon icon="ri-close-line" class="me-1" />
                   Batal
                 </VBtn>
-                <VBtn :loading="props.loading" variant="flat" :color="props.isEdit ? 'info' : 'success'" size="small" type="submit">
+                <VBtn :loading="props.loading" variant="flat" :color="props.isEdit ? 'info' : 'success'" size="small"
+                  type="submit">
                   <VIcon :icon="props.isEdit ? 'ri-save-2-line' : 'ri-add-line'" class="me-1" />
-                  {{ props.isEdit ? 'Simpan' : 'Tambah'}}
+                  {{ props.isEdit ? 'Simpan' : 'Tambah' }}
                 </VBtn>
               </div>
             </VCol>

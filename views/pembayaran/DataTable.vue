@@ -18,6 +18,7 @@ const emit = defineEmits<{
   (e: 'loadMore'): void
   (e: 'approved', item: Pembayaran): void
   (e: 'reject', item: Pembayaran): void
+  (e: 'cancel', item: Pembayaran): void  // ← tambah ini
 }>()
 
 const config = useRuntimeConfig()
@@ -37,16 +38,19 @@ const headers = [
   { label: 'Aksi', key: 'aksi', width: '120px', align: 'center', sortable: false },
 ]
 
+// tambah cancelled di status
 const statusChipsColor: Record<string, string> = {
   pending: 'warning',
   approved: 'success',
   rejected: 'error',
+  cancelled: 'secondary', // ← tambah ini
 }
 
 const statusText: Record<string, string> = {
   pending: 'Menunggu Validasi',
   approved: 'Disetujui',
   rejected: 'Ditolak',
+  cancelled: 'Dibatalkan', // ← tambah ini
 }
 </script>
 
@@ -79,7 +83,8 @@ const statusText: Record<string, string> = {
 
     <!-- Jenis Iuran -->
     <template #cell-jenis_iuran="{ item }">
-      <VChip size="small" :color="item.informasi_iuran.jenis_iuran === 'bulanan' ? 'info' : 'error'">
+      <VChip size="small" :color="item.informasi_iuran.jenis_iuran === 'bulanan' ? 'info' : 'error'"
+        class="text-capitalize">
         {{ item.informasi_iuran.jenis_iuran }}
       </VChip>
     </template>
@@ -160,8 +165,16 @@ const statusText: Record<string, string> = {
           </VTooltip>
         </template> -->
         <template v-else-if="item.status_bayar === 'approved'">
-          <VIcon icon="ri-checkbox-circle-line" color="success" size="22" />
-          <span class="text-success">Diterima</span>
+          <div class="d-flex align-center gap-2">
+            <div class="d-flex align-center gap-1">
+              <VIcon icon="ri-checkbox-circle-line" color="success" size="22" />
+              <span class="text-success">Diterima</span>
+            </div>
+            <VBtn size="x-small" variant="flat" color="error" @click="emit('cancel', item)">
+              <VIcon icon="ri-close-line" size="14" class="me-1" />
+              Batalkan
+            </VBtn>
+          </div>
         </template>
 
         <!-- Rejected -->
@@ -175,11 +188,18 @@ const statusText: Record<string, string> = {
         <template v-else-if="item.status_bayar === 'rejected'">
           <div v-ripple v-tooltip="'Klik untuk lihat alasan penolakan'"
             class="d-inline-flex align-center gap-1 cursor-pointer px-2 py-1 rounded-lg"
-            style="border: 1px dashed rgb(var(--v-theme-error)); background: rgba(var(--v-theme-error), 0.08);"
+            style="border: 1px dashed rgb(var(--v-theme-error)); background: rgba(var(--v-theme-error), 1);"
             @click="emit('showRejectionReason', item)">
-            <VIcon icon="ri-close-circle-line" color="error" size="16" />
-            <span class="text-error" style="font-size: 12px; white-space: nowrap;">Ditolak</span>
-            <VIcon icon="ri-information-line" color="error" size="14" style="opacity: 0.7;" />
+            <VIcon icon="ri-close-circle-line" color="white" size="16" />
+            <span class="text-white" style="font-size: 12px; white-space: nowrap;">Ditolak</span>
+            <VIcon icon="ri-information-line" color="white" size="14" style="opacity: 0.7;" />
+          </div>
+        </template>
+
+        <template v-else-if="item.status_bayar === 'cancelled'">
+          <div class="d-flex align-center gap-1">
+            <VIcon icon="ri-forbid-line" color="secondary" size="22" />
+            <span class="text-secondary">Dibatalkan</span>
           </div>
         </template>
 

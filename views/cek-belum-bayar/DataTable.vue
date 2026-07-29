@@ -39,14 +39,9 @@ const statusChipsColor: Record<PaymentStatus, string> = {
 </script>
 
 <template>
-  <AppDataTable
-    :headers="headers"
-    :items="props.data"
-    :loading="props.loading"
-    :has-more="props.hasMore"
-    :no-data-text="!hasFilter ? 'Tolong lakukan pencaharian informasi iuran terlebih dahulu' : 'Tidak ada data' "
-    @loadMore="emit('loadMore')"
-  >
+  <AppDataTable :headers="headers" :items="props.data" :loading="props.loading" :has-more="props.hasMore"
+    :no-data-text="!hasFilter ? 'Tolong lakukan pencaharian informasi iuran terlebih dahulu' : 'Tidak ada data'"
+    @loadMore="emit('loadMore')">
 
     <!-- Nama Warga -->
     <template #cell-nama_warga="{ item }">
@@ -55,7 +50,7 @@ const statusChipsColor: Record<PaymentStatus, string> = {
 
     <!-- Regu -->
     <template #cell-regu="{ item }">
-      {{ item.anggota_regu?.regu?.nama_regu || '-' }}
+      {{ item.anggota_regu[0]?.regu?.nama_regu || '-' }}
     </template>
 
     <!-- Jumlah Iuran -->
@@ -67,14 +62,8 @@ const statusChipsColor: Record<PaymentStatus, string> = {
 
     <!-- Aksi -->
     <template #cell-actions="{ item }">
-      <IconBtn
-        variant="outlined"
-        class="rounded-lg"
-        size="small"
-        color="secondary"
-        :loading="loadingSendNotif && (item.nik === nikNotifSended)"
-        @click="emit('sendNotif', item)"
-      >
+      <IconBtn variant="outlined" class="rounded-lg" size="small" color="secondary"
+        :loading="loadingSendNotif && (item.nik === nikNotifSended)" @click="emit('sendNotif', item)">
         <VIcon icon="ri-bell-line" />
       </IconBtn>
     </template>
@@ -84,7 +73,8 @@ const statusChipsColor: Record<PaymentStatus, string> = {
 
 <style scoped>
 .table-scroll-wrapper {
-  max-height: 400px;   /* tinggi container */
+  max-height: 400px;
+  /* tinggi container */
   overflow-y: auto;
   overflow-x: hidden;
   height: 100%;

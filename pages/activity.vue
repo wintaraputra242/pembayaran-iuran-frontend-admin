@@ -67,7 +67,8 @@ onMounted(async () => {
     </div>
     <VRow class="match-height">
       <VCol cols="12">
-        <FormFilterActivity :loading="activityStore.loading" @filter="handleFilter" @reload="handleReload" />
+        <FormFilterActivity :initial-action="activityStore.filters?.action || null"
+          :initial-user="activityStore.filters?.user ?? ''" @filter="handleFilter" @reload="handleReload" />
       </VCol>
 
       <VCol cols="12">

@@ -97,7 +97,7 @@ export const useMasterReguStore = defineStore('master-regu', {
     },
 
     async fetchDeleteRegu(id: number) {
-    
+
       const api = useMasterRegu()
       this.loading = true
 
@@ -111,7 +111,7 @@ export const useMasterReguStore = defineStore('master-regu', {
     },
 
     async fetchUpdateStatus(params: { id: number, status_keaktifan: 'aktif' | 'tidak_aktif' }) {
-    
+
       const api = useMasterRegu()
       this.loading = true
 
@@ -171,7 +171,7 @@ export const useMasterReguStore = defineStore('master-regu', {
     },
 
     async fetchResetAnggota(id: number) {
-    
+
       const api = useMasterRegu()
       this.loadingAnggota = true
 
@@ -185,7 +185,7 @@ export const useMasterReguStore = defineStore('master-regu', {
     },
 
     async fetchResetAnggotaByRegu(id_regu: number) {
-    
+
       const api = useMasterRegu()
       this.loadingAnggota = true
 
@@ -199,7 +199,7 @@ export const useMasterReguStore = defineStore('master-regu', {
     },
 
     async fetchResetAnggotaAll() {
-    
+
       const api = useMasterRegu()
       this.loadingAnggota = true
 

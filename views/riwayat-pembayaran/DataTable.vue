@@ -20,7 +20,6 @@ const config = useRuntimeConfig()
 
 const headers = [
   { label: 'No.', key: 'no', width: '70px', sortable: false },
-  { label: 'ID Transaksi', key: 'transaction_id', width: '200px' },
   { label: 'Tanggal Bayar', key: 'tanggal_bayar', width: '180px' },
   { label: 'Judul Iuran', key: 'judul_iuran', width: '220px' },
   { label: 'Metode Bayar', key: 'metode_bayar', width: '160px' },
@@ -37,7 +36,9 @@ const statusChipsColor: Record<
   'failed' |
   'expired' |
   'canceled' |
-  'manual',
+  'manual' |
+  'approved' |
+  'rejected',
   string
 > = {
   pending: 'info',
@@ -47,6 +48,8 @@ const statusChipsColor: Record<
   expired: 'secondary',
   canceled: 'secondary',
   manual: 'success',
+  approved: 'success',
+  rejected: 'error',
 }
 
 const statusText: Record<
@@ -56,7 +59,9 @@ const statusText: Record<
   'failed' |
   'expired' |
   'canceled' |
-  'manual',
+  'manual' |
+  'approved' |
+  'rejected',
   string
 > = {
   pending: 'Menunggu',
@@ -66,6 +71,8 @@ const statusText: Record<
   expired: 'Kedaluwarsa',
   canceled: 'Dibatalkan',
   manual: 'Lunas',
+  approved: 'Diterima',
+  rejected: 'Ditolak',
 }
 </script>
 
@@ -119,14 +126,26 @@ const statusText: Record<
 
     <!-- Bukti -->
     <template #cell-bukti="{ item }">
-      <div class="d-flex">
-        <div v-ripple class="pa-2 rounded-lg cursor-pointer" @click="emit('showBuktiBayar', item)">
-          <!-- <VImg :src="item.bukti_pembayaran || eCommerce2" width="50" /> -->
-          <VImg v-if="item.bukti_pembayaran" :src="config.public.backendUrl + '/storage/' + item.bukti_pembayaran"
-            width="50" />
-          <span v-else>-</span>
+      <div v-if="item.bukti_pembayaran" v-ripple class="cursor-pointer d-inline-flex flex-column align-center gap-1"
+        style="max-width: 70px;" @click="emit('showBuktiBayar', item)">
+        <div style="position: relative; width: 54px; height: 54px;">
+          <img :src="config.public.backendUrl + '/storage/' + item.bukti_pembayaran"
+            style="width: 54px; height: 54px; object-fit: cover; border-radius: 8px; border: 1px solid rgba(var(--v-theme-primary), 0.3);" />
+          <!-- overlay icon zoom -->
+          <div style="
+        position: absolute; inset: 0;
+        background: rgba(var(--v-theme-primary), 0.15);
+        border-radius: 8px;
+        display: flex; align-items: center; justify-content: center;
+      ">
+            <VIcon size="18" color="primary">ri-zoom-in-line</VIcon>
+          </div>
         </div>
+        <span style="font-size: 10px; color: rgb(var(--v-theme-primary)); white-space: nowrap;">
+          Lihat Bukti
+        </span>
       </div>
+      <span v-else class="text-medium-emphasis">-</span>
     </template>
 
   </AppDataTable>

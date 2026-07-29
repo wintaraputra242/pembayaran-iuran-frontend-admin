@@ -69,7 +69,7 @@ export default defineNuxtConfig({
   // debug: true,
 
   devtools: {
-    enabled: true,
+    enabled: false,
   },
 
   css: [
@@ -165,6 +165,10 @@ export default defineNuxtConfig({
         },
       }),
     ],
+
+    server: {
+      allowedHosts: ['possession-slip-adds-withdrawal.trycloudflare.com']
+    }
   },
 
   build: {
@@ -192,6 +196,7 @@ export default defineNuxtConfig({
       firebaseAppId: process.env.NUXT_PUBLIC_FIREBASE_APP_ID,
       firebaseVapidKey: process.env.NUXT_PUBLIC_FIREBASE_VAPID_KEY,
       measurementId: process.env.NUXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
+      adminPhone: process.env.NUXT_PUBLIC_WA_PENGURUS,
     },
   },
 

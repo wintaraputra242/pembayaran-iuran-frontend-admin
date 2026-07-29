@@ -4,6 +4,7 @@ import DataTable from '@/views/cek-belum-validasi/DataTable.vue'
 
 const config = useRuntimeConfig()
 const pembayaranStore = usePembayaranStore()
+const router = useRouter()
 
 // ── State ─────────────────────────────────────────────────────────
 const showPaymentProof = ref(false)
@@ -94,11 +95,20 @@ const handleLoadMore = async () => {
   })
 }
 
+const handleBack = () => {
+  // Cek apakah ada history yang bisa di-back
+  if (window.history.length > 1) {
+    router.back()
+  } else {
+    router.push('/pembayaran')
+  }
+}
+
 </script>
 
 <template>
   <div>
-    <VBtn class="px-0 py-1 mb-3" variant="text" size="large" to="/pembayaran">
+    <VBtn class="px-0 py-1 mb-3" variant="text" size="large" @click="handleBack">
       <VIcon icon="ri-arrow-left-s-line" class="me-2" />
       Keluar
     </VBtn>

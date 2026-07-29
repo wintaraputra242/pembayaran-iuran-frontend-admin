@@ -39,11 +39,12 @@ export const usePembayaranStore = defineStore('pembayaran', {
       status_bayar: '',
       start_date: '',
       end_date: '',
+      pembayaran_id: ''
     },
 
     idInformasiIuran: 0,
     bulan: 0,
-    namaWarga: '',
+    idRegu: '',
 
     itemSelected: null as Pembayaran | null,
 
@@ -57,6 +58,19 @@ export const usePembayaranStore = defineStore('pembayaran', {
     pendingPembayaran: [] as Pembayaran[],
 
     qrisData: null as { image: string; nama_rekening: string; nomor_rekening: string; keterangan: string } | null,
+
+    cancelDialog: false,
+    cancelReason: '',
+    isLoadingCancel: false,
+    itemToCancel: null as Pembayaran | null,
+    unpaidWargaList: [] as any[],
+    loadingUnpaid: false,
+    metaUnpaidWarga: {} as Record<string, any>,
+    riwayatKetuaRegu: [] as any[],
+    loadingRiwayatKetua: false,
+    metaRiwayatKetua: {} as Record<string, any>,
+    detailPembayaranById: null as any,
+    loadingDetailPembayaranById: false,
   }),
 
   getters: {
@@ -82,6 +96,21 @@ export const usePembayaranStore = defineStore('pembayaran', {
   },
 
   actions: {
+    async fetchDetailPembayaranById(id: number) {
+      const api = usePembayaran()
+      this.loadingDetailPembayaranById = true
+
+      try {
+        const res = await api.getDetailPembayaranById(id)
+
+        this.detailPembayaranById = res.data
+
+        return res
+      } finally {
+        this.loadingDetailPembayaranById = false
+      }
+    },
+
     async fetchPembayaran(params?: { page?: number; limit?: number }) {
       if (this.reload) {
         this.pembayaran = []
@@ -95,7 +124,11 @@ export const usePembayaranStore = defineStore('pembayaran', {
         const newFilter: Record<string, string> = {}
 
         Object.entries(this.filters).forEach(([key, value]) => {
-          if (value) newFilter[key] = value
+          if (!value) return
+
+          // Backend menerima 'id', bukan 'pembayaran_id' — mapping nama param di sini
+          const paramKey = key === 'pembayaran_id' ? 'id' : key
+          newFilter[paramKey] = value
         })
 
         const res = await api.getPembayaran({
@@ -116,14 +149,16 @@ export const usePembayaranStore = defineStore('pembayaran', {
     },
 
     setFilter(
-      key: keyof typeof this.filters | 'idInformasiIuran' | 'bulan' | 'namaWarga' | 'nikWarga',
-      value: string | number
+      key: keyof typeof this.filters | 'idInformasiIuran' | 'bulan' | 'idRegu' | 'nikWarga',
+      value: string | number | null | undefined
     ) {
       if (key in this.filters) {
-        this.filters[key as keyof typeof this.filters] = String(value)
+        const isEmpty = value === null || value === undefined || value === ''
+
+        this.filters[key as keyof typeof this.filters] = isEmpty ? '' : String(value)
       } else {
-        this[key as 'idInformasiIuran' | 'bulan'] = Number(value)
-        this[key as 'namaWarga' | 'nikWarga'] = value as string
+        this[key as 'idInformasiIuran' | 'bulan'] = value ? Number(value) : (0 as any)
+        this[key as 'idRegu' | 'nikWarga'] = (value ?? '') as string
       }
     },
 
@@ -136,6 +171,7 @@ export const usePembayaranStore = defineStore('pembayaran', {
         status_bayar: '',
         start_date: '',
         end_date: '',
+        pembayaran_id: ''
       }
     },
 
@@ -210,7 +246,7 @@ export const usePembayaranStore = defineStore('pembayaran', {
         const res = await api.getUnpaidPembayaran({
           id_informasi_iuran: this.idInformasiIuran,
           bulan: this.bulan ?? undefined,
-          nama_warga: this.namaWarga || undefined,
+          id_regu: this.idRegu || undefined,
           page: params?.page,
           per_page: params?.limit,
         })
@@ -310,7 +346,7 @@ export const usePembayaranStore = defineStore('pembayaran', {
 
       try {
         const res = await api.getUnpaidPembayaranKetuaRegu({
-          nama_warga: this.namaWarga || undefined,
+          nama_warga: this.idRegu || undefined,
           page: params?.page,
           per_page: params?.limit,
         })
@@ -441,6 +477,100 @@ export const usePembayaranStore = defineStore('pembayaran', {
         return res
       } finally {
         this.loadingAction = false
+      }
+    },
+
+    openCancelDialog(item: Pembayaran) {
+      this.itemToCancel = item
+      this.cancelReason = ''
+      this.cancelDialog = true
+    },
+
+    closeCancelDialog() {
+      this.itemToCancel = null
+      this.cancelReason = ''
+      this.cancelDialog = false
+    },
+
+    async submitCancel(from?: string) {
+      if (!this.itemToCancel || !this.cancelReason.trim()) return
+
+      const api = usePembayaran()
+      this.isLoadingCancel = true
+
+      try {
+        await api.cancelPembayaran(this.itemToCancel.id, this.cancelReason)
+        this.closeCancelDialog()
+
+        // Reload data
+        this.reload = true
+        this.pembayaran = []
+
+        if (from === 'dashboard') {
+          await useDashboardStore().fetchDashboard('pembayaran')
+
+          return
+        }
+        await this.fetchPembayaran({ limit: 10, page: 1 })
+      } catch (e) {
+        // error sudah dihandle useApi
+      } finally {
+        this.isLoadingCancel = false
+      }
+    },
+
+    async fetchUnpaidWarga(params?: {
+      id_regu?: number
+      id_informasi_iuran?: number
+      bulan?: number
+      nama_warga?: string
+      page?: number
+      per_page?: number
+    }) {
+      const api = usePembayaran()
+      this.loadingUnpaid = true
+
+      try {
+        const res = await api.getUnpaidWarga(params)
+
+        if (params?.page && params.page > 1) {
+          this.unpaidWargaList = [...this.unpaidWargaList, ...res.data.data]
+        } else {
+          this.unpaidWargaList = res.data.data
+        }
+
+        const { data, ...meta } = res.data
+        this.metaUnpaidWarga = meta
+      } finally {
+        this.loadingUnpaid = false
+      }
+    },
+
+    async fetchRiwayatKetuaRegu(params?: {
+      start_date?: string
+      end_date?: string
+      status_bayar?: string
+      nama_warga?: string
+      per_page?: number
+      page?: number
+    }) {
+      const api = usePembayaran()
+      this.loadingRiwayatKetua = true
+
+      try {
+        const res = await api.getRiwayatKetuaRegu(params)
+
+        // Reset kalau page 1 atau tidak ada page
+        if (!params?.page || params.page === 1) {
+          this.riwayatKetuaRegu = res.data.data
+        } else {
+          this.riwayatKetuaRegu = [...this.riwayatKetuaRegu, ...res.data.data]
+        }
+
+        const { data, ...meta } = res.data
+        this.metaRiwayatKetua = meta
+      } finally {
+        this.loadingRiwayatKetua = false
       }
     },
 

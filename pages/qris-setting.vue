@@ -159,7 +159,9 @@ const handleShowImage = (item: QrSetting) => {
     <VRow class="match-height">
       <!-- Filter -->
       <VCol cols="12">
-        <FormFilterQris @show-form-data="handleShowFormData" @filter="handleFilter" @reload="handleReload" />
+        <FormFilterQris :initial-keyword="qrSettingStore.filters?.keyword ?? ''"
+          :initial-status="qrSettingStore.filters?.status ? qrSettingStore.filters?.status : null"
+          @filter="handleFilter" @reload="handleReload" @show-form-data="handleShowFormData" />
       </VCol>
 
       <!-- Tabel -->

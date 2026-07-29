@@ -3,11 +3,11 @@ import ListInformasiIuranCreatePembayaran from '@/views/create-pembayaran/ListIn
 
 definePageMeta({ adminAndKetuaRegu: true })
 
-const route = useRoute()
-
 const authStore = useAuthStore()
 const uiStore = useUiStore()
 const masterStore = useMasterInformasiIuranStore()
+const router = useRouter()
+const route = useRoute()
 
 const tab = ref<'kematian' | 'bulanan'>('kematian')
 const page = ref(1)
@@ -39,9 +39,7 @@ const loadData = async (type: 'kematian' | 'bulanan') => {
   })
 }
 
-watch(tab, (val) => {
-  loadData(val)
-})
+watch(tab, (val) => loadData(val), { immediate: true })
 
 let debounceTimer: any
 
@@ -66,9 +64,7 @@ watch(() => filters.bulanan, (val) => {
 })
 
 watch(() => route.query.jenis_iuran, (newVal) => {
-  if (newVal) {
-    tab.value = newVal as 'kematian' | 'bulanan'
-  }
+  tab.value = (newVal as 'kematian' | 'bulanan') ?? 'kematian'
 }, { immediate: true })
 
 const handleLoadMore = async () => {
@@ -81,6 +77,17 @@ const handleLoadMore = async () => {
   })
 }
 
+const handleBack = () => {
+  // filters.informasi_iuran = null
+  // filters.bulan = null
+  // filters.nama_warga = null
+
+  const referrer = sessionStorage.getItem('pembayaran_referrer') ?? '/pembayaran'
+  sessionStorage.removeItem('pembayaran_referrer')
+
+  router.push(referrer)
+}
+
 onMounted(() => {
   const fromPath = useCookie('from-path')
 
@@ -89,7 +96,7 @@ onMounted(() => {
     fromPath.value = null
   }
 
-  loadData('kematian')
+  // Hapus loadData('kematian') dari sini
 })
 </script>
 
@@ -97,7 +104,7 @@ onMounted(() => {
   <div class="mt-n5">
     <div class="mb-4">
       <div v-if="authStore.user?.role === 'admin'" class="mb-3">
-        <VBtn class="px-0 py-1" variant="text" size="large" to="/pembayaran">
+        <VBtn class="px-0 py-1" variant="text" size="large" @click="handleBack">
           <VIcon icon="ri-arrow-left-s-line" class="me-2" />
           Keluar
         </VBtn>
@@ -119,7 +126,7 @@ onMounted(() => {
             prepend-inner-icon="ri-search-2-line" />
         </div>
         <ListInformasiIuranCreatePembayaran :has-more="masterStore.hasMore" :loading="masterStore.loading"
-          :items="kematianItems" @load-more="handleLoadMore" />
+          :items="kematianItems" :keyword="filters.kematian" @load-more="handleLoadMore" />
       </VTabsWindowItem>
       <VTabsWindowItem class="py-5" value="bulanan">
         <div class="mb-3">
@@ -127,7 +134,7 @@ onMounted(() => {
             prepend-inner-icon="ri-search-2-line" />
         </div>
         <ListInformasiIuranCreatePembayaran :has-more="masterStore.hasMore" :loading="masterStore.loading"
-          :items="bulananItems" @load-more="handleLoadMore" />
+          :items="bulananItems" :keyword="filters.bulanan" @load-more="handleLoadMore" />
       </VTabsWindowItem>
     </VTabsWindow>
   </div>

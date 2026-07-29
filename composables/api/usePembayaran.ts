@@ -58,7 +58,7 @@ export const usePembayaran = () => {
   const getUnpaidPembayaran = async (params: {
     id_informasi_iuran: number
     bulan?: number
-    nama_warga?: string
+    id_regu?: number
     per_page?: number
     page?: number
   }): Promise<GetUnpaidPembayaranResponse> => {
@@ -166,6 +166,43 @@ export const usePembayaran = () => {
     })
   }
 
+  const cancelPembayaran = async (id: number, alasan_pembatalan: string) => {
+    return await api(`/pembayaran/${id}/cancel`, {
+      method: 'PATCH',
+      body: { alasan_pembatalan },
+    })
+  }
+
+  const getUnpaidWarga = async (params?: {
+    id_regu?: number
+    id_informasi_iuran?: number
+    bulan?: number
+    nama_warga?: string
+    page?: number
+    per_page?: number
+  }) => {
+    return await api('/pembayaran/unpaid', {
+      query: params,
+    })
+  }
+
+  const getRiwayatKetuaRegu = async (params?: {
+    start_date?: string
+    end_date?: string
+    status_bayar?: string
+    nama_warga?: string
+    per_page?: number
+    page?: number
+  }) => {
+    return await api<any>('/pembayaran/riwayat-ketua-regu', {
+      query: params,
+    })
+  }
+
+  const getDetailPembayaranById = async (id: number): Promise<GetDetailPembayaranResponse> => {
+    return await api<GetDetailPembayaranResponse>(`/pembayaran/show-by-id/${id}`)
+  }
+
   return {
     getPembayaran,
     getDetailPembayaran,
@@ -183,6 +220,10 @@ export const usePembayaran = () => {
     notifyResidentUnpaidOneByOne,
     approvePembayaran,
     rejectPembayaran,
-    getPendingPembayaran
+    getPendingPembayaran,
+    cancelPembayaran,
+    getUnpaidWarga,
+    getRiwayatKetuaRegu,
+    getDetailPembayaranById
   }
 }

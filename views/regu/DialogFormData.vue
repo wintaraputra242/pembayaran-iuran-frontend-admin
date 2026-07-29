@@ -22,7 +22,7 @@ const form = ref()
 const defaultParams = {
   nama_regu: '',
 }
-const params = reactive({...defaultParams})
+const params = reactive({ ...defaultParams })
 
 const rules = {
   required: (v: any) => !!v || "Field wajib diisi",
@@ -44,23 +44,22 @@ watch(
 
 const handleClose = () => {
   form.value?.reset()
-  
+
   emit('close')
 }
 
-watch(
-  () => props.isEdit,
-  newVal => {
-    if (!newVal) return
-
+watch(() => props.isEdit, newVal => {
+  if (!newVal) return
+  form.value?.reset()
+  nextTick(() => {
     params.nama_regu = props.item?.nama_regu as string
-  }
-)
+  })
+})
 
 const handleSubmit = async () => {
   const { valid } = await form.value?.validate()
 
-  if (valid) {    
+  if (valid) {
     emit('submit', params)
   }
 
@@ -70,7 +69,7 @@ watch(() => props.isFetchSuccess, (newVal) => {
   if (newVal) {
     handleClose()
   }
-}, {immediate: true})
+}, { immediate: true })
 </script>
 
 <template>
@@ -88,12 +87,8 @@ watch(() => props.isFetchSuccess, (newVal) => {
         <VForm ref="form" @submit.prevent="handleSubmit">
           <VRow align="center" class="pt-1">
             <VCol cols="12">
-              <VTextField
-                v-model="params.nama_regu"
-                label="Nama Regu"
-                placeholder="Masukkan nama regu"
-                :rules="[rules.nama]"
-              />
+              <VTextField v-model="params.nama_regu" label="Nama Regu" placeholder="Masukkan nama regu"
+                :rules="[rules.nama]" />
             </VCol>
             <VCol cols="12">
               <div class="d-flex justify-end flex-wrap gap-2">
@@ -101,9 +96,10 @@ watch(() => props.isFetchSuccess, (newVal) => {
                   <VIcon icon="ri-close-line" class="me-1" />
                   Batal
                 </VBtn>
-                <VBtn variant="flat" :loading="props.loading" :color="props.isEdit ? 'info' : 'success'" size="small" type="submit">
+                <VBtn variant="flat" :loading="props.loading" :color="props.isEdit ? 'info' : 'success'" size="small"
+                  type="submit">
                   <VIcon :icon="props.isEdit ? 'ri-save-2-line' : 'ri-add-line'" class="me-1" />
-                  {{ props.isEdit ? 'Simpan' : 'Tambah'}}
+                  {{ props.isEdit ? 'Simpan' : 'Tambah' }}
                 </VBtn>
               </div>
             </VCol>

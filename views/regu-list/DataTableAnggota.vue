@@ -15,9 +15,11 @@ const props = withDefaults(defineProps<{
   item?: AnggotaRegu | null
   loading: boolean
   isLoading?: boolean
+  keyword?: string // ← tambah
 }>(), {
   data: () => ([]),
   isLoading: false,
+  keyword: '',
 })
 
 const tab = ref('table')
@@ -39,21 +41,42 @@ const handleDetailAnggota = (item: AnggotaRegu) => {
   emit('detailAnggota', item)
 }
 
+// Filter data berdasarkan keyword
+const filteredData = computed(() => {
+  if (!props.data?.length) return []
+  if (!props.keyword?.trim()) return props.data
+
+  const kw = props.keyword.toLowerCase()
+  return props.data.filter(item =>
+    item.warga?.nama_warga?.toLowerCase().includes(kw)
+  )
+})
+
+// Highlight keyword
+const highlight = (text: string | null | undefined): string => {
+  if (!text) return '-'
+  if (!props.keyword?.trim()) return text
+
+  const escaped = props.keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  const regex = new RegExp(`(${escaped})`, 'gi')
+
+  return text.replace(
+    regex,
+    '<mark style="background: rgba(var(--v-theme-warning), 0.35); color: inherit; border-radius: 2px; padding: 0 2px;">$1</mark>'
+  )
+}
+
 </script>
 
 <template>
-  <AppDataTable
-    :headers="headers"
-    :items="props.data"
-    :loading="props.loading"
-    no-data-text="Tidak ada anggota"
-  >
+  <AppDataTable :headers="headers" :items="filteredData" :loading="props.loading" no-data-text="Tidak ada anggota">
     <template #cell-nama_anggota="{ item }">
-      <span>{{ item.warga.nama_warga }}</span>
+      <span v-html="item.warga?.nama_warga" />
     </template>
 
     <template #cell-status_anggota="{ item }">
-      <VChip size="small" :color="item.is_leader ? 'info' : ''" :prepend-icon="item.is_leader ? 'ri-vip-crown-line' : ''">
+      <VChip size="small" :color="item.is_leader ? 'info' : ''"
+        :prepend-icon="item.is_leader ? 'ri-vip-crown-line' : ''">
         {{ item.is_leader ? 'Ketua Regu' : 'Anggota' }}
       </VChip>
     </template>

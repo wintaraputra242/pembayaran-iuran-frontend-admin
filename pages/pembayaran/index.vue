@@ -14,6 +14,7 @@ const config = useRuntimeConfig()
 const pembayaranStore = usePembayaranStore()
 const dropdownStore = useDropdownStore()
 const router = useRouter()
+const route = useRoute()
 
 const page = ref(1)
 
@@ -162,38 +163,38 @@ const handleFilter = (filters: {
   page.value = 1
   pembayaranStore.reload = true
 
-  // console.log(filters)
-
   Object.entries(filters).forEach(([key, value]) => {
-    if (value !== undefined && value !== null) {
-      // khusus untuk date, ubah ke start_date & end_date
-      if (key === 'date' && Array.isArray(value)) {
-        // console.log(value)
-        if (!value) {
-          pembayaranStore.setFilter('start_date', '')
-          pembayaranStore.setFilter('end_date', '')
-          return
-        }
+    // Khusus untuk date, ubah ke start_date & end_date.
+    // Tidak dibungkus guard "value !== null" di sini, supaya saat date di-clear
+    // (value === null), start_date & end_date di store tetap ikut direset.
+    if (key === 'date') {
+      if (Array.isArray(value) && value[0] && value[1]) {
         pembayaranStore.setFilter('start_date', formatDateToYMD(value[0] as any))
         pembayaranStore.setFilter('end_date', formatDateToYMD(value[1] as any))
-      } else if (key !== 'date') {
-        // sisanya langsung di-set sesuai key di store
-        const mapping: Record<string, keyof typeof pembayaranStore.filters> = {
-          nama_warga: 'nama_warga',
-          regu: 'regu',
-          jenis_iuran: 'jenis_iuran',
-          metode_bayar: 'metode_bayar',
-          status_bayar: 'status_bayar',
-        }
-
-        if (mapping[key]) {
-          pembayaranStore.setFilter(mapping[key], String(value))
-        }
+      } else {
+        pembayaranStore.setFilter('start_date', '')
+        pembayaranStore.setFilter('end_date', '')
       }
+      return
+    }
+
+    // Sisanya langsung di-set sesuai key di store.
+    // Selalu panggil setFilter walau value null/kosong, supaya filter yang
+    // di-clear benar-benar ter-reset di store (bukan cuma dilewati).
+    const mapping: Record<string, keyof typeof pembayaranStore.filters> = {
+      nama_warga: 'nama_warga',
+      regu: 'regu',
+      jenis_iuran: 'jenis_iuran',
+      metode_bayar: 'metode_bayar',
+      status_bayar: 'status_bayar',
+    }
+
+    if (mapping[key]) {
+      pembayaranStore.setFilter(mapping[key], value as string ?? '')
     }
   })
 
-  const nonNullFilters = []
+  const nonNullFilters: any[] = []
 
   Object.values(filters).forEach((val) => {
     if (val) nonNullFilters.push(val)
@@ -228,9 +229,54 @@ const handleShowRejectionReason = (item: Pembayaran) => {
   showRejectionReason.value = true
 }
 
+const initialFiltersForForm = computed(() => {
+  const f = pembayaranStore.filters as Record<string, any>
+
+  return {
+    date: f.start_date && f.end_date ? [f.start_date, f.end_date] : null,
+    jenis_iuran: f.jenis_iuran || null,
+    metode_bayar: f.metode_bayar || null,
+    status_bayar: f.status_bayar || null,
+    regu: f.regu || null,
+    nama_warga: f.nama_warga || '',
+  }
+})
+
+const applyPembayaranIdFilterFromQuery = async (pembayaranId: string) => {
+  pembayaranStore.reload = true
+  pembayaranStore.pembayaran = []
+  pembayaranStore.setFilter('pembayaran_id', pembayaranId)
+  page.value = 1
+  await pembayaranStore.fetchPembayaran({ limit: 10, page: 1 })
+
+  // Bersihkan query dari URL supaya tidak ke-apply lagi kalau user reload manual
+  router.replace({ path: '/pembayaran' })
+}
+
+watch(
+  () => route.query.pembayaran_id,
+  (newVal) => {
+    if (newVal) {
+      applyPembayaranIdFilterFromQuery(newVal as string)
+    }
+  },
+  { immediate: true }
+)
+
+onActivated(() => {
+  const pembayaranIdFromQuery = route.query.pembayaran_id as string | undefined
+  if (pembayaranIdFromQuery) {
+    applyPembayaranIdFilterFromQuery(pembayaranIdFromQuery)
+  }
+})
+
 onMounted(async () => {
   const authStore = useAuthStore()
   if (!authStore.token) return
+
+  // Kalau pembayaran_id ada di query, biarkan watcher immediate di atas
+  // yang menangani — supaya logic tidak dobel di sini.
+  if (route.query.pembayaran_id) return
 
   if (pembayaranStore.needsReload) {
     pembayaranStore.needsReload = false
@@ -248,6 +294,11 @@ onMounted(async () => {
 
   handleGetDropdownRegu()
 })
+
+const goToCreatePembayaran = () => {
+  sessionStorage.setItem('pembayaran_referrer', '/pembayaran')
+  router.push('/create-pembayaran')
+}
 
 onBeforeRouteLeave(() => {
   const authStore = useAuthStore()
@@ -268,8 +319,8 @@ onBeforeRouteLeave(() => {
       <VCol cols="12">
         <div>
           <FormFilterPembayaran :regu-options="dropdownStore.reguForDropdown"
-            :loading-regu-options="dropdownStore.loading.reguForDropdown"
-            @show-form-data="router.push('/create-pembayaran')" @filter="handleFilter" @reload="handleReload"
+            :loading-regu-options="dropdownStore.loading.reguForDropdown" :initial-filters="initialFiltersForForm"
+            @show-form-data="goToCreatePembayaran" @filter="handleFilter" @reload="handleReload"
             @reset-all-anggota="handleResetAllAnggota" @show-no-payment="handleShowNoPayment"
             @show-no-validation="handleShowNoValidation" />
         </div>
@@ -280,7 +331,7 @@ onBeforeRouteLeave(() => {
           :loading="pembayaranStore.loading" :has-more="pembayaranStore.hasMore" :has-filter="pembayaranStore.hasFilter"
           @delete="handleDeleteData" @show-anggota="handleShowAnggota" @show-bukti-bayar="handleShowBuktiBayar"
           @show-history-payment="handleHistoryPayment" @send-notif="handleSendNotif" @load-more="handleLoadMore"
-          @show-rejection-reason="handleShowRejectionReason" />
+          @show-rejection-reason="handleShowRejectionReason" @cancel="pembayaranStore.openCancelDialog" />
       </VCol>
     </VRow>
 
@@ -306,5 +357,40 @@ onBeforeRouteLeave(() => {
     <SuccessDialog v-model="showSuccessConfirm" :title="successTitle" :message="successMessage" />
 
     <DialogShowNote v-model="showRejectionReason" :item="itemSelected" />
+
+    <!-- Dialog Batalkan Pembayaran -->
+    <VDialog v-model="pembayaranStore.cancelDialog" max-width="480">
+      <VCard rounded="lg">
+        <VCardTitle class="pa-4 d-flex align-center gap-2">
+          <VIcon icon="ri-close-circle-line" color="error" />
+          Batalkan Pembayaran
+        </VCardTitle>
+        <VDivider />
+        <VCardText class="pa-4">
+          <p class="text-body-2 mb-3">
+            Anda akan membatalkan pembayaran atas nama
+            <strong>{{ pembayaranStore.itemToCancel?.warga?.nama_warga }}</strong>.
+            Tindakan ini tidak dapat dibatalkan.
+          </p>
+          <VTextarea v-model="pembayaranStore.cancelReason" label="Alasan Pembatalan"
+            placeholder="Masukkan alasan pembatalan..." variant="outlined" auto-grow />
+        </VCardText>
+        <VDivider />
+        <VCardText class="pa-4">
+          <div class="d-flex justify-end gap-2">
+            <VBtn variant="tonal" color="secondary" :disabled="pembayaranStore.isLoadingCancel"
+              @click="pembayaranStore.closeCancelDialog">
+              Batal
+            </VBtn>
+            <VBtn variant="flat" color="error" :loading="pembayaranStore.isLoadingCancel"
+              :disabled="!pembayaranStore.cancelReason.trim()" @click="pembayaranStore.submitCancel">
+              <VIcon icon="ri-close-circle-line" class="me-1" />
+              Batalkan Pembayaran
+            </VBtn>
+          </div>
+        </VCardText>
+      </VCard>
+    </VDialog>
+
   </div>
 </template>

@@ -25,15 +25,18 @@ const emit = defineEmits<{
 const props = withDefaults(defineProps<{
   reguOptions: ReguForDropdown[]
   loadingReguOptions: boolean
-}>(), {})
+  initialFilters?: Record<string, any>
+}>(), {
+  initialFilters: () => ({}),
+})
 
 const filters = reactive({
-  date: '',
-  metode_bayar: null,
-  status_bayar: null,
-  jenis_iuran: null,
-  regu: null,
-  nama_warga: '',
+  date: props.initialFilters?.date ?? '',
+  metode_bayar: props.initialFilters?.metode_bayar ?? null,
+  status_bayar: props.initialFilters?.status_bayar ?? null,
+  jenis_iuran: props.initialFilters?.jenis_iuran ?? null,
+  regu: props.initialFilters?.regu ?? null,
+  nama_warga: props.initialFilters?.nama_warga ?? '',
 })
 
 const handleReload = () => {

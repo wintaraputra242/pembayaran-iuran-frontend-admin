@@ -1,88 +1,90 @@
 <script setup lang="ts">
-// import qris from '@images/pages/qris.png'
-import type { Pembayaran, UnpaidWarga } from '@/types/api/pembayaran';
-
-
 const props = withDefaults(defineProps<{
-  data: UnpaidWarga[]
+  data: any[]
   loading: boolean
   loadingSendNotif: boolean
   hasMore: boolean
   hasFilter: boolean
-}>(), {})
+}>(), {
+  data: () => [],
+  loadingSendNotif: false,
+  hasMore: false,
+  hasFilter: false,
+})
 
 const emit = defineEmits<{
   (e: 'loadMore'): void
-  (e: 'showBuktiBayar', item: Pembayaran): void;
-  (e: 'sendNotif', item: UnpaidWarga): void
+  (e: 'sendNotif', item: any): void
 }>()
 
 const headers = [
-  { label: 'No.', key: 'no', width: '70px', sortable: false },
-  { label: 'Judul Iuran', key: 'judul_iuran', width: '250px' },
-  { label: 'Jenis', key: 'jenis_iuran', width: '150px', align: 'center' },
-  { label: 'Tgl. Buat', key: 'tgl_buat', width: '180px' },
-  { label: 'Jumlah Iuran yang Harus Dibayar', key: 'jumlah_iuran', width: '180px' },
+  { label: 'No.', key: 'no', width: '60px' },
+  { label: 'Nama Warga', key: 'nama_warga', width: '200px' },
+  { label: 'No. HP', key: 'no_hp', width: '150px' },
+  { label: 'Regu', key: 'regu', width: '120px' },
+  { label: 'Status', key: 'status_keaktifan', width: '120px' },
   { key: 'actions' },
 ]
 
 const indexSelected = ref<number | null>(null)
 
-const handleSendNotif = (item: UnpaidWarga, index: number) => {
+const handleSendNotif = (item: any, index: number) => {
   indexSelected.value = index
-
   emit('sendNotif', item)
 }
 </script>
 
 <template>
-  <AppDataTable :headers="headers" :items="data" :loading="loading" :has-more="false"
-    :no-data-text="!hasFilter ? 'Data harus difilter terlebih dahulu' : 'Warga sudah membayar semua iuran'">
-
-    <!-- Judul Iuran -->
-    <template #cell-judul_iuran="{ item }">
-      {{ item.judul_iuran }}
-    </template>
-
-    <!-- Jenis -->
-    <template #cell-jenis_iuran="{ item }">
-      <div class="text-capitalize">
-        <VChip size="small" :color="item.jenis_iuran === 'bulanan' ? 'info' : 'error'">
-          {{ item.jenis_iuran }}
-        </VChip>
+  <AppDataTable :headers="headers" :items="data" :loading="loading" :has-more="hasMore"
+    :no-data-text="!hasFilter ? 'Pilih informasi iuran dan klik Cek' : 'Semua warga sudah membayar'"
+    @load-more="emit('loadMore')">
+    <!-- Nama Warga -->
+    <template #cell-nama_warga="{ item }">
+      <div class="d-flex flex-column">
+        <span class="font-weight-medium">{{ item.nama_warga }}</span>
+        <!-- <span class="text-caption text-medium-emphasis">{{ item.nik }}</span> -->
       </div>
     </template>
 
-    <!-- Tgl. Buat -->
-    <template #cell-tgl_buat="{ item }">
-      {{ formatDateID(item.created_at) }}
+    <!-- No HP -->
+    <template #cell-no_hp="{ item }">
+      <!-- <span v-if="item.no_hp">{{ item.no_hp }}</span> -->
+      <a v-if="item.no_hp" :href="`https://wa.me/${item.no_hp.replace(/\D/g, '').replace(/^0/, '62')}`" target="_blank"
+        rel="noopener noreferrer" class="text-decoration-none d-inline-flex align-center gap-1 px-2 py-1 rounded-lg"
+        style="background: rgba(37, 211, 102, 0.1); border: 1px solid rgba(37, 211, 102, 0.3);">
+        <VIcon icon="ri-whatsapp-line" size="13" color="success" />
+        <p class="ma-0 text-caption font-weight-medium" style="color: #25d366;">{{
+          item.no_hp }}</p>
+        <VIcon icon="ri-external-link-line" size="11" style="color: #25d366; opacity: 0.7;" />
+      </a>
+      <span v-else class="text-medium-emphasis">-</span>
     </template>
 
-    <!-- Jumlah -->
-    <template #cell-jumlah_iuran="{ item }">
-      {{ formatRupiah(item.jumlah_iuran) }}
+    <!-- Regu -->
+    <template #cell-regu="{ item }">
+      <span>{{ item.anggota_regu?.[0]?.regu?.nama_regu ?? '-' }}</span>
+    </template>
+
+    <!-- Status -->
+    <template #cell-status_keaktifan="{ item }">
+      <VChip size="small" :color="item.status_keaktifan === 'aktif' ? 'success' : 'error'" variant="tonal">
+        {{ item.status_keaktifan === 'aktif' ? 'Aktif' : 'Tidak Aktif' }}
+      </VChip>
     </template>
 
     <!-- Aksi -->
     <template #cell-actions="{ item, index }">
       <div class="d-flex justify-center">
-        <IconBtn variant="outlined" class="rounded-lg" size="small" color="secondary"
-          :loading="index === indexSelected && loadingSendNotif"
-          @click="handleSendNotif(item as UnpaidWarga, index as number)">
-          <VIcon icon="ri-bell-line" />
-        </IconBtn>
+        <VTooltip text="Kirim Notifikasi">
+          <template #activator="{ props: tooltipProps }">
+            <IconBtn v-bind="tooltipProps" variant="outlined" class="rounded-lg" size="small" color="primary"
+              :loading="index === indexSelected && loadingSendNotif" :disabled="!item.no_hp"
+              @click="handleSendNotif(item, index as number)">
+              <VIcon icon="ri-bell-line" />
+            </IconBtn>
+          </template>
+        </VTooltip>
       </div>
     </template>
-
   </AppDataTable>
 </template>
-
-<style scoped>
-.table-scroll-wrapper {
-  max-height: 400px;
-  /* tinggi container */
-  overflow-y: auto;
-  overflow-x: hidden;
-  height: 100%;
-}
-</style>

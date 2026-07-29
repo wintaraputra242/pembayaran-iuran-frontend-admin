@@ -10,7 +10,10 @@ const props = defineProps<{
   hasFilter?: boolean
 }>()
 
-const emit = defineEmits(['loadMore', 'showBuktiBayar'])
+const emit = defineEmits<{
+  (e: 'loadMore'): void
+  (e: 'showBuktiBayar', item: any): void // ← tambah ini
+}>()
 
 const config = useRuntimeConfig()
 
@@ -35,17 +38,17 @@ const bulanLabel: Record<number, string> = {
 }
 
 const statusChipsColor = {
-  manual: 'success',
-  paid: 'success',
-  pending: 'warning',
-  failed: 'error',
+  approved: 'success',
+  reject: 'error',
+  cancel: 'secondary',
+  pending: 'info',
 }
 
 const statusText = {
-  manual: 'Lunas',
-  paid: 'Lunas',
+  approved: 'Disetujui',
+  reject: 'Ditolak',
+  cancel: 'Dibatalkan',
   pending: 'Menunggu',
-  failed: 'Gagal',
 }
 
 
@@ -122,13 +125,26 @@ const statusText = {
 
     <!-- Bukti Pembayaran -->
     <template #cell-bukti_bayar="{ item }">
-      <div class="d-flex">
-        <div v-ripple class="pa-2 rounded-lg cursor-pointer" @click="emit('showBuktiBayar', item)">
-          <VImg v-if="item.bukti_pembayaran" :src="config.public.backendUrl + '/storage/' + item.bukti_pembayaran"
-            width="50" />
-          <span v-else>-</span>
+      <div v-if="item.bukti_pembayaran" v-ripple class="cursor-pointer d-inline-flex flex-column align-center gap-1"
+        style="max-width: 70px;" @click="emit('showBuktiBayar', item)">
+        <div style="position: relative; width: 54px; height: 54px;">
+          <img :src="config.public.backendUrl + '/storage/' + item.bukti_pembayaran"
+            style="width: 54px; height: 54px; object-fit: cover; border-radius: 8px; border: 1px solid rgba(var(--v-theme-primary), 0.3);" />
+          <!-- overlay icon zoom -->
+          <div style="
+            position: absolute; inset: 0;
+            background: rgba(var(--v-theme-primary), 0.15);
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+          ">
+            <VIcon size="18" color="primary">ri-zoom-in-line</VIcon>
+          </div>
         </div>
+        <span style="font-size: 10px; color: rgb(var(--v-theme-primary)); white-space: nowrap;">
+          Lihat Bukti
+        </span>
       </div>
+      <span v-else class="text-medium-emphasis">-</span>
     </template>
   </AppDataTable>
 </template>

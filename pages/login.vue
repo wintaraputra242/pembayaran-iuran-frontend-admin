@@ -21,10 +21,12 @@ const isPasswordVisible = ref(false)
 const formComp = ref()
 
 const isLoadingSubmit = ref(false)
+const errorMessage = ref<string | null>(null)
 const onSubmit = async () => {
   const { valid } = await formComp.value.validate()
   if (!valid) return
 
+  errorMessage.value = null
   isLoadingSubmit.value = true
 
   try {
@@ -48,12 +50,13 @@ const onSubmit = async () => {
     router.push(redirect ?? defaultRoute)
 
   } catch (e: any) {
-    uiStore.showError(e.errors ?? 'Terjadi kesalahan saat login', 'Gagal Login')
+    errorMessage.value = e.errors ?? 'Terjadi kesalahan saat login'
   } finally {
     isLoadingSubmit.value = false
   }
 }
 
+const adminPhone = useRuntimeConfig().public.adminPhone
 
 onMounted(() => {
   const fromPath = useCookie('from-path')
@@ -88,6 +91,10 @@ onMounted(() => {
         </VCardItem>
 
         <VCardText>
+          <VAlert v-if="errorMessage" type="error" class="mb-4" density="compact">
+            {{ errorMessage }}
+          </VAlert>
+
           <VForm ref="formComp" @submit.prevent="onSubmit">
             <VRow>
               <!-- username -->
@@ -104,6 +111,13 @@ onMounted(() => {
                     (v: string) => !!v || 'Password harus diisi'
                   ]" :append-inner-icon="isPasswordVisible ? 'ri-eye-off-line' : 'ri-eye-line'"
                   @click:append-inner="isPasswordVisible = !isPasswordVisible" />
+
+                <div class="text-end mt-1">
+                  <a :href="`https://wa.me/${adminPhone}?text=${encodeURIComponent('Halo, saya lupa password akun iuran warga. Mohon bantu reset password saya.')}`"
+                    target="_blank" class="text-caption text-primary" style="text-decoration: none;">
+                    Lupa kata sandi?
+                  </a>
+                </div>
 
                 <!-- remember me checkbox -->
                 <!-- <div class="d-flex align-center justify-space-between flex-wrap my-6">

@@ -43,7 +43,10 @@ watch(() => props.isFetchSuccess, (newVal) => {
   if (newVal) {
     handleCloseAddAnggota()
   }
-}, {immediate: true})
+}, { immediate: true })
+
+const authStore = useAuthStore()
+const isKetuaRegu = computed(() => authStore.user?.role === 'ketua_regu')
 </script>
 
 <template>
@@ -63,7 +66,8 @@ watch(() => props.isFetchSuccess, (newVal) => {
             <div class="text-center">
               <VIcon icon="ri-account-circle-fill" size="45" />
               <h4>{{ item?.warga.nama_warga }}</h4>
-              <VChip size="small" :color="item?.is_leader ? 'info' : ''" :prepend-icon="item?.is_leader ? 'ri-vip-crown-line' : ''">
+              <VChip size="small" :color="item?.is_leader ? 'info' : ''"
+                :prepend-icon="item?.is_leader ? 'ri-vip-crown-line' : ''">
                 {{ item?.is_leader ? 'Ketua Regu' : 'Anggota' }}
               </VChip>
             </div>
@@ -74,7 +78,7 @@ watch(() => props.isFetchSuccess, (newVal) => {
           <div v-else class="mt-2">
             <table>
               <tbody>
-                <tr>
+                <tr v-if="!isKetuaRegu">
                   <td class="font-weight">
                     <p class="ma-0 font-weight-bold">NIK :</p>
                     <p class="ma-0">{{ item?.nik }}</p>
@@ -89,13 +93,24 @@ watch(() => props.isFetchSuccess, (newVal) => {
                 <tr>
                   <td class="font-weight">
                     <p class="ma-0 font-weight-bold">No. HP :</p>
-                    <p class="ma-0">{{ masterWargaStore.detailWarga?.no_hp }}</p>
+                    <!-- <p class="ma-0">{{ masterWargaStore.detailWarga?.no_hp }}</p> -->
+                    <a v-if="masterWargaStore.detailWarga?.no_hp"
+                      :href="`https://wa.me/${masterWargaStore.detailWarga?.no_hp.replace(/\D/g, '').replace(/^0/, '62')}`"
+                      target="_blank" rel="noopener noreferrer"
+                      class="text-decoration-none d-inline-flex align-center gap-1 px-2 py-1 rounded-lg"
+                      style="background: rgba(37, 211, 102, 0.1); border: 1px solid rgba(37, 211, 102, 0.3);">
+                      <VIcon icon="ri-whatsapp-line" size="13" color="success" />
+                      <p class="ma-0 text-caption font-weight-medium" style="color: #25d366;">{{
+                        masterWargaStore.detailWarga?.no_hp }}</p>
+                      <VIcon icon="ri-external-link-line" size="11" style="color: #25d366; opacity: 0.7;" />
+                    </a>
                   </td>
                 </tr>
                 <tr>
                   <td class="font-weight">
                     <p class="ma-0 font-weight-bold">Status Warga :</p>
-                    <VChip size="small" :color="masterWargaStore.detailWarga?.status_keaktifan === 'aktif' ? 'success' : 'error'">
+                    <VChip size="small"
+                      :color="masterWargaStore.detailWarga?.status_keaktifan === 'aktif' ? 'success' : 'error'">
                       {{ masterWargaStore.detailWarga?.status_keaktifan === 'aktif' ? 'Aktif' : 'Tidak Aktif' }}
                     </VChip>
                   </td>

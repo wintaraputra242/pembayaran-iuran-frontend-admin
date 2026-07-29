@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import ChatbotWidget from '@/components/ChatbotWidget.vue';
 import DefaultLayoutWithVerticalNav from './components/DefaultLayoutWithVerticalNav.vue';
 
 const uiStore = useUiStore()
@@ -27,6 +28,8 @@ onMounted(async () => {
 
     <VFab :active="isScrolled" icon="ri-arrow-up-s-line" size="large"
       style="z-index: 10; position: fixed; bottom: 30px; right: 50px;" @click="scrollToTop()"></VFab>
+
+    <ChatbotWidget />
   </div>
 </template>
 
