@@ -68,7 +68,7 @@ const handleJumpFromUsers = () => {
             </IconBtn>
             <VBtn variant="flat" color="info" :loading="props.loadingDownload" prepend-icon="ri-printer-line"
               @click="emit('downloadCredentials')">
-              Cetak Username & Password
+              Cetak Akun Regu
             </VBtn>
             <VBtn variant="flat" color="success" prepend-icon="ri-add-large-line" @click="handleJumpFromUsers">
               Tambah Akun Ketua Regu
