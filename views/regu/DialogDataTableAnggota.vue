@@ -225,50 +225,44 @@ watch(() => props.isFetchSuccess, (val) => {
             <div v-else class="d-flex flex-column gap-2">
               <VCard v-for="(item, index) in props.data" :key="item.id" variant="outlined" rounded="lg">
                 <VCardItem class="pa-3">
-                  <div class="d-flex align-center justify-space-between">
-                    <div class="d-flex align-center gap-3">
-                      <VAvatar color="primary" variant="tonal" size="36">
-                        <span class="text-body-2 font-weight-bold">{{ index + 1 }}</span>
-                      </VAvatar>
-                      <div>
-                        <p class="font-weight-semibold mb-0" style="font-size: 14px;">
-                          {{ item.warga?.nama_warga }}
-                        </p>
+                  <div class="d-flex align-start justify-space-between gap-2">
+                    <div style="min-width: 0; flex: 1;">
+                      <p class="font-weight-semibold mb-2" style="font-size: 14px;">
+                        {{ item.warga?.nama_warga }}
+                      </p>
+
+                      <div class="d-flex align-center gap-2">
+                        <VAvatar color="primary" variant="tonal" size="28">
+                          <span class="text-caption font-weight-bold">{{ index + 1 }}</span>
+                        </VAvatar>
+
                         <VChip size="x-small" :color="item.is_leader ? 'info' : 'default'"
-                          :prepend-icon="item.is_leader ? 'ri-vip-crown-line' : ''" variant="tonal" class="mt-1">
+                          :prepend-icon="item.is_leader ? 'ri-vip-crown-line' : ''" variant="tonal">
                           {{ item.is_leader ? 'Ketua Regu' : 'Anggota' }}
                         </VChip>
                       </div>
                     </div>
 
-                    <div class="d-flex gap-1">
-                      <VTooltip v-if="!item.is_leader" text="Jadikan Ketua Regu">
-                        <template #activator="{ props: tp }">
-                          <IconBtn v-bind="tp" variant="outlined" size="small" color="info" class="rounded-lg"
-                            @click="emit('setLeader', item)">
-                            <VIcon icon="ri-vip-crown-line" />
-                          </IconBtn>
-                        </template>
-                      </VTooltip>
+                    <!-- Dropdown menu aksi -->
+                    <VMenu location="bottom end">
+                      <template #activator="{ props: menuProps }">
+                        <IconBtn v-bind="menuProps" variant="outlined" size="small" color="secondary"
+                          class="rounded-lg flex-shrink-0">
+                          <VIcon icon="ri-more-2-fill" />
+                        </IconBtn>
+                      </template>
 
-                      <VTooltip text="Detail Warga">
-                        <template #activator="{ props: tp }">
-                          <IconBtn v-bind="tp" variant="outlined" size="small" color="secondary" class="rounded-lg"
-                            @click="handleDetailAnggota(item)">
-                            <VIcon icon="ri-info-card-line" />
-                          </IconBtn>
-                        </template>
-                      </VTooltip>
+                      <VList density="compact" min-width="200">
+                        <VListItem v-if="!item.is_leader" prepend-icon="ri-vip-crown-line" title="Jadikan Ketua Regu"
+                          @click="emit('setLeader', item)" />
 
-                      <VTooltip text="Hapus Anggota">
-                        <template #activator="{ props: tp }">
-                          <IconBtn v-bind="tp" variant="outlined" size="small" color="error" class="rounded-lg"
-                            @click="emit('resetAnggota', item)">
-                            <VIcon icon="ri-delete-bin-line" />
-                          </IconBtn>
-                        </template>
-                      </VTooltip>
-                    </div>
+                        <VListItem prepend-icon="ri-info-card-line" title="Detail Warga"
+                          @click="handleDetailAnggota(item)" />
+
+                        <VListItem prepend-icon="ri-delete-bin-line" title="Hapus Anggota" class="text-error"
+                          @click="emit('resetAnggota', item)" />
+                      </VList>
+                    </VMenu>
                   </div>
                 </VCardItem>
               </VCard>

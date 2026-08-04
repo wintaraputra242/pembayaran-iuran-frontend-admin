@@ -7,6 +7,10 @@ const notificationStore = useNotificationStore()
 
 const { isScrolled, scrollToTop } = useScrollStatus(20)
 
+// watch(() => uiStore.errorDialog.message, (val) => {
+//   console.log(val.informasi_iuran?.[0]);
+// })
+
 onMounted(async () => {
   await notificationStore.fetchUnreadCount()
 })
@@ -20,7 +24,8 @@ onMounted(async () => {
     </DefaultLayoutWithVerticalNav>
 
     <ErrorDialog :show="uiStore.errorDialog.show" :title="uiStore.errorDialog.title"
-      :message="uiStore.errorDialog.message" @close="uiStore.closeError" />
+      :message="(uiStore.errorDialog.message as any)?.informasi_iuran?.[0] ?? uiStore.errorDialog.message"
+      @close="uiStore.closeError" />
     <SuccessDialog v-model="uiStore.successDialog.show" :title="uiStore.successDialog.title"
       :message="uiStore.successDialog.message" @close="uiStore.closeSuccess" />
     <InfoDialog v-model="uiStore.infoDialog.show" :title="uiStore.infoDialog.title"

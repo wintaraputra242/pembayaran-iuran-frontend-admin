@@ -130,7 +130,18 @@ const handleSubmit = async () => {
 
   if (!valid) return
 
-  emit('submit', params)
+  // Konversi ke uppercase di sini saja, sekali,
+  // sebelum dikirim — bukan tiap keystroke, supaya tidak mengganggu
+  // proses composition keyboard mobile.
+  emit('submit', {
+    ...params,
+    judul_iuran: params.judul_iuran
+      ? params.judul_iuran.toUpperCase()
+      : params.judul_iuran,
+    nama_warga_meninggal: params.nama_warga_meninggal
+      ? params.nama_warga_meninggal.toUpperCase()
+      : params.nama_warga_meninggal,
+  })
 }
 </script>
 
@@ -159,7 +170,7 @@ const handleSubmit = async () => {
             <template v-if="params.jenis_iuran">
               <VCol cols="12">
                 <VTextField v-model="params.judul_iuran" label="Judul Iuran" placeholder="Masukkan judul iuran"
-                  :rules="[rules.judul]" />
+                  :rules="[rules.judul]" class="uppercase-input" />
               </VCol>
               <VCol v-if="params.jenis_iuran === 'bulanan'" cols="12">
                 <VSelect v-model="params.periode" label="Periode" placeholder="Masukkan periode iuran" :items="years"
@@ -168,13 +179,13 @@ const handleSubmit = async () => {
               <VCol v-if="params.jenis_iuran === 'kematian'" cols="12">
                 <VTextField v-model="params.nama_warga_meninggal" label="Nama Warga yang Meninggal"
                   placeholder="Masukkan nama warga yang meninggal" :rules="[rules.nama_warga_meninggal]"
-                  @update:model-value="(e) => { params.nama_warga_meninggal = e.toUpperCase() }" />
+                  class="uppercase-input" />
               </VCol>
               <VCol v-if="params.jenis_iuran === 'kematian'" cols="12">
-                <VSelect v-model="params.nik_penanggung_jawab" label="Warga yang Bertanggung Jawab"
-                  placeholder="Masukkan warga yang bertanggung jawab" item-value="nik" item-title="nama_warga"
+                <VAutocomplete v-model="params.nik_penanggung_jawab" label="Warga yang Bertanggung Jawab"
+                  placeholder="Cari nama warga yang bertanggung jawab" item-value="nik" item-title="nama_warga"
                   :items="props.itemDropdownWarga" :loading="props.loadingDropdownWarga"
-                  :rules="[rules.nik_penanggung_jawab]" />
+                  :rules="[rules.nik_penanggung_jawab]" no-data-text="Warga tidak ditemukan" />
               </VCol>
               <VCol cols="12">
                 <VTextField v-model="params.jumlah_iuran" label="Jumlah Iuran" placeholder="Masukkan jumlah iuran"
@@ -216,5 +227,11 @@ const handleSubmit = async () => {
   border: 2px dashed #888;
   border-radius: 10px;
   text-align: center;
+}
+</style>
+
+<style scoped>
+.uppercase-input :deep(input) {
+  text-transform: uppercase;
 }
 </style>

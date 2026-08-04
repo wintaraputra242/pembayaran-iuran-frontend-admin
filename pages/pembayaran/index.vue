@@ -263,6 +263,89 @@ watch(
   { immediate: true }
 )
 
+const handleConfirmApprove = async () => {
+  if (!itemSelected.value) return
+  isLoadingConfirm.value = true
+
+  try {
+    await pembayaranStore.fetchApprovePembayaran(itemSelected.value.id)
+
+    // Update item di list secara langsung, tanpa refetch
+    const index = pembayaranStore.pembayaran.findIndex(p => p.id === itemSelected.value!.id)
+    if (index !== -1) {
+      pembayaranStore.pembayaran[index] = {
+        ...pembayaranStore.pembayaran[index],
+        status_bayar: 'approved',
+        // Kalau backend approve juga set tanggal_bayar/processed_by, sesuaikan di sini juga
+        // tanggal_bayar: new Date().toISOString(),
+      }
+    }
+
+    showConfirmation.value = false
+    showSuccessConfirm.value = true
+    successMessage.value = `Pembayaran dari ${itemSelected.value.warga.nama_warga} berhasil disetujui.`
+  } finally {
+    isLoadingConfirm.value = false
+  }
+}
+
+const confirmOptionsAprrove = ref({
+  title: '',
+  message: '',
+  confirmText: '',
+  cancelText: 'Batal',
+  confirmColor: 'success',
+  confirmIcon: '',
+})
+
+const handleApprove = (item: Pembayaran) => {
+  itemSelected.value = item
+  confirmOptionsAprrove.value = {
+    title: 'Setujui Pembayaran',
+    message: `Setujui pembayaran iuran dari warga atas nama ${item.warga.nama_warga}?`,
+    confirmText: 'Setujui',
+    cancelText: 'Batal',
+    confirmColor: 'success',
+    confirmIcon: 'ri-check-line',
+  }
+  showConfirmation.value = true
+}
+
+const showRejectDialog = ref(false)
+const rejectReason = ref('')
+const isLoadingValidasi = ref(false)
+
+const handleReject = (item: Pembayaran) => {
+  itemSelected.value = item
+  rejectReason.value = ''
+  showRejectDialog.value = true
+}
+
+const handleConfirmReject = async () => {
+  if (!itemSelected.value || !rejectReason.value) return
+  isLoadingValidasi.value = true
+
+  try {
+    await pembayaranStore.fetchRejectPembayaran(itemSelected.value.id, rejectReason.value)
+
+    // Update item di list secara langsung, tanpa refetch
+    const index = pembayaranStore.pembayaran.findIndex(p => p.id === itemSelected.value!.id)
+    if (index !== -1) {
+      pembayaranStore.pembayaran[index] = {
+        ...pembayaranStore.pembayaran[index],
+        status_bayar: 'rejected',
+        rejection_reason: rejectReason.value,
+      }
+    }
+
+    showRejectDialog.value = false
+    showSuccessConfirm.value = true
+    successMessage.value = `Pembayaran dari ${itemSelected.value.warga.nama_warga} berhasil ditolak.`
+  } finally {
+    isLoadingValidasi.value = false
+  }
+}
+
 onActivated(() => {
   const pembayaranIdFromQuery = route.query.pembayaran_id as string | undefined
   if (pembayaranIdFromQuery) {
@@ -297,7 +380,7 @@ onMounted(async () => {
 
 const goToCreatePembayaran = () => {
   sessionStorage.setItem('pembayaran_referrer', '/pembayaran')
-  router.push('/create-pembayaran')
+  router.push({ path: '/create-pembayaran', query: { from: 'pembayaran' } })
 }
 
 onBeforeRouteLeave(() => {
@@ -306,7 +389,6 @@ onBeforeRouteLeave(() => {
   pembayaranStore.needsReload = true  // ✅ set flag saja
 })
 </script>
-
 
 <template>
   <div>
@@ -331,7 +413,8 @@ onBeforeRouteLeave(() => {
           :loading="pembayaranStore.loading" :has-more="pembayaranStore.hasMore" :has-filter="pembayaranStore.hasFilter"
           @delete="handleDeleteData" @show-anggota="handleShowAnggota" @show-bukti-bayar="handleShowBuktiBayar"
           @show-history-payment="handleHistoryPayment" @send-notif="handleSendNotif" @load-more="handleLoadMore"
-          @show-rejection-reason="handleShowRejectionReason" @cancel="pembayaranStore.openCancelDialog" />
+          @show-rejection-reason="handleShowRejectionReason" @cancel="pembayaranStore.openCancelDialog"
+          @approved="handleApprove" @reject="handleReject" />
       </VCol>
     </VRow>
 
@@ -357,6 +440,38 @@ onBeforeRouteLeave(() => {
     <SuccessDialog v-model="showSuccessConfirm" :title="successTitle" :message="successMessage" />
 
     <DialogShowNote v-model="showRejectionReason" :item="itemSelected" />
+
+    <ConfirmDialog v-model="showConfirmation" :title="confirmOptionsAprrove.title"
+      :message="confirmOptionsAprrove.message" :confirm-text="confirmOptionsAprrove.confirmText"
+      :cancel-text="confirmOptionsAprrove.cancelText" :confirm-color="confirmOptionsAprrove.confirmColor"
+      :confirm-icon="confirmOptionsAprrove.confirmIcon" :loading="isLoadingConfirm" @confirm="handleConfirmApprove" />
+
+    <!-- Dialog Reject -->
+    <VDialog v-model="showRejectDialog" max-width="450">
+      <VCard>
+        <VCardItem>
+          <VCardTitle class="mb-1">Tolak Pembayaran</VCardTitle>
+          <p class="text-body-2 text-medium-emphasis mb-4">
+            Pembayaran iuran dari warga atas nama
+            <strong>{{ itemSelected?.warga.nama_warga }}</strong>
+          </p>
+
+          <VTextarea v-model="rejectReason" label="Alasan Penolakan" placeholder="Masukkan alasan penolakan..." rows="3"
+            auto-grow />
+
+          <div class="d-flex gap-2 justify-end mt-4">
+            <VBtn variant="text" @click="showRejectDialog = false">
+              Batal
+            </VBtn>
+            <VBtn color="error" variant="flat" :loading="isLoadingValidasi" :disabled="!rejectReason"
+              @click="handleConfirmReject">
+              <VIcon icon="ri-close-line" class="me-1" />
+              Tolak Pembayaran
+            </VBtn>
+          </div>
+        </VCardItem>
+      </VCard>
+    </VDialog>
 
     <!-- Dialog Batalkan Pembayaran -->
     <VDialog v-model="pembayaranStore.cancelDialog" max-width="480">

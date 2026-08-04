@@ -187,7 +187,7 @@ onMounted(async () => {
       <VBtn class="px-0 py-1" variant="text" size="large"
         :to="'/create-pembayaran?jenis_iuran=' + masterInformasiIuranStore.detailInformasiIuran.jenis_iuran">
         <VIcon icon="ri-arrow-left-s-line" class="me-2" />
-        Keluar
+        Kembali
       </VBtn>
     </div>
 

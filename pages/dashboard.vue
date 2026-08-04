@@ -3,8 +3,11 @@ import type { AddInformasiIuranPayload } from '@/types/api/master-informasi-iura
 import type { Pembayaran } from '@/types/api/pembayaran';
 import DataTableDashboard from '@/views/dashboard-new/DataTable.vue';
 import DialogFormDataInformasiIuran from '@/views/informasi-iuran/DialogFormData.vue';
+import DialogShowNote from '@/views/pembayaran/DialogShowNote.vue';
 
 definePageMeta({ onlyAdmin: true })
+
+const config = useRuntimeConfig()
 
 const uiStore = useUiStore()
 const dashboardStore = useDashboardStore()
@@ -121,17 +124,51 @@ const handleAddIuran = async (params: AddInformasiIuranPayload) => {
   }
 }
 
-const goToCreatePembayaran = () => {
-  sessionStorage.setItem('pembayaran_referrer', '/dashboard')
-  router.push('/create-pembayaran')
-}
-
 const filterOptions = [
   { label: 'Notifikasi', value: 'notifikasi', icon: 'ri-notification-line' },
   { label: 'Pembayaran', value: 'pembayaran', icon: 'ri-cash-line' },
   { label: 'Belum Bayar', value: 'warga_belum_bayar', icon: 'ri-user-unfollow-line' },
   { label: 'Log Aktivitas', value: 'activity_log', icon: 'ri-history-line' },
 ]
+
+const formatRupiahLocal = (value: number) => {
+  return new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    minimumFractionDigits: 0,
+  }).format(value)
+}
+
+const getFontSizeClass = (value: number) => {
+  const length = formatRupiah(value).length
+  if (length > 16) return 'text-caption'      // misal Rp 100.000.000 ke atas
+  if (length > 12) return 'text-body-2'       // misal Rp 10.000.000 - 99.999.999
+  return 'text-body-1'                        // di bawah 10 juta
+}
+
+const goToCreatePembayaran = () => {
+  sessionStorage.setItem('pembayaran_referrer', '/dashboard')
+  router.push({ path: '/create-pembayaran', query: { from: 'dashboard' } }) // sesuaikan path aslinya
+}
+
+const goToLaporan = () => {
+  sessionStorage.setItem('laporan_referrer', '/dashboard')
+  router.push('/laporan')
+}
+
+const showPaymentProof = ref(false)
+
+const handleShowBuktiBayar = (item: Pembayaran) => {
+  itemSelected.value = item
+  showPaymentProof.value = true
+}
+
+const showRejectionReason = ref(false)
+
+const handleShowRejectionReason = (item: Pembayaran) => {
+  itemSelected.value = item
+  showRejectionReason.value = true
+}
 
 onMounted(async () => {
   const fromPath = useCookie('from-path')
@@ -216,8 +253,9 @@ onMounted(async () => {
               <VAvatar color="success" size="36" variant="tonal">
                 <VIcon icon="ri-money-dollar-circle-line" size="18" />
               </VAvatar>
-              <span class="text-body-1 font-weight-black text-success">
-                {{ formatRupiah(dashboardStore.totalPembayaranHariIni) }}
+              <span class="font-weight-black text-success text-end text-truncate"
+                :class="getFontSizeClass(dashboardStore.totalPembayaranHariIni)" style="max-width: 75%;">
+                {{ formatRupiahLocal(dashboardStore.totalPembayaranHariIni) }}
               </span>
             </div>
             <p class="text-body-2 font-weight-medium mb-0">Bayar Hari Ini</p>
@@ -270,7 +308,7 @@ onMounted(async () => {
         <VRow dense>
           <VCol cols="6">
             <VBtn color="primary" variant="flat" block size="small" rounded="lg" prepend-icon="ri-add-circle-line"
-              @click="router.push('/create-pembayaran')">
+              @click="goToCreatePembayaran">
               Tambah Pembayaran
             </VBtn>
           </VCol>
@@ -288,7 +326,7 @@ onMounted(async () => {
           </VCol>
           <VCol cols="6">
             <VBtn color="secondary" variant="flat" block size="small" rounded="lg" prepend-icon="ri-file-chart-line"
-              @click="router.push('/laporan')">
+              @click="goToLaporan">
               Lihat Laporan
             </VBtn>
           </VCol>
@@ -334,11 +372,18 @@ onMounted(async () => {
 
           <VCardText class="pt-5">
             <DataTableDashboard :type="selectedType" :data="tableData" :loading="dashboardStore.loading"
-              :has-filter="false" @approve="handleApprove" @reject="handleReject" />
+              :has-filter="false" @approve="handleApprove" @reject="handleReject"
+              @cancel="pembayaranStore.openCancelDialog" @show-rejection-reason="handleShowRejectionReason"
+              @show-bukti-bayar="handleShowBuktiBayar" />
           </VCardText>
         </VCard>
       </VCol>
     </VRow>
+
+    <PaymentProofImageDialog v-model="showPaymentProof" :judul-iuran="itemSelected?.informasi_iuran.judul_iuran"
+      :nama-warga="itemSelected?.warga.nama_warga"
+      :src="config.public.backendUrl + '/storage/' + itemSelected?.bukti_pembayaran"
+      :item="(itemSelected as Pembayaran)" />
 
     <ConfirmDialog v-model="showConfirmation" :title="confirmOptions.title" :message="confirmOptions.message"
       :confirm-text="confirmOptions.confirmText" :cancel-text="confirmOptions.cancelText"
@@ -409,5 +454,40 @@ onMounted(async () => {
       :is-fetch-success="isFetchSuccess" :item-dropdown-warga="dropdownStore.itemWargaForDropdown"
       :loading-dropdown-warga="dropdownStore.loading.wargaForDropdown" @close="showFormIuran = false"
       @submit="handleAddIuran" />
+
+    <VDialog v-model="pembayaranStore.cancelDialog" max-width="480">
+      <VCard rounded="lg">
+        <VCardTitle class="pa-4 d-flex align-center gap-2">
+          <VIcon icon="ri-close-circle-line" color="error" />
+          Batalkan Pembayaran
+        </VCardTitle>
+        <VDivider />
+        <VCardText class="pa-4">
+          <p class="text-body-2 mb-3">
+            Anda akan membatalkan pembayaran atas nama
+            <strong>{{ pembayaranStore.itemToCancel?.warga?.nama_warga }}</strong>.
+            Tindakan ini tidak dapat dibatalkan.
+          </p>
+          <VTextarea v-model="pembayaranStore.cancelReason" label="Alasan Pembatalan"
+            placeholder="Masukkan alasan pembatalan..." variant="outlined" auto-grow />
+        </VCardText>
+        <VDivider />
+        <VCardText class="pa-4">
+          <div class="d-flex justify-end gap-2">
+            <VBtn variant="tonal" color="secondary" :disabled="pembayaranStore.isLoadingCancel"
+              @click="pembayaranStore.closeCancelDialog">
+              Batal
+            </VBtn>
+            <VBtn variant="flat" color="error" :loading="pembayaranStore.isLoadingCancel"
+              :disabled="!pembayaranStore.cancelReason.trim()" @click="pembayaranStore.submitCancel('dashboard')">
+              <VIcon icon="ri-close-circle-line" class="me-1" />
+              Batalkan Pembayaran
+            </VBtn>
+          </div>
+        </VCardText>
+      </VCard>
+    </VDialog>
+
+    <DialogShowNote v-model="showRejectionReason" :item="itemSelected" />
   </div>
 </template>

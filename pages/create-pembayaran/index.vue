@@ -96,6 +96,21 @@ onMounted(() => {
     fromPath.value = null
   }
 
+  // Set referrer untuk tombol "Keluar" — hanya kalau belum ada,
+  // supaya tidak ke-overwrite kalau user reload halaman ini berkali-kali
+  if (!sessionStorage.getItem('pembayaran_referrer')) {
+    const referrer = document.referrer
+
+    if (referrer.includes('/dashboard')) {
+      sessionStorage.setItem('pembayaran_referrer', '/dashboard')
+    } else if (referrer.includes('/pembayaran')) {
+      sessionStorage.setItem('pembayaran_referrer', '/pembayaran')
+    } else {
+      // Fallback default kalau referrer tidak dikenali (misal direct access/refresh)
+      sessionStorage.setItem('pembayaran_referrer', '/pembayaran')
+    }
+  }
+
   // Hapus loadData('kematian') dari sini
 })
 </script>
@@ -106,7 +121,7 @@ onMounted(() => {
       <div v-if="authStore.user?.role === 'admin'" class="mb-3">
         <VBtn class="px-0 py-1" variant="text" size="large" @click="handleBack">
           <VIcon icon="ri-arrow-left-s-line" class="me-2" />
-          Keluar
+          Kembali
         </VBtn>
       </div>
       <h2>Informasi Iuran</h2>

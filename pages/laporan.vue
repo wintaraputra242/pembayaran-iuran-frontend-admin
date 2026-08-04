@@ -2,15 +2,31 @@
 const dropdownStore = useDropdownStore()
 const laporanStore = useLaporanStore()
 const uiStore = useUiStore()
+const router = useRouter()
 
 const selectedIuranId = ref<number | null>(null)
 const selectedIuran = computed(() =>
   dropdownStore.itemInformasiIuranForDropdown?.find(i => i.id === selectedIuranId.value) ?? null
 )
 
+const showBackButton = ref(false)
+
 onMounted(() => {
   dropdownStore.fetchInformasiIuranForDropdown()
+
+  // Cek apakah masuk dari dashboard
+  const referrer = sessionStorage.getItem('laporan_referrer')
+  if (referrer === '/dashboard') {
+    showBackButton.value = true
+  }
+
+  // Hapus supaya tidak "nempel" kalau nanti user reload/navigasi lain dari sidebar
+  sessionStorage.removeItem('laporan_referrer')
 })
+
+const handleBack = () => {
+  router.push('/dashboard')
+}
 
 const handleExportPdf = async () => {
   if (!selectedIuranId.value) {
@@ -23,6 +39,14 @@ const handleExportPdf = async () => {
 
 <template>
   <div>
+    <!-- Tombol Back -->
+    <div v-if="showBackButton" class="mb-3">
+      <VBtn class="px-0 py-1" variant="text" size="large" @click="handleBack">
+        <VIcon icon="ri-arrow-left-s-line" class="me-2" />
+        Kembali
+      </VBtn>
+    </div>
+
     <!-- Header -->
     <div class="mb-3">
       <h2>Laporan</h2>

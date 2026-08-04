@@ -3,6 +3,15 @@ import { useApi } from '@/composables/api/useApi';
 import type { WargaPembayaranForDropdown } from '@/types/api/dropdown';
 import type { MasterInformasiIuran } from '@/types/api/master-informasi-iuran';
 
+type PaidMonthData = {
+  bulan_approved: number[]
+  bulan_pending: number[]
+  bulan_rejected: number[]
+  bulan_cancelled: number[]
+  bulan_mulai_bayar: number
+  bulan_maksimal_bayar: number
+}
+
 const emit = defineEmits<{
   (e: 'submit', params: {
     total: number | null
@@ -20,7 +29,7 @@ const props = withDefaults(defineProps<{
   item: MasterInformasiIuran | null
   isLoadingDropdownWarga: boolean
   dropdownWargaOptions: WargaPembayaranForDropdown[] | null
-  monthPaidWarga?: number[] | string[]
+  monthPaidWarga?: PaidMonthData | null
   loadingMonthPaidWarga?: boolean
   loadingSubmit: boolean
   isClearForm: boolean
@@ -29,6 +38,7 @@ const props = withDefaults(defineProps<{
   dropdownWargaOptions: null,
   item: null,
   isClearForm: false,
+  monthPaidWarga: null,
 })
 
 const pembayaranStore = usePembayaranStore()
@@ -60,38 +70,55 @@ const months = [
   'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
 ]
 
+const bulanMulaiBayar = computed(() => props.monthPaidWarga?.bulan_mulai_bayar ?? 1)
+const bulanMaksimalBayar = computed(() => props.monthPaidWarga?.bulan_maksimal_bayar ?? 12)
+
 const monthsWithStatus = computed(() => {
-  const paidMonths = (props.monthPaidWarga ?? []).map(Number) // ✅ convert string → number
+  const approved = (props.monthPaidWarga?.bulan_approved ?? []).map(Number)
+  const pending = (props.monthPaidWarga?.bulan_pending ?? []).map(Number)
+  const rejected = (props.monthPaidWarga?.bulan_rejected ?? []).map(Number)
+  const cancelled = (props.monthPaidWarga?.bulan_cancelled ?? []).map(Number)
 
   return months.map((label, index) => {
     const monthNumber = index + 1
+
+    const isApproved = approved.includes(monthNumber)
+    const isPending = pending.includes(monthNumber)
+    const isRejected = rejected.includes(monthNumber)
+    const isCancelled = cancelled.includes(monthNumber)
+    const isPaid = isApproved || isPending
+    const isSebelumBergabung = monthNumber < bulanMulaiBayar.value
+    const isSesudahNonaktif = monthNumber > bulanMaksimalBayar.value
+
     return {
       label,
       value: monthNumber,
-      isPaid: paidMonths.includes(monthNumber),
+      isApproved,
+      isPending,
+      isRejected,
+      isCancelled,
+      isPaid,
+      isSebelumBergabung,
+      isSesudahNonaktif,
+      isDisabled: isPaid || isSebelumBergabung || isSesudahNonaktif,
     }
   })
 })
 
-const disableDates = ref<Date[]>([])
-
-// watch(() => props.monthPaidWarga, (newVal) => {
-//   if (newVal && newVal.length > 0) {
-//     // Auto-select bulan yang sudah dibayar (tampil as disabled chip)
-//     params.bulan = newVal.map(Number)
-//   } else {
-//     params.bulan = []
-//   }
-// })
+// Bulan yang sudah approved/pending — dipakai untuk exclude dari payload submit
+const paidMonthsFlat = computed(() => [
+  ...(props.monthPaidWarga?.bulan_approved ?? []).map(Number),
+  ...(props.monthPaidWarga?.bulan_pending ?? []).map(Number),
+])
 
 watch(() => params.warga, (newVal) => {
   if (!newVal) {
     params.metode_bayar = null
-    params.bulan = []  // ✅ pastikan ini ada
+    params.bulan = []
     buktiPembayaran.value = null
     isErrorSubmit.value = false
   } else {
-    params.bulan = []  // ✅ tambah ini — reset juga saat ganti warga
+    params.bulan = []
   }
 })
 
@@ -101,7 +128,7 @@ watch(() => props.isClearForm, (newVal) => {
     buktiPembayaran.value = null
     isErrorSubmit.value = false
     isSubmit.value = false
-    params.bulan = []      // ✅ reset manual jika DatePicker tidak ikut reset
+    params.bulan = []
     params.warga = null
     params.metode_bayar = null
   }
@@ -109,12 +136,6 @@ watch(() => props.isClearForm, (newVal) => {
 
 const total = ref(0)
 const adminFee = ref(0)
-
-// const calculateMonthRangeTotal = (monthRange: { month: number }[], pricePerMonth: number): number => {
-//   if (!monthRange || monthRange.length !== 2) return 0
-//   const totalMonths = monthRange[1]?.month - monthRange[0]?.month + 1
-//   return totalMonths <= 0 ? 0 : totalMonths * pricePerMonth
-// }
 
 const setTotalFee = (bulan?: number[] | null, pricePerMonth?: number) => {
   if (!pricePerMonth) return
@@ -126,7 +147,6 @@ const setTotalFee = (bulan?: number[] | null, pricePerMonth?: number) => {
     return
   }
 
-  // Hitung berdasarkan jumlah bulan yang dipilih (bukan range)
   const jumlahBulan = bulan && bulan.length > 0 ? bulan.length : 1
   total.value = jumlahBulan * pricePerMonth + adminFee.value
 }
@@ -137,7 +157,6 @@ watch(() => params.bulan, (newVal) => {
 })
 watch(() => params.metode_bayar, () => setTotalFee(params.bulan, props.item?.jumlah_iuran))
 
-// Ketika pilih QRIS, fetch data QRIS dan tampilkan dialog
 const handleMetodeChange = async (val: string | null) => {
   if (val === 'qris') {
     await pembayaranStore.fetchQris()
@@ -157,16 +176,8 @@ const handleSubmit = async () => {
 
   if (!valid || !buktiPembayaran.value) return
 
-  const paidMonths = (props.monthPaidWarga ?? []).map(Number)
-
   // Hanya kirim bulan yang baru dipilih user, bukan yang sudah paid
-  const bulanBaru = params.bulan.filter(m => !paidMonths.includes(m))
-
-  console.log('monthPaidWarga:', props.monthPaidWarga)
-  console.log('paidMonths:', paidMonths)
-  console.log('params.bulan sebelum filter:', params.bulan)
-  console.log('bulanBaru setelah filter:', bulanBaru)
-  console.log('hasil map:', bulanBaru.map(month => ({ month, year: new Date().getFullYear() })))
+  const bulanBaru = params.bulan.filter(m => !paidMonthsFlat.value.includes(m))
 
   emit('submit', {
     total: total.value,
@@ -184,7 +195,7 @@ const handleDownloadQris = async () => {
   try {
     const { api } = useApi()
     const blob = await api<Blob>(`/qris/download/${(pembayaranStore.qrisData as any).id}`, {
-      responseType: 'blob', // sesuaikan dengan cara useApi kamu handle responseType
+      responseType: 'blob',
     })
 
     const url = URL.createObjectURL(blob)
@@ -226,26 +237,40 @@ const isKetuaRegu = computed(() => authStore.user?.role === 'ketua_regu')
               :items="monthsWithStatus" item-title="label" item-value="value" multiple chips closable-chips
               :loading="loadingMonthPaidWarga" :disabled="!params.warga || loadingMonthPaidWarga" :rules="[rules.bulan]"
               @update:model-value="(val: number[]) => {
-                // Guard: pastikan paid months tidak bisa masuk params.bulan
-                const paidMonths = (monthPaidWarga ?? []).map(Number)
-                params.bulan = val.filter(m => !paidMonths.includes(m))
+                params.bulan = val.filter(m => !paidMonthsFlat.includes(m))
               }">
               <template #item="{ props, item }">
-                <VListItem v-bind="props" :disabled="item.raw.isPaid" :title="item.raw.label">
+                <VListItem v-bind="props" :disabled="item.raw.isDisabled" :title="item.raw.label">
                   <template #prepend="{ isSelected }">
-                    <VCheckboxBtn :model-value="isSelected || item.raw.isPaid" :disabled="item.raw.isPaid"
-                      :color="item.raw.isPaid ? 'success' : 'primary'" />
+                    <VCheckboxBtn :model-value="isSelected || item.raw.isPaid" :disabled="item.raw.isDisabled"
+                      :color="item.raw.isApproved ? 'success' : item.raw.isPending ? 'info' : 'primary'" />
                   </template>
                   <template #append>
-                    <VChip v-if="item.raw.isPaid" color="success" size="x-small" label>
-                      Sudah Dibayar
+                    <VChip v-if="item.raw.isApproved" color="success" size="x-small" label>
+                      Lunas
+                    </VChip>
+                    <VChip v-else-if="item.raw.isPending" color="info" size="x-small" label>
+                      Menunggu Validasi
+                    </VChip>
+                    <VChip v-else-if="item.raw.isRejected" color="error" size="x-small" label>
+                      Ditolak — Bisa Bayar Ulang
+                    </VChip>
+                    <VChip v-else-if="item.raw.isCancelled" color="warning" size="x-small" label>
+                      Dibatalkan — Bisa Bayar Ulang
+                    </VChip>
+                    <VChip v-else-if="item.raw.isSebelumBergabung" color="secondary" size="x-small" label>
+                      Sebelum Bergabung
+                    </VChip>
+                    <VChip v-else-if="item.raw.isSesudahNonaktif" color="secondary" size="x-small" label>
+                      Sudah Tidak Aktif
                     </VChip>
                   </template>
                 </VListItem>
               </template>
 
               <template #chip="{ item, props }">
-                <VChip v-bind="props" :color="item.raw.isPaid ? 'success' : 'primary'" :closable="!item.raw.isPaid">
+                <VChip v-bind="props" :color="item.raw.isApproved ? 'success' : item.raw.isPending ? 'info' : 'primary'"
+                  :closable="!item.raw.isDisabled">
                   {{ item.raw.label }}
                 </VChip>
               </template>
@@ -302,7 +327,6 @@ const isKetuaRegu = computed(() => authStore.user?.role === 'ketua_regu')
                 Biaya Iuran : <strong>{{ formatRupiah(item?.jumlah_iuran as number) }}</strong>
               </p>
 
-              <!-- Tampilkan bulan yang dipilih dan subtotalnya -->
               <p v-if="params.bulan?.length > 0" class="ma-0 text-body-2">
                 {{params.bulan.map(m => months[m - 1]).join(', ')}} ({{ params.bulan.length }} bulan) :
                 <strong>{{ formatRupiah(params.bulan.length * (item?.jumlah_iuran as number)) }}</strong>
