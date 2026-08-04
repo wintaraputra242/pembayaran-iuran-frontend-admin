@@ -67,15 +67,18 @@ const confirmOptions = {
 }
 
 const handleDelete = async () => {
-  const res = await masterReguStore.fetchDeleteRegu(itemSelected.value?.id as number)
+  try {
+    const res = await masterReguStore.fetchDeleteRegu(itemSelected.value?.id as number)
 
-  if (res.success) {
+    if (res.success) {
+      uiStore.showSuccess(res.message)
+
+      page.value = 1
+      masterReguStore.reload = true
+      await masterReguStore.fetchRegu({ limit: 10, page: page.value })
+    }
+  } finally {
     showConfirmation.value = false
-    uiStore.showSuccess(res.message)
-
-    page.value = 1
-    masterReguStore.reload = true
-    await masterReguStore.fetchRegu({ limit: 10, page: page.value })
   }
 }
 
@@ -304,15 +307,18 @@ const handleReload = () => {
 }
 
 const handleUpdateStatus = async () => {
-  const res = await masterReguStore.fetchUpdateStatus({ id: itemSelected.value?.id as number, status_keaktifan: itemSelected.value?.status_keaktifan === 'aktif' ? 'tidak_aktif' : 'aktif' })
+  try {
+    const res = await masterReguStore.fetchUpdateStatus({ id: itemSelected.value?.id as number, status_keaktifan: itemSelected.value?.status_keaktifan === 'aktif' ? 'tidak_aktif' : 'aktif' })
 
-  if (res.success) {
+    if (res.success) {
+      uiStore.showSuccess(res.message)
+
+      page.value = 1
+      masterReguStore.reload = true
+      await masterReguStore.fetchRegu({ limit: 10, page: page.value })
+    }
+  } finally {
     showConfirmation.value = false
-    uiStore.showSuccess(res.message)
-
-    page.value = 1
-    masterReguStore.reload = true
-    await masterReguStore.fetchRegu({ limit: 10, page: page.value })
   }
 }
 

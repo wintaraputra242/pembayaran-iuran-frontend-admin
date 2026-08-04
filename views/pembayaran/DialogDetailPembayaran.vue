@@ -83,7 +83,7 @@ const buktiPembayaranUrl = computed(() => {
 
       <VDivider />
 
-      <VCardText class="pa-4">
+      <VCardText class="pa-4" style="max-height: 70vh;">
         <div v-if="loading" class="d-flex justify-center py-8">
           <VProgressCircular indeterminate color="primary" />
         </div>
@@ -98,7 +98,8 @@ const buktiPembayaranUrl = computed(() => {
               <h3 class="mb-0">{{ detail.nama_warga }}</h3>
               <span class="text-body-2 text-medium-emphasis">NIK: {{ detail.nik }}</span>
             </div>
-            <VChip :color="getStatusConfig(detail.status_bayar).color" size="small" label>
+            <VChip :color="getStatusConfig(detail.status_bayar).color" size="small" label variant="text"
+              style="text-wrap: wrap; height: auto; text-align: end; width: auto;">
               {{ getStatusConfig(detail.status_bayar).label }}
             </VChip>
           </div>

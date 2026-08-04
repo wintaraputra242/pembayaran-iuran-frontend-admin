@@ -17,6 +17,7 @@ const emit = defineEmits<{
   (e: 'reject', item: any): void
   (e: 'cancel', item: any): void
   (e: 'showRejectionReason', item: any): void
+  (e: 'showBuktiBayar', item: any): void
 }>()
 
 const props = withDefaults(defineProps<{
@@ -24,6 +25,8 @@ const props = withDefaults(defineProps<{
   data: (Notification | Pembayaran | MasterWarga | ActivityLog)[]
   loading: boolean
 }>(), {})
+
+const config = useRuntimeConfig()
 
 const headersMap = {
   notifikasi: [
@@ -39,6 +42,7 @@ const headersMap = {
     { key: 'total_bayar', label: 'Total Bayar' },
     { key: 'tanggal_bayar', label: 'Tanggal Bayar' },
     { key: 'metode_bayar', label: 'Metode' },
+    { key: 'bukti_bayar', label: 'Bukti Bayar' },
     { key: 'aksi', label: 'Aksi' },
   ],
   warga_belum_bayar: [
@@ -138,6 +142,29 @@ const actionLabel: Record<string, string> = {
 
     <template #cell-created_at="{ item }" v-if="props.type === 'activity_log'">
       {{ formatDateID(item.created_at) ?? '-' }}
+    </template>
+
+    <template #cell-bukti_bayar="{ item }" v-if="props.type === 'pembayaran'">
+      <div v-if="item.bukti_pembayaran" v-ripple class="cursor-pointer d-inline-flex flex-column align-center gap-1"
+        style="max-width: 70px;" @click="emit('showBuktiBayar', item)">
+        <div style="position: relative; width: 54px; height: 54px;">
+          <img :src="config.public.backendUrl + '/storage/' + item.bukti_pembayaran"
+            style="width: 54px; height: 54px; object-fit: cover; border-radius: 8px; border: 1px solid rgba(var(--v-theme-primary), 0.3);" />
+          <!-- overlay icon zoom -->
+          <div style="
+        position: absolute; inset: 0;
+        background: rgba(var(--v-theme-primary), 0.15);
+        border-radius: 8px;
+        display: flex; align-items: center; justify-content: center;
+      ">
+            <VIcon size="18" color="primary">ri-zoom-in-line</VIcon>
+          </div>
+        </div>
+        <span style="font-size: 10px; color: rgb(var(--v-theme-primary)); white-space: nowrap;">
+          Lihat Bukti
+        </span>
+      </div>
+      <span v-else class="text-medium-emphasis">-</span>
     </template>
 
     <template #cell-aksi="{ item }" v-if="props.type === 'pembayaran'">

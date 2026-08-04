@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineEmits, defineProps, ref, watch } from 'vue';
+import { ref, watch } from 'vue';
 
 const props = defineProps<{
   modelValue: File | null
@@ -11,7 +11,9 @@ const emit = defineEmits<{
   (e: 'update:modelValue', value: File | null): void
 }>()
 
-const fileInput = ref<HTMLInputElement | null>(null)
+const cameraInput = ref<HTMLInputElement | null>(null)
+const galleryInput = ref<HTMLInputElement | null>(null)
+const showPickerMenu = ref(false)
 const preview = ref<string | null>(null)
 const errorMessage = ref<string | null>(null)
 
@@ -23,20 +25,6 @@ const isAllowedFile = (file: File) => {
   return ALLOWED_TYPES.includes(file.type) || ALLOWED_EXTENSIONS.includes(ext)
 }
 
-// Generate preview jika modelValue dari parent berubah
-watch(
-  () => props.modelValue,
-  newVal => {
-    if (!newVal) {
-      preview.value = null
-      return
-    }
-    preview.value = URL.createObjectURL(newVal)
-  },
-  { immediate: true }
-)
-
-// Validasi rules
 const validate = () => {
   if (!props.rules) return true
 
@@ -52,12 +40,9 @@ const validate = () => {
   return true
 }
 
-// Re-validate setiap kali modelValue berubah
-watch(() => props.modelValue, () => validate())
-
 watch(
   () => props.modelValue,
-  (newVal, oldVal) => {
+  (newVal) => {
     if (preview.value) {
       URL.revokeObjectURL(preview.value)
     }
@@ -68,16 +53,26 @@ watch(
     }
 
     preview.value = URL.createObjectURL(newVal)
+    validate()
   },
   { immediate: true }
 )
 
-// Open camera
-const openCamera = () => {
-  fileInput.value?.click()
+// Buka menu pilihan
+const openPicker = () => {
+  showPickerMenu.value = true
 }
 
-// Handle ketika foto diambil
+const chooseCamera = () => {
+  showPickerMenu.value = false
+  cameraInput.value?.click()
+}
+
+const chooseGallery = () => {
+  showPickerMenu.value = false
+  galleryInput.value?.click()
+}
+
 const handleFileChange = (e: Event) => {
   const target = e.target as HTMLInputElement
   const file = target.files?.[0]
@@ -87,22 +82,21 @@ const handleFileChange = (e: Event) => {
   if (!isAllowedFile(file)) {
     errorMessage.value = 'Format file harus JPG, JPEG, atau PNG.'
     emit('update:modelValue', null)
-    if (fileInput.value) fileInput.value.value = ''
+    target.value = ''
     return
   }
 
   preview.value = URL.createObjectURL(file)
-
   emit('update:modelValue', file)
   validate()
 }
 
-// Hapus foto
 const removeImage = () => {
   preview.value = null
   emit('update:modelValue', null)
 
-  if (fileInput.value) fileInput.value.value = ''
+  if (cameraInput.value) cameraInput.value.value = ''
+  if (galleryInput.value) galleryInput.value.value = ''
 
   validate()
 }
@@ -119,11 +113,11 @@ watch(() => props.isErrorSubmit, (newVal) => {
       :class="{
         'border-grey': !errorMessage,
         'border-error': !!errorMessage
-      }" style="min-height: 180px;" @click="openCamera">
+      }" style="min-height: 180px;" @click="!preview && openPicker()">
       <template v-if="!preview">
         <VIcon size="48" class="mb-2">ri-camera-line</VIcon>
         <p class="text-body-2 text-center">
-          Klik untuk mengambil foto bukti pembayaran
+          Klik untuk upload bukti pembayaran
         </p>
         <p class="text-caption text-medium-emphasis text-center mb-0">
           Format: JPG, JPEG, PNG
@@ -133,10 +127,16 @@ watch(() => props.isErrorSubmit, (newVal) => {
       <template v-else>
         <img :src="preview" alt="Preview" class="w-100 rounded-lg" style="object-fit: cover;" />
 
-        <VBtn size="small" color="error" class="mt-3" @click.stop="removeImage">
-          <VIcon class="me-1">ri-delete-bin-line</VIcon>
-          Hapus Foto
-        </VBtn>
+        <div class="d-flex gap-2 mt-3">
+          <VBtn size="small" variant="tonal" @click.stop="openPicker">
+            <VIcon class="me-1">ri-refresh-line</VIcon>
+            Ganti Foto
+          </VBtn>
+          <VBtn size="small" color="error" @click.stop="removeImage">
+            <VIcon class="me-1">ri-delete-bin-line</VIcon>
+            Hapus
+          </VBtn>
+        </div>
       </template>
     </div>
 
@@ -145,9 +145,23 @@ watch(() => props.isErrorSubmit, (newVal) => {
       {{ errorMessage }}
     </p>
 
-    <!-- hidden input -->
-    <input ref="fileInput" type="file" accept=".jpg,.jpeg,.png,image/jpeg,image/png" capture="environment"
+    <!-- Dialog pilihan sumber gambar -->
+    <VDialog v-model="showPickerMenu" max-width="320">
+      <VCard>
+        <VCardText class="pa-2">
+          <VListItem prepend-icon="ri-camera-line" title="Ambil Foto" @click="chooseCamera" />
+          <VListItem prepend-icon="ri-image-line" title="Upload dari Galeri" @click="chooseGallery" />
+        </VCardText>
+      </VCard>
+    </VDialog>
+
+    <!-- hidden input: kamera -->
+    <input ref="cameraInput" type="file" accept=".jpg,.jpeg,.png,image/jpeg,image/png" capture="environment"
       class="d-none" @change="handleFileChange" />
+
+    <!-- hidden input: galeri (tanpa atribut capture) -->
+    <input ref="galleryInput" type="file" accept=".jpg,.jpeg,.png,image/jpeg,image/png" class="d-none"
+      @change="handleFileChange" />
   </div>
 </template>
 

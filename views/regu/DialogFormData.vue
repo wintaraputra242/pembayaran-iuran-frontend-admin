@@ -34,13 +34,10 @@ const rules = {
   },
 }
 
-watch(
-  () => params.nama_regu,
-  newVal => {
-    if (!newVal) return
-    params.nama_regu = newVal.toUpperCase()
-  }
-)
+// TIDAK ADA lagi watch/handler yang mengubah params.nama_regu saat mengetik.
+// Uppercase cuma ditampilkan secara visual lewat CSS (class "uppercase-input"
+// di <style> bawah), supaya tidak pernah mengganggu proses composition
+// keyboard mobile. Value asli baru dikonversi ke uppercase saat submit.
 
 const handleClose = () => {
   form.value?.reset()
@@ -60,7 +57,13 @@ const handleSubmit = async () => {
   const { valid } = await form.value?.validate()
 
   if (valid) {
-    emit('submit', params)
+    // Konversi ke uppercase di sini saja, sekali, sebelum dikirim ke parent —
+    // bukan tiap keystroke.
+    const finalParams = {
+      ...params,
+      nama_regu: params.nama_regu.toUpperCase(),
+    }
+    emit('submit', finalParams)
   }
 
 }
@@ -88,7 +91,7 @@ watch(() => props.isFetchSuccess, (newVal) => {
           <VRow align="center" class="pt-1">
             <VCol cols="12">
               <VTextField v-model="params.nama_regu" label="Nama Regu" placeholder="Masukkan nama regu"
-                :rules="[rules.nama]" />
+                :rules="[rules.nama]" class="uppercase-input" />
             </VCol>
             <VCol cols="12">
               <div class="d-flex justify-end flex-wrap gap-2">
@@ -117,5 +120,11 @@ watch(() => props.isFetchSuccess, (newVal) => {
   border: 2px dashed #888;
   border-radius: 10px;
   text-align: center;
+}
+</style>
+
+<style scoped>
+.uppercase-input :deep(input) {
+  text-transform: uppercase;
 }
 </style>

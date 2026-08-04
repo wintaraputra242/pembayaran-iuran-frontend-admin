@@ -117,15 +117,18 @@ const handleReload = () => {
 }
 
 const handleDelete = async () => {
-  const res = await masterInformasiIuranStore.fetchDeleteInformasiIuran(itemSelected.value?.id as number)
+  try {
+    const res = await masterInformasiIuranStore.fetchDeleteInformasiIuran(itemSelected.value?.id as number)
 
-  if (res.success) {
+    if (res.success) {
+      uiStore.showSuccess(res.message)
+
+      page.value = 1
+      masterInformasiIuranStore.reload = true
+      await masterInformasiIuranStore.fetchInformasiIuran({ limit: 10, page: page.value, mode: 'admin' })
+    }
+  } finally {
     showConfirmation.value = false
-    uiStore.showSuccess(res.message)
-
-    page.value = 1
-    masterInformasiIuranStore.reload = true
-    await masterInformasiIuranStore.fetchInformasiIuran({ limit: 10, page: page.value, mode: 'admin' })
   }
 }
 
@@ -143,15 +146,18 @@ const handleShowConfirmDelData = (item: MasterInformasiIuran) => {
 }
 
 const handleUpdateStatus = async () => {
-  const res = await masterInformasiIuranStore.fetchUpdateStatus({ id: itemSelected.value?.id as number, status_aktif: itemSelected.value?.status_aktif === 1 ? 0 : 1 })
+  try {
+    const res = await masterInformasiIuranStore.fetchUpdateStatus({ id: itemSelected.value?.id as number, status_aktif: itemSelected.value?.status_aktif === 1 ? 0 : 1 })
 
-  if (res.success) {
+    if (res.success) {
+      uiStore.showSuccess(res.message)
+
+      page.value = 1
+      masterInformasiIuranStore.reload = true
+      await masterInformasiIuranStore.fetchInformasiIuran({ limit: 10, page: page.value, mode: 'admin' })
+    }
+  } finally {
     showConfirmation.value = false
-    uiStore.showSuccess(res.message)
-
-    page.value = 1
-    masterInformasiIuranStore.reload = true
-    await masterInformasiIuranStore.fetchInformasiIuran({ limit: 10, page: page.value, mode: 'admin' })
   }
 }
 

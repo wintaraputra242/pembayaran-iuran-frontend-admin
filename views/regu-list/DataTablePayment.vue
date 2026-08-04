@@ -12,7 +12,9 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'loadMore'): void
-  (e: 'showBuktiBayar', item: any): void // ← tambah ini
+  (e: 'showBuktiBayar', item: any): void
+  (e: 'approve', item: any): void
+  (e: 'reject', item: any): void
 }>()
 
 const config = useRuntimeConfig()
@@ -29,6 +31,7 @@ const headers = [
   { label: 'Status', key: 'status' },
   { label: 'Petugas', key: 'petugas' },
   { label: 'Bukti', key: 'bukti_bayar' },
+  { label: 'Aksi', key: 'aksi', width: '200px', align: 'center', sortable: false },
 ]
 
 const bulanLabel: Record<number, string> = {
@@ -37,21 +40,19 @@ const bulanLabel: Record<number, string> = {
   9: 'Sep', 10: 'Okt', 11: 'Nov', 12: 'Des',
 }
 
-const statusChipsColor = {
+const statusChipsColor: Record<string, string> = {
   approved: 'success',
-  reject: 'error',
-  cancel: 'secondary',
+  rejected: 'error',
+  cancelled: 'secondary',
   pending: 'info',
 }
 
-const statusText = {
+const statusText: Record<string, string> = {
   approved: 'Disetujui',
-  reject: 'Ditolak',
-  cancel: 'Dibatalkan',
+  rejected: 'Ditolak',
+  cancelled: 'Dibatalkan',
   pending: 'Menunggu',
 }
-
-
 </script>
 
 <template>
@@ -111,11 +112,9 @@ const statusText = {
 
     <!-- Status -->
     <template #cell-status="{ item }">
-      <div class="text-capitalize">
-        <VChip size="small" :color="statusChipsColor[item.status_bayar as keyof typeof statusChipsColor]">
-          {{ statusText[item.status_bayar as keyof typeof statusText] }}
-        </VChip>
-      </div>
+      <VChip size="small" :color="statusChipsColor[item.status_bayar]">
+        {{ statusText[item.status_bayar] }}
+      </VChip>
     </template>
 
     <!-- Petugas -->

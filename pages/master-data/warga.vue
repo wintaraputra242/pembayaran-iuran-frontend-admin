@@ -43,16 +43,19 @@ const confirmOptions = {
 }
 
 const handleDelete = async () => {
-  const res = await masterWargaStore.fetchDeleteWarga(itemSelected.value?.nik as string)
+  try {
+    const res = await masterWargaStore.fetchDeleteWarga(itemSelected.value?.nik as string)
+    if (res.success) {
+      uiStore.showSuccess(res.message)
 
-  if (res.success) {
+      page.value = 1
+      masterWargaStore.reload = true
+      await masterWargaStore.fetchWarga({ limit: 10, page: page.value })
+    }
+  } finally {
     showConfirmation.value = false
-    uiStore.showSuccess(res.message)
-
-    page.value = 1
-    masterWargaStore.reload = true
-    await masterWargaStore.fetchWarga({ limit: 10, page: page.value })
   }
+
 }
 
 const handleShowConfirmDelData = (item: MasterWarga) => {

@@ -6,6 +6,7 @@ export interface MasterWarga {
   nama_warga: string
   alamat: string
   no_hp: string
+  tanggal_bergabung: string
   status_keaktifan: 'aktif' | 'tidak_aktif'
   tanggal_nonaktif: string | null
   is_deleted: boolean

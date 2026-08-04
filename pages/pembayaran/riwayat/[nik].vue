@@ -308,7 +308,7 @@ onMounted(() => {
   <div>
     <VBtn class="px-0 py-1 mb-3" variant="text" size="large" to="/pembayaran">
       <VIcon icon="ri-arrow-left-s-line" class="me-2" />
-      Keluar
+      Kembali
     </VBtn>
 
     <div class="mb-3">

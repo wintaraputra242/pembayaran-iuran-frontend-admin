@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import type { MasterWarga } from '@/types/api/master-warga';
+import { format } from 'date-fns';
 
 const emit = defineEmits<{
   (e: 'submit', params: {
@@ -7,6 +8,7 @@ const emit = defineEmits<{
     nama_warga: string
     alamat: string
     no_hp: string
+    tanggal_bergabung: any
   }): void;
   (e: 'import', file: File): void;
   (e: 'close'): void;
@@ -36,6 +38,7 @@ const defaultParams = {
   nama_warga: '',
   alamat: '',
   no_hp: '',
+  tanggal_bergabung: '',
 }
 const params = reactive({ ...defaultParams })
 
@@ -102,12 +105,16 @@ const rules = {
       return 'Hanya file Excel'
     return true
   },
+  tanggal_bergabung: (v: string) => {
+    if (!v) return true // nullable, boleh dikosongkan
+    return true
+  },
 }
 
-watch(() => params.nama_warga, newVal => {
-  if (!newVal) return
-  params.nama_warga = newVal.toUpperCase()
-})
+// TIDAK ADA lagi watch yang mengubah params.nama_warga saat mengetik.
+// Uppercase cuma ditampilkan secara visual lewat CSS (class "uppercase-input"),
+// supaya tidak mengganggu proses composition keyboard mobile.
+// Value asli baru dikonversi ke uppercase saat submit (lihat handleSubmit).
 
 const handleClose = () => {
   form.value?.reset()
@@ -128,12 +135,22 @@ watch(() => props.isEdit, newVal => {
   params.nama_warga = props.item?.nama_warga as string
   params.alamat = props.item?.alamat as string
   params.no_hp = props.item?.no_hp as string
+  params.tanggal_bergabung = props.item?.tanggal_bergabung as string
 })
 
 const handleSubmit = async () => {
   const { valid } = await form.value.validate()
   if (!valid) return
-  emit('submit', params)
+
+  // Konversi ke uppercase di sini saja, sekali, sebelum dikirim —
+  // bukan tiap keystroke, supaya tidak mengganggu keyboard mobile.
+  emit('submit', {
+    ...params,
+    nama_warga: params.nama_warga.toUpperCase(),
+    tanggal_bergabung: params.tanggal_bergabung
+      ? format(new Date(params.tanggal_bergabung), 'yyyy-MM-dd')
+      : null,
+  })
 }
 
 // Dipanggil dari parent saat store warga berhasil
@@ -239,7 +256,7 @@ const handleDownloadTemplate = async () => {
                   </VCol>
                   <VCol cols="12">
                     <VTextField v-model="params.nama_warga" label="Nama" placeholder="Masukkan nama warga"
-                      :rules="[rules.nama]" />
+                      :rules="[rules.nama]" class="uppercase-input" />
                   </VCol>
                   <VCol cols="12">
                     <VTextarea v-model="params.alamat" label="Alamat" placeholder="Masukkan alamat warga"
@@ -248,6 +265,14 @@ const handleDownloadTemplate = async () => {
                   <VCol cols="12">
                     <VTextField v-model="params.no_hp" label="No. Handphone" placeholder="Masukkan no. handphone warga"
                       :rules="[rules.phone]" />
+                  </VCol>
+                  <VCol cols="12">
+                    <DatePicker v-model="params.tanggal_bergabung" label="Tanggal Bergabung"
+                      placeholder="Pilih tanggal bergabung" format="dd/MM/yyyy" :rules="[rules.tanggal_bergabung]"
+                      clearable />
+                    <p class="text-caption text-medium-emphasis mt-1 mb-0">
+                      Tanggal warga mulai menjadi bagian banjar / mulai wajib iuran (bukan tanggal input data ke sistem)
+                    </p>
                   </VCol>
                   <VCol cols="12">
                     <div class="d-flex justify-end flex-wrap gap-2">
@@ -340,3 +365,9 @@ const handleDownloadTemplate = async () => {
     </VCard>
   </VDialog>
 </template>
+
+<style scoped>
+.uppercase-input :deep(input) {
+  text-transform: uppercase;
+}
+</style>
