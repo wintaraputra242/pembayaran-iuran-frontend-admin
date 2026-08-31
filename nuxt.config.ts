@@ -275,7 +275,9 @@ export default defineNuxtConfig({
     },
 
     devOptions: {
-      enabled: true,
+      // Dimatikan supaya saat development, browser selalu ambil build terbaru
+      // (bukan versi lama yang di-cache Service Worker). PWA tetap berfungsi normal di production build.
+      enabled: false,
       type: 'module',
       navigateFallbackAllowlist: [/^\//, /^\//]
     },

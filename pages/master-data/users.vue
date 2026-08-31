@@ -13,6 +13,7 @@ const showConfirmation = ref(false)
 const isLoadingConfirm = ref(false)
 const itemSelected = ref<MasterUser | null>(null)
 const page = ref(1)
+const limit = ref(10)
 
 const confirmOptions = reactive({
   title: '',
@@ -29,7 +30,7 @@ const confirmOptions = reactive({
 onMounted(async () => {
   if (masterUsersStore.page) page.value = masterUsersStore.page
   if (masterUsersStore.page === 0) {
-    await masterUsersStore.fetchUsers({ limit: 10, page: page.value })
+    await masterUsersStore.fetchUsers({ limit: limit.value, page: page.value })
   }
 })
 
@@ -38,7 +39,19 @@ onMounted(async () => {
 // -------------------------------------------------------
 const handleLoadMore = () => {
   page.value++
-  masterUsersStore.fetchUsers({ limit: 10, page: page.value })
+  masterUsersStore.fetchUsers({ limit: limit.value, page: page.value })
+}
+
+// Pagination desktop (server-side) — ganti data (bukan menambahkan) sesuai halaman/jumlah baris yang dipilih.
+const handleChangePage = (newPage: number) => {
+  page.value = newPage
+  masterUsersStore.fetchUsers({ limit: limit.value, page: page.value, replace: true })
+}
+
+const handleChangeLimit = (newLimit: number) => {
+  limit.value = newLimit
+  page.value = 1
+  masterUsersStore.fetchUsers({ limit: limit.value, page: page.value, replace: true })
 }
 
 const handleFilter = (filters: { keyword: string; role: null | string }) => {
@@ -47,14 +60,14 @@ const handleFilter = (filters: { keyword: string; role: null | string }) => {
   Object.entries(filters).forEach(([key, value]) => {
     masterUsersStore.setFilter(key as 'role' | 'keyword', value as string)
   })
-  masterUsersStore.fetchUsers({ limit: 10, page: page.value })
+  masterUsersStore.fetchUsers({ limit: limit.value, page: page.value })
 }
 
 const handleReload = () => {
   page.value = 1
   masterUsersStore.reload = true
   masterUsersStore.resetFilter()
-  masterUsersStore.fetchUsers({ limit: 10, page: page.value })
+  masterUsersStore.fetchUsers({ limit: limit.value, page: page.value })
 }
 
 // -------------------------------------------------------
@@ -116,7 +129,8 @@ const handleDownloadCredentials = async () => {
       <VCol cols="12">
         <DataTableUsers :data="masterUsersStore.users" :meta="masterUsersStore.meta" :loading="masterUsersStore.loading"
           :has-more="masterUsersStore.hasMore" :has-filter="masterUsersStore.hasFilter"
-          @get-password="handleGetPassword" @delete="handleDeleteConfirm" @load-more="handleLoadMore" />
+          @get-password="handleGetPassword" @delete="handleDeleteConfirm" @load-more="handleLoadMore"
+          @change-page="handleChangePage" @change-limit="handleChangeLimit" />
       </VCol>
     </VRow>
 

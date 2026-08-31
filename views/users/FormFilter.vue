@@ -49,11 +49,11 @@ const handleJumpFromUsers = () => {
   <VCard>
     <VCardItem>
       <VRow align="center">
-        <VCol cols="12" sm="5">
+        <VCol cols="12" sm="6">
           <VTextField v-model="filters.keyword" placeholder="Cari pengguna" prepend-inner-icon="ri-search-2-line"
             hide-details clearable />
         </VCol>
-        <VCol cols="12" sm="4">
+        <VCol cols="12" sm="6">
           <VSelect v-model="filters.role" placeholder="Semua Role" item-title="label" item-value="value" hide-details
             clearable :items="[
               { label: 'Admin', value: 'admin' },

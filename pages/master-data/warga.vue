@@ -50,7 +50,7 @@ const handleDelete = async () => {
 
       page.value = 1
       masterWargaStore.reload = true
-      await masterWargaStore.fetchWarga({ limit: 10, page: page.value })
+      await masterWargaStore.fetchWarga({ limit: limit.value, page: page.value })
     }
   } finally {
     showConfirmation.value = false
@@ -80,7 +80,7 @@ const handleUpdateStatus = async () => {
 
     page.value = 1
     masterWargaStore.reload = true
-    await masterWargaStore.fetchWarga({ limit: 10, page: page.value })
+    await masterWargaStore.fetchWarga({ limit: limit.value, page: page.value })
   }
 }
 
@@ -106,6 +106,7 @@ const handleShowConfirmUpdateStatus = (item: MasterWarga) => {
 }
 
 const page = ref(1)
+const limit = ref(10)
 
 const handleFilter = (filters: { keyword: string, status_keaktifan: null | string }) => {
   page.value = 1
@@ -113,19 +114,31 @@ const handleFilter = (filters: { keyword: string, status_keaktifan: null | strin
   Object.entries(filters).forEach(([key, value]) => {
     masterWargaStore.setFilter(key as 'status_keaktifan' | 'keyword', value as string)
   })
-  masterWargaStore.fetchWarga({ limit: 10, page: page.value })
+  masterWargaStore.fetchWarga({ limit: limit.value, page: page.value })
 }
 
 const handleReload = () => {
   page.value = 1
   masterWargaStore.reload = true
   masterWargaStore.resetFilter()
-  masterWargaStore.fetchWarga({ limit: 10, page: page.value })
+  masterWargaStore.fetchWarga({ limit: limit.value, page: page.value })
 }
 
 const handleLoadMore = async () => {
   page.value += 1
-  await masterWargaStore.fetchWarga({ limit: 10, page: page.value })
+  await masterWargaStore.fetchWarga({ limit: limit.value, page: page.value })
+}
+
+// Pagination desktop (server-side) — ganti data (bukan menambahkan) sesuai halaman/jumlah baris yang dipilih.
+const handleChangePage = async (newPage: number) => {
+  page.value = newPage
+  await masterWargaStore.fetchWarga({ limit: limit.value, page: page.value, replace: true })
+}
+
+const handleChangeLimit = async (newLimit: number) => {
+  limit.value = newLimit
+  page.value = 1
+  await masterWargaStore.fetchWarga({ limit: limit.value, page: page.value, replace: true })
 }
 
 const isFetchSuccess = ref(false)
@@ -143,7 +156,7 @@ const handleAddData = async (params: AddWargaPayload) => {
 
     page.value = 1
     masterWargaStore.reload = true
-    await masterWargaStore.fetchWarga({ limit: 10, page: page.value })
+    await masterWargaStore.fetchWarga({ limit: limit.value, page: page.value })
   }
 }
 
@@ -166,7 +179,7 @@ const handleImport = async (file: File) => {
 
     page.value = 1
     masterWargaStore.reload = true
-    await masterWargaStore.fetchWarga({ limit: 10, page: page.value })
+    await masterWargaStore.fetchWarga({ limit: limit.value, page: page.value })
   }
 }
 
@@ -181,7 +194,7 @@ const handleUpdate = async (params: AddWargaPayload) => {
 
     page.value = 1
     masterWargaStore.reload = true
-    await masterWargaStore.fetchWarga({ limit: 10, page: page.value })
+    await masterWargaStore.fetchWarga({ limit: limit.value, page: page.value })
   }
 }
 
@@ -214,7 +227,7 @@ onMounted(async () => {
   if (masterWargaStore.page) page.value = masterWargaStore.page
 
   if (masterWargaStore.page === 0) {
-    await masterWargaStore.fetchWarga({ limit: 10, page: page.value })
+    await masterWargaStore.fetchWarga({ limit: limit.value, page: page.value })
   }
 
   await dropdownStore.fetchReguForDropdown()
@@ -239,7 +252,7 @@ onMounted(async () => {
         <DataTableWarga :data="masterWargaStore.warga" :meta="masterWargaStore.meta" :loading="masterWargaStore.loading"
           :has-more="masterWargaStore.hasMore" :has-filter="masterWargaStore.hasFilter" @edit="handleEditData"
           @delete="handleShowConfirmDelData" @update-status="handleShowConfirmUpdateStatus"
-          @load-more="handleLoadMore" />
+          @load-more="handleLoadMore" @change-page="handleChangePage" @change-limit="handleChangeLimit" />
       </VCol>
     </VRow>
 

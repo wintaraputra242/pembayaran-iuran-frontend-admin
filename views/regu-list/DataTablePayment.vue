@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import type { PembayaranByRegu } from '@/types/api/pembayaran';
+import type { PaginationMeta } from '@/types/common';
 import qris from '@images/pages/qris.png'; // sesuaikan path
 
 
 const props = defineProps<{
   data: PembayaranByRegu[]
+  meta?: null | PaginationMeta
   loading?: boolean
   hasMore?: boolean
   hasFilter?: boolean
@@ -15,6 +17,8 @@ const emit = defineEmits<{
   (e: 'showBuktiBayar', item: any): void
   (e: 'approve', item: any): void
   (e: 'reject', item: any): void
+  (e: 'changePage', page: number): void
+  (e: 'changeLimit', limit: number): void
 }>()
 
 const config = useRuntimeConfig()
@@ -56,8 +60,9 @@ const statusText: Record<string, string> = {
 </script>
 
 <template>
-  <AppDataTable :headers="headers" :items="props.data" :loading="props.loading" :has-more="props.hasMore"
-    :has-filter="props.hasFilter" @loadMore="emit('loadMore')">
+  <AppDataTable :headers="headers" :items="props.data" :meta="props.meta" :loading="props.loading"
+    :has-more="props.hasMore" :has-filter="props.hasFilter" @load-more="emit('loadMore')"
+    @change-page="emit('changePage', $event)" @change-limit="emit('changeLimit', $event)">
     <!-- Nama Warga -->
     <template #cell-nama_warga="{ item }">
       <div class="d-flex flex-column">

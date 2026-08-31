@@ -3,6 +3,8 @@ import type { PaginationMeta } from '@/types/common';
 
 const emit = defineEmits<{
   (e: 'loadMore'): void
+  (e: 'changePage', page: number): void
+  (e: 'changeLimit', limit: number): void
 }>()
 
 const props = withDefaults(defineProps<{
@@ -44,8 +46,9 @@ const actionLabel: Record<string, string> = {
 </script>
 
 <template>
-  <AppDataTable :headers="headers" :items="props.data" :loading="props.loading" :has-more="props.hasMore"
-    :has-filter="props.hasFilter" @load-more="emit('loadMore')">
+  <AppDataTable :headers="headers" :items="props.data" :meta="props.meta" :loading="props.loading"
+    :has-more="props.hasMore" :has-filter="props.hasFilter" @load-more="emit('loadMore')"
+    @change-page="emit('changePage', $event)" @change-limit="emit('changeLimit', $event)">
     <!-- Petugas -->
     <template #cell-petugas="{ item }">
       <span class="font-weight-medium">{{ item?.user?.name ?? '-' }}</span>

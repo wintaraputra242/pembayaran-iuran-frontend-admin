@@ -88,11 +88,24 @@ const handleConfirmReject = async () => {
   }
 }
 
+const limit = ref(10)
+
 // ── Load More ─────────────────────────────────────────────────────
 const handleLoadMore = async () => {
   await pembayaranStore.fetchPendingPembayaran({
     page: (pembayaranStore.page ?? 0) + 1,
+    per_page: limit.value,
   })
+}
+
+// Pagination desktop (server-side) — ganti data (bukan menambahkan) sesuai halaman/jumlah baris yang dipilih.
+const handleChangePage = async (newPage: number) => {
+  await pembayaranStore.fetchPendingPembayaran({ page: newPage, per_page: limit.value, replace: true })
+}
+
+const handleChangeLimit = async (newLimit: number) => {
+  limit.value = newLimit
+  await pembayaranStore.fetchPendingPembayaran({ page: 1, per_page: limit.value, replace: true })
 }
 
 const handleBack = () => {
@@ -147,7 +160,7 @@ const handleBack = () => {
         <DataTable :data="pembayaranStore.pendingPembayaran" :meta="pembayaranStore.meta"
           :loading="pembayaranStore.loading" :has-more="pembayaranStore.hasMore"
           @show-bukti-bayar="handleShowBuktiBayar" @approve="handleApprove" @reject="handleReject"
-          @load-more="handleLoadMore" />
+          @load-more="handleLoadMore" @change-page="handleChangePage" @change-limit="handleChangeLimit" />
       </VCol>
 
     </VRow>

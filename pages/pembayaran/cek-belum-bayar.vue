@@ -16,6 +16,7 @@ const router = useRouter()
 const display = useDisplay()
 
 const page = ref(1)
+const limit = ref(10)
 
 const showFormData = ref(false)
 const isEdit = ref(false)
@@ -113,7 +114,19 @@ watch(showPaymentProof, val => {
 
 const handleLoadMore = async () => {
   page.value += 1
-  await pembayaranStore.fetchUnpaidPembayaran({ limit: 10, page: page.value })
+  await pembayaranStore.fetchUnpaidPembayaran({ limit: limit.value, page: page.value })
+}
+
+// Pagination desktop (server-side) — ganti data (bukan menambahkan) sesuai halaman/jumlah baris yang dipilih.
+const handleChangePage = async (newPage: number) => {
+  page.value = newPage
+  await pembayaranStore.fetchUnpaidPembayaran({ limit: limit.value, page: page.value, replace: true })
+}
+
+const handleChangeLimit = async (newLimit: number) => {
+  limit.value = newLimit
+  page.value = 1
+  await pembayaranStore.fetchUnpaidPembayaran({ limit: limit.value, page: page.value, replace: true })
 }
 
 const filters = reactive<{
@@ -143,6 +156,25 @@ const bulanOptions = [
 
 const hasFilterUnpaidWarga = ref(false)
 
+// Lebar kolom filter menyesuaikan jumlah field yang sedang tampil (field "Bulan" & "Regu"
+// tampil kondisional), supaya baris filter selalu terisi penuh di desktop — tidak ada
+// ruang kosong terbuang seperti sebelumnya saat cuma 1-2 field yang muncul.
+const visibleFilterFieldCount = computed(() => {
+  let count = 1 // "Pilih informasi iuran" selalu tampil
+
+  if (filters.informasi_iuran?.jenis_iuran === 'bulanan') count++
+  if (pembayaranStore.unpaidWarga.length > 0 || filters.regu) count++
+
+  return count
+})
+
+const filterColMd = computed(() => {
+  if (visibleFilterFieldCount.value <= 1) return 4
+  if (visibleFilterFieldCount.value === 2) return 6
+
+  return 4
+})
+
 watch(() => filters.informasi_iuran, async (val: any) => {
   if (!val || !filters.bulan) {
     filters.regu = null
@@ -164,7 +196,7 @@ watch(() => filters.informasi_iuran, async (val: any) => {
 
     pembayaranStore.isReloadDataUnpaidWarga = true
 
-    await pembayaranStore.fetchUnpaidPembayaran({ limit: 10, page: page.value })
+    await pembayaranStore.fetchUnpaidPembayaran({ limit: limit.value, page: page.value })
 
     return
   }
@@ -194,7 +226,7 @@ watch(() => filters.bulan, async (val) => {
 
     pembayaranStore.isReloadDataUnpaidWarga = true
 
-    await pembayaranStore.fetchUnpaidPembayaran({ limit: 10, page: page.value })
+    await pembayaranStore.fetchUnpaidPembayaran({ limit: limit.value, page: page.value })
     return
   }
 
@@ -215,7 +247,7 @@ watch(
     debounceTimer = setTimeout(() => {
       pembayaranStore.isReloadDataUnpaidWarga = true
       pembayaranStore.setFilter('idRegu', val?.id ?? null) // NOTE: key 'idRegu' perlu disesuaikan juga di backend
-      pembayaranStore.fetchUnpaidPembayaran({ page: 1, limit: 10 })
+      pembayaranStore.fetchUnpaidPembayaran({ page: 1, limit: limit.value })
     }, 500)
   }
 )
@@ -276,19 +308,19 @@ onMounted(() => {
         <VCard>
           <VCardItem>
             <VRow>
-              <VCol cols="12" sm="6">
+              <VCol cols="12" sm="6" :md="filterColMd">
                 <VAutocomplete v-model="filters.informasi_iuran" placeholder="Pilih informasi iuran"
                   :items="dropdownStore.itemInformasiIuranForDropdown" return-object item-title="judul_iuran"
                   item-value="id" clearable :loading="dropdownStore.loading.informasiIuranForDropdown"
                   @click:clear="filters.bulan = null" />
               </VCol>
 
-              <VCol v-if="filters.informasi_iuran?.jenis_iuran === 'bulanan'" cols="12" sm="6">
+              <VCol v-if="filters.informasi_iuran?.jenis_iuran === 'bulanan'" cols="12" sm="6" :md="filterColMd">
                 <VSelect v-model="filters.bulan" placeholder="Pilih Bulan" :items="bulanOptions" item-title="label"
                   item-value="value" clearable :loading="dropdownStore.loading.informasiIuranForDropdown" />
               </VCol>
 
-              <VCol v-if="pembayaranStore.unpaidWarga.length > 0 || filters.regu" cols="12" sm="6">
+              <VCol v-if="pembayaranStore.unpaidWarga.length > 0 || filters.regu" cols="12" sm="6" :md="filterColMd">
                 <VAutocomplete v-model="filters.regu" placeholder="Cari berdasarkan Regu"
                   :items="dropdownStore.reguForDropdown" return-object item-title="nama_regu" item-value="id" clearable
                   :loading="dropdownStore.loading.reguForDropdown" />
@@ -308,10 +340,12 @@ onMounted(() => {
       </VCol>
 
       <VCol cols="12">
-        <DataTableCekBelumBayar :data="pembayaranStore.unpaidWarga" :loading="pembayaranStore.loading"
-          :loading-send-notif="pembayaranStore.loadingSendNotif" :has-more="pembayaranStore.hasMoreUnpaidWarga"
-          :has-filter="hasFilterUnpaidWarga" :jml-iuran="filters.informasi_iuran?.jumlah_iuran"
-          :nik-notif-sended="itemSelectForSendNotif" @send-notif="handleSendNotif" @load-more="handleLoadMore" />
+        <DataTableCekBelumBayar :data="pembayaranStore.unpaidWarga" :meta="pembayaranStore.meta"
+          :loading="pembayaranStore.loading" :loading-send-notif="pembayaranStore.loadingSendNotif"
+          :has-more="pembayaranStore.hasMoreUnpaidWarga" :has-filter="hasFilterUnpaidWarga"
+          :jml-iuran="filters.informasi_iuran?.jumlah_iuran" :nik-notif-sended="itemSelectForSendNotif"
+          @send-notif="handleSendNotif" @load-more="handleLoadMore" @change-page="handleChangePage"
+          @change-limit="handleChangeLimit" />
       </VCol>
     </VRow>
 

@@ -31,6 +31,9 @@ export const useMasterInformasiIuranStore = defineStore('master-informasi-iuran'
       limit?: number
       mode?: string
       jenis_iuran?: string
+      // true = ganti seluruh data dengan hasil fetch ini (dipakai pagination desktop).
+      // false/undefined = tambahkan ke data yang sudah ada (dipakai infinite-scroll mobile).
+      replace?: boolean
     }) {
       if (this.reload) {
         this.informasiIuran = []
@@ -58,7 +61,7 @@ export const useMasterInformasiIuranStore = defineStore('master-informasi-iuran'
           ...newFilter,
         })
 
-        this.informasiIuran = [...this.informasiIuran, ...res.data.data]
+        this.informasiIuran = params?.replace ? res.data.data : [...this.informasiIuran, ...res.data.data]
 
         const { data, ...meta } = res.data
         this.meta = meta

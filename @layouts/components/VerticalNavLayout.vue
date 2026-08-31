@@ -4,12 +4,25 @@ import { useDisplay } from 'vuetify';
 
 export default defineComponent({
   setup(props, { slots }) {
-    const isOverlayNavActive = ref(false)
+    const route = useRoute()
+    const { mdAndDown } = useDisplay()
+    const authStore = useAuthStore()
+
+    // Sidebar cuma diperuntukkan untuk admin — ketua regu tidak boleh melihatnya sama sekali,
+    // di ukuran layar manapun (bukan cuma disembunyikan tombol togglenya).
+    const isAdmin = computed(() => authStore.user?.role === 'admin')
+
+    // Default: terbuka (menetap) di desktop, tertutup (overlay) di mobile/tablet — tapi hanya
+    // untuk admin. Untuk role lain, selalu tertutup apa pun ukuran layarnya.
+    const isOverlayNavActive = ref(isAdmin.value && !mdAndDown.value)
     const isLayoutOverlayVisible = ref(false)
     const toggleIsOverlayNavActive = useToggle(isOverlayNavActive)
 
-    const route = useRoute()
-    const { mdAndDown } = useDisplay()
+    // Kalau breakpoint berpindah (mis. window di-resize melewati 1280px), sinkronkan ulang
+    // ke default masing-masing mode supaya tidak "nyangkut" di state mode sebelumnya.
+    watch(mdAndDown, isNowMdAndDown => {
+      isOverlayNavActive.value = isAdmin.value && !isNowMdAndDown
+    })
 
     // ℹ️ This is alternative to below two commented watcher
     // We want to show overlay if overlay nav is visible and want to hide overlay if overlay is hidden and vice versa.
@@ -77,6 +90,7 @@ export default defineComponent({
           class: [
             'layout-wrapper layout-nav-type-vertical layout-navbar-static layout-footer-static layout-content-width-fluid',
             mdAndDown.value && 'layout-overlay-nav',
+            isOverlayNavActive.value ? 'layout-nav-open' : 'layout-nav-closed',
             route.meta.layoutWrapperClasses,
           ],
         },
@@ -112,30 +126,33 @@ export default defineComponent({
 
 .layout-wrapper.layout-nav-type-vertical {
   // TODO(v2): Check why we need height in vertical nav & min-height in horizontal nav
-  max-width: 768px;
-  margin-inline: auto;
   min-height: 100dvh;
   background-color: #ffffff; // warna dalam
   position: relative;
   overflow: hidden; // penting agar sidebar tidak overflow keluar
   block-size: 100%;
 
-  // .layout-content-wrapper {
-  //   display: flex;
-  //   flex-direction: column;
-  //   flex-grow: 1;
-  //   min-block-size: 100dvh;
-  //   transition: padding-inline-start 0.2s ease-in-out;
-  //   will-change: padding-inline-start;
-
-  //   @media screen and (min-width: 1280px) {
-  //     padding-inline-start: variables.$layout-vertical-nav-width;
-  //   }
-  // }
+  // Bingkai ala aplikasi mobile (max-width 768px, di-center) HANYA untuk layar kecil (HP).
+  // Sebelumnya diterapkan tanpa media query sehingga desktop pun ikut terjepit ke 768px.
+  @media (max-width: 767px) {
+    max-width: 768px;
+    margin-inline: auto;
+  }
 
   .layout-content-wrapper {
     overflow: hidden !important;
-    padding-inline-start: 0 !important;
+    padding-inline-start: 0;
+    transition: padding-inline-start 0.2s ease-in-out;
+  }
+
+  // Beri ruang untuk sidebar HANYA selama sidebar sedang terbuka & di layar desktop.
+  // Kalau sidebar ditutup (tombol silang), konten kembali memakai lebar penuh.
+  &.layout-nav-open {
+    @media screen and (min-width: 1280px) {
+      .layout-content-wrapper {
+        padding-inline-start: variables.$layout-vertical-nav-width;
+      }
+    }
   }
 
   .layout-navbar {
@@ -179,8 +196,6 @@ export default defineComponent({
 
   // 👉 Layout overlay
   .layout-overlay {
-    max-width: 768px;
-    margin-inline: auto;
     position: fixed;
     z-index: variables.$layout-overlay-z-index;
     background-color: rgb(0 0 0 / 60%);
@@ -191,9 +206,21 @@ export default defineComponent({
     transition: opacity 0.25s ease-in-out;
     will-change: transform;
 
+    // Ikut dibatasi 768px hanya di layar kecil, senada dengan .layout-wrapper di atas
+    @media (max-width: 767px) {
+      max-width: 768px;
+      margin-inline: auto;
+    }
+
     &.visible {
       opacity: 1;
       pointer-events: auto;
+    }
+
+    // Di desktop sidebar sudah tampil menetap (bukan overlay), jadi backdrop gelap ini
+    // tidak relevan lagi — cegah muncul kalau tombol hamburger tetap dipencet dari kebiasaan.
+    @media (min-width: 1280px) {
+      display: none;
     }
   }
 

@@ -29,6 +29,9 @@ export const useMasterWargaStore = defineStore('master-warga', {
     async fetchWarga(params?: {
       page?: number
       limit?: number
+      // true = ganti seluruh data dengan hasil fetch ini (dipakai pagination desktop).
+      // false/undefined = tambahkan ke data yang sudah ada (dipakai infinite-scroll mobile).
+      replace?: boolean
     }) {
       if (this.reload) {
         this.warga = []
@@ -54,7 +57,7 @@ export const useMasterWargaStore = defineStore('master-warga', {
           ...newFilter,
         })
 
-        this.warga = [...this.warga, ...res.data.data]
+        this.warga = params?.replace ? res.data.data : [...this.warga, ...res.data.data]
 
         const { data, ...meta } = res.data
         this.meta = meta

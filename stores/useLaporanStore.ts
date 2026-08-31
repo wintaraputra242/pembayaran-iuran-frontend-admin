@@ -1,9 +1,9 @@
+import { defineStore } from 'pinia'
 import { useLaporan } from '@/composables/api/useLaporan'
 import type {
-  Pembayaran
+  Pembayaran,
 } from '@/types/api/pembayaran'
 import type { PaginationMeta } from '@/types/common'
-import { defineStore } from 'pinia'
 
 export const useLaporanStore = defineStore('laporan', {
   state: () => ({
@@ -26,16 +26,16 @@ export const useLaporanStore = defineStore('laporan', {
   }),
 
   getters: {
-    hasData: (state) => state.laporan.length > 0,
-    hasMore: (state) => state.meta?.total !== state.laporan.length,
-    hasFilter: (state) =>
-      !!state.filters.jenis_iuran ||
-      !!state.filters.metode_bayar ||
-      !!state.filters.status_bayar ||
-      !!state.filters.regu ||
-      !!state.filters.informasi_iuran ||
-      !!state.filters.start_date ||
-      !!state.filters.end_date,
+    hasData: state => state.laporan.length > 0,
+    hasMore: state => state.meta?.total !== state.laporan.length,
+    hasFilter: state =>
+      !!state.filters.jenis_iuran
+      || !!state.filters.metode_bayar
+      || !!state.filters.status_bayar
+      || !!state.filters.regu
+      || !!state.filters.informasi_iuran
+      || !!state.filters.start_date
+      || !!state.filters.end_date,
   },
 
   actions: {
@@ -46,13 +46,15 @@ export const useLaporanStore = defineStore('laporan', {
       }
 
       const api = useLaporan()
+
       this.loading = true
 
       try {
         const newFilter: Record<string, any> = {}
 
         Object.entries(this.filters).forEach(([key, value]) => {
-          if (value) newFilter[key] = value
+          if (value)
+            newFilter[key] = value
         })
 
         const res = await api.getLaporan({
@@ -64,17 +66,19 @@ export const useLaporanStore = defineStore('laporan', {
         this.laporan = [...this.laporan, ...res.data.data]
 
         const { data, ...meta } = res.data
+
         this.meta = meta
 
         this.page = params?.page as number
-      } finally {
+      }
+      finally {
         this.loading = false
       }
     },
 
     setFilter(
       key: keyof typeof this.filters,
-      value: string
+      value: string,
     ) {
       this.filters[key] = value
     },
@@ -91,20 +95,28 @@ export const useLaporanStore = defineStore('laporan', {
       }
     },
 
-    async fetchExportPdfLaporan(id_informasi_iuran: number) {
+    async fetchExportPdfLaporan(params: {
+      id_informasi_iuran?: number
+      jenis_iuran?: string
+      start_date?: string
+      end_date?: string
+    }) {
       const api = useLaporan()
+
       this.loadingExport = true
 
       try {
-        const blob = await api.exportPdfLaporan({ id_informasi_iuran })
+        const blob = await api.exportPdfLaporan(params)
 
         const url = window.URL.createObjectURL(blob)
         const link = document.createElement('a')
+
         link.href = url
         link.download = `laporan-pembayaran-${Date.now()}.pdf`
         link.click()
         window.URL.revokeObjectURL(url)
-      } finally {
+      }
+      finally {
         this.loadingExport = false
       }
     },

@@ -111,7 +111,13 @@ export const usePembayaranStore = defineStore('pembayaran', {
       }
     },
 
-    async fetchPembayaran(params?: { page?: number; limit?: number }) {
+    async fetchPembayaran(params?: {
+      page?: number
+      limit?: number
+      // true = ganti seluruh data dengan hasil fetch ini (dipakai pagination desktop).
+      // false/undefined = tambahkan ke data yang sudah ada (dipakai infinite-scroll mobile).
+      replace?: boolean
+    }) {
       if (this.reload) {
         this.pembayaran = []
         this.reload = false
@@ -137,7 +143,7 @@ export const usePembayaranStore = defineStore('pembayaran', {
           ...newFilter,
         })
 
-        this.pembayaran = [...this.pembayaran, ...res.data.data]
+        this.pembayaran = params?.replace ? res.data.data : [...this.pembayaran, ...res.data.data]
 
         const { data, ...meta } = res.data
         this.meta = meta
@@ -229,7 +235,7 @@ export const usePembayaranStore = defineStore('pembayaran', {
       }
     },
 
-    async fetchUnpaidPembayaran(params?: { page?: number; limit?: number }) {
+    async fetchUnpaidPembayaran(params?: { page?: number; limit?: number; replace?: boolean }) {
       if (this.isReloadDataUnpaidWarga) {
         this.unpaidWarga = []
         this.isReloadDataUnpaidWarga = false
@@ -251,7 +257,7 @@ export const usePembayaranStore = defineStore('pembayaran', {
           per_page: params?.limit,
         })
 
-        this.unpaidWarga = [...this.unpaidWarga, ...res.data.data]
+        this.unpaidWarga = params?.replace ? res.data.data : [...this.unpaidWarga, ...res.data.data]
 
         const { data, ...meta } = res.data
         this.meta = meta
@@ -296,7 +302,7 @@ export const usePembayaranStore = defineStore('pembayaran', {
       }
     },
 
-    async fetchHistoryPaid(params?: { page?: number; limit?: number }) {
+    async fetchHistoryPaid(params?: { page?: number; limit?: number; replace?: boolean }) {
       if (!this.nikWarga) return
 
       const api = usePembayaran()
@@ -309,7 +315,7 @@ export const usePembayaranStore = defineStore('pembayaran', {
           per_page: params?.limit,
         })
 
-        this.historyPaid = [...this.historyPaid, ...res.data.data]
+        this.historyPaid = params?.replace ? res.data.data : [...this.historyPaid, ...res.data.data]
 
         const { data, ...meta } = res.data
         this.metaHistoryPaid = meta
@@ -335,7 +341,7 @@ export const usePembayaranStore = defineStore('pembayaran', {
       }
     },
 
-    async fetchUnpaidPembayaranKetuaRegu(params?: { page?: number; limit?: number }) {
+    async fetchUnpaidPembayaranKetuaRegu(params?: { page?: number; limit?: number; replace?: boolean }) {
       if (this.isReloadDataUnpaidWarga) {
         this.unpaidWarga = []
         this.isReloadDataUnpaidWarga = false
@@ -351,7 +357,7 @@ export const usePembayaranStore = defineStore('pembayaran', {
           per_page: params?.limit,
         })
 
-        this.unpaidWarga = [...this.unpaidWarga, ...res.data.data]
+        this.unpaidWarga = params?.replace ? res.data.data : [...this.unpaidWarga, ...res.data.data]
 
         const { data, ...meta } = res.data
         this.meta = meta
@@ -372,7 +378,7 @@ export const usePembayaranStore = defineStore('pembayaran', {
       }
     },
 
-    async fetchHistoryUnpaid(params?: { page?: number; limit?: number }) {
+    async fetchHistoryUnpaid(params?: { page?: number; limit?: number; replace?: boolean }) {
       if (!this.nikWarga) return
 
       if (this.isReloadDataHistoryUnpaid) {
@@ -390,7 +396,7 @@ export const usePembayaranStore = defineStore('pembayaran', {
           per_page: params?.limit,
         })
 
-        this.historyUnpaid = [...this.historyUnpaid, ...res.data.data]
+        this.historyUnpaid = params?.replace ? res.data.data : [...this.historyUnpaid, ...res.data.data]
 
         const { data, ...meta } = res.data
         this.metaHistoryUnpaid = meta
@@ -406,6 +412,7 @@ export const usePembayaranStore = defineStore('pembayaran', {
       nama_warga?: string
       page?: number
       per_page?: number
+      replace?: boolean
     }) {
       if (this.isReloadDataPembayaranByRegu) {
         this.pembayaranByRegu = []
@@ -421,7 +428,7 @@ export const usePembayaranStore = defineStore('pembayaran', {
           ...params,
         })
 
-        this.pembayaranByRegu = [...this.pembayaranByRegu, ...res.data.data]
+        this.pembayaranByRegu = params?.replace ? res.data.data : [...this.pembayaranByRegu, ...res.data.data]
         const { data, ...meta } = res.data
         this.metaByRegu = meta
       } finally {
@@ -429,7 +436,7 @@ export const usePembayaranStore = defineStore('pembayaran', {
       }
     },
 
-    async fetchPendingPembayaran(params?: { page?: number; per_page?: number }) {
+    async fetchPendingPembayaran(params?: { page?: number; per_page?: number; replace?: boolean }) {
       if (this.reload) {
         this.pendingPembayaran = []
         this.reload = false
@@ -444,9 +451,9 @@ export const usePembayaranStore = defineStore('pembayaran', {
           per_page: params?.per_page ?? 10,
         })
 
-        this.pendingPembayaran = params?.page && params.page > 1
-          ? [...this.pendingPembayaran, ...res.data.data]
-          : res.data.data
+        this.pendingPembayaran = (params?.replace || !(params?.page && params.page > 1))
+          ? res.data.data
+          : [...this.pendingPembayaran, ...res.data.data]
 
         const { data, ...meta } = res.data
         this.meta = meta
