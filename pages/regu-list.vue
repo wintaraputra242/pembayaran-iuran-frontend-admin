@@ -104,6 +104,36 @@ const handleLoadMoreSudahBayar = async () => {
   })
 }
 
+// Pagination desktop (server-side) — ganti data (bukan menambahkan) sesuai halaman/jumlah baris yang dipilih.
+const handleChangePageSudahBayar = async (newPage: number) => {
+  if (!selectedRegu.value) return
+  await pembayaranStore.fetchPembayaranByRegu({
+    id_regu: selectedRegu.value.id,
+    nama_warga: filters.anggota_sudah_bayar || undefined,
+    page: newPage,
+    replace: true,
+  })
+}
+
+const handleChangeLimitSudahBayar = async (newLimit: number) => {
+  if (!selectedRegu.value) return
+  await pembayaranStore.fetchPembayaranByRegu({
+    id_regu: selectedRegu.value.id,
+    nama_warga: filters.anggota_sudah_bayar || undefined,
+    page: 1,
+    per_page: newLimit,
+    replace: true,
+  })
+}
+
+const handleChangePageUnpaid = async (newPage: number) => {
+  await pembayaranStore.fetchUnpaidPembayaran({ page: newPage, replace: true })
+}
+
+const handleChangeLimitUnpaid = async (newLimit: number) => {
+  await pembayaranStore.fetchUnpaidPembayaran({ page: 1, limit: newLimit, replace: true })
+}
+
 // -------------------------------------------------------
 // SEND NOTIF
 // -------------------------------------------------------
@@ -198,9 +228,10 @@ const isKetuaRegu = computed(() => authStore.user?.role === 'ketua_regu')
               prepend-inner-icon="ri-search-2-line" hide-details />
           </div>
 
-          <DataTablePaymentByRegu :data="pembayaranStore.pembayaranByRegu" :loading="pembayaranStore.loadingByRegu"
-            :has-more="!!pembayaranStore.metaByRegu?.next_page_url" @load-more="handleLoadMoreSudahBayar"
-            @show-bukti-bayar="handleShowBuktiBayar" />
+          <DataTablePaymentByRegu :data="pembayaranStore.pembayaranByRegu" :meta="pembayaranStore.metaByRegu"
+            :loading="pembayaranStore.loadingByRegu" :has-more="!!pembayaranStore.metaByRegu?.next_page_url"
+            @load-more="handleLoadMoreSudahBayar" @show-bukti-bayar="handleShowBuktiBayar"
+            @change-page="handleChangePageSudahBayar" @change-limit="handleChangeLimitSudahBayar" />
         </VTabsWindowItem>
 
         <!-- TAB BELUM BAYAR -->
@@ -232,9 +263,10 @@ const isKetuaRegu = computed(() => authStore.user?.role === 'ketua_regu')
 
           <!-- Tabel belum bayar -->
           <DataTableNoPaymentReguList v-if="showUnpaidPanel" :data="pembayaranStore.unpaidWarga"
-            :loading="pembayaranStore.loading" :loading-send-notif="isLoadingSendNotif"
+            :meta="pembayaranStore.meta" :loading="pembayaranStore.loading" :loading-send-notif="isLoadingSendNotif"
             :has-more="!!pembayaranStore.meta?.next_page_url" :has-filter="showUnpaidPanel"
-            @load-more="handleLoadMoreUnpaid" @send-notif="handleSendNotif" />
+            @load-more="handleLoadMoreUnpaid" @send-notif="handleSendNotif" @change-page="handleChangePageUnpaid"
+            @change-limit="handleChangeLimitUnpaid" />
 
           <div v-else class="text-center py-6 text-medium-emphasis">
             <VIcon icon="ri-search-line" size="32" class="mb-2 d-block mx-auto" />

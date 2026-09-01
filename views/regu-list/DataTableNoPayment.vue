@@ -1,6 +1,9 @@
 <script setup lang="ts">
+import type { PaginationMeta } from '@/types/common'
+
 const props = withDefaults(defineProps<{
   data: any[]
+  meta?: null | PaginationMeta
   loading: boolean
   loadingSendNotif: boolean
   hasMore: boolean
@@ -15,6 +18,8 @@ const props = withDefaults(defineProps<{
 const emit = defineEmits<{
   (e: 'loadMore'): void
   (e: 'sendNotif', item: any): void
+  (e: 'changePage', page: number): void
+  (e: 'changeLimit', limit: number): void
 }>()
 
 const headers = [
@@ -35,9 +40,10 @@ const handleSendNotif = (item: any, index: number) => {
 </script>
 
 <template>
-  <AppDataTable :headers="headers" :items="data" :loading="loading" :has-more="hasMore"
+  <AppDataTable :headers="headers" :items="data" :meta="meta" :loading="loading" :has-more="hasMore"
     :no-data-text="!hasFilter ? 'Pilih informasi iuran dan klik Cek' : 'Semua warga sudah membayar'"
-    @load-more="emit('loadMore')">
+    @load-more="emit('loadMore')" @change-page="emit('changePage', $event)"
+    @change-limit="emit('changeLimit', $event)">
     <!-- Nama Warga -->
     <template #cell-nama_warga="{ item }">
       <div class="d-flex flex-column">

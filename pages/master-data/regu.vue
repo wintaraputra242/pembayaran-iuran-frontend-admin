@@ -75,7 +75,7 @@ const handleDelete = async () => {
 
       page.value = 1
       masterReguStore.reload = true
-      await masterReguStore.fetchRegu({ limit: 10, page: page.value })
+      await masterReguStore.fetchRegu({ limit: limit.value, page: page.value })
     }
   } finally {
     showConfirmation.value = false
@@ -247,7 +247,7 @@ const handleSubmit = async (params: CreateReguPayload) => {
 
   page.value = 1
   masterReguStore.reload = true
-  await masterReguStore.fetchRegu({ limit: 10, page: page.value })
+  await masterReguStore.fetchRegu({ limit: limit.value, page: page.value })
 
   isFetchSuccess.value = true
   showFormData.value = false
@@ -267,6 +267,7 @@ const handleShowFormData = () => {
 }
 
 const page = ref(1)
+const limit = ref(10)
 
 const isFetchSuccess = ref(false)
 
@@ -276,7 +277,7 @@ const handleFilter = (filters: { nama_regu: string, status_keaktifan: 'aktif' | 
   Object.entries(filters).forEach(([key, value]) => {
     masterReguStore.setFilter(key as 'nama_regu' | 'status_keaktifan', value as string)
   })
-  masterReguStore.fetchRegu({ limit: 10, page: page.value })
+  masterReguStore.fetchRegu({ limit: limit.value, page: page.value })
 }
 
 const handleUpdate = async (params: CreateReguPayload) => {
@@ -290,20 +291,32 @@ const handleUpdate = async (params: CreateReguPayload) => {
 
     page.value = 1
     masterReguStore.reload = true
-    await masterReguStore.fetchRegu({ limit: 10, page: page.value })
+    await masterReguStore.fetchRegu({ limit: limit.value, page: page.value })
   }
 }
 
 const handleLoadMore = async () => {
   page.value += 1
-  await masterReguStore.fetchRegu({ limit: 10, page: page.value })
+  await masterReguStore.fetchRegu({ limit: limit.value, page: page.value })
+}
+
+// Pagination desktop (server-side) — ganti data (bukan menambahkan) sesuai halaman/jumlah baris yang dipilih.
+const handleChangePage = async (newPage: number) => {
+  page.value = newPage
+  await masterReguStore.fetchRegu({ limit: limit.value, page: page.value, replace: true })
+}
+
+const handleChangeLimit = async (newLimit: number) => {
+  limit.value = newLimit
+  page.value = 1
+  await masterReguStore.fetchRegu({ limit: limit.value, page: page.value, replace: true })
 }
 
 const handleReload = () => {
   page.value = 1
   masterReguStore.reload = true
   masterReguStore.resetFilter()
-  masterReguStore.fetchRegu({ limit: 10, page: page.value })
+  masterReguStore.fetchRegu({ limit: limit.value, page: page.value })
 }
 
 const handleUpdateStatus = async () => {
@@ -315,7 +328,7 @@ const handleUpdateStatus = async () => {
 
       page.value = 1
       masterReguStore.reload = true
-      await masterReguStore.fetchRegu({ limit: 10, page: page.value })
+      await masterReguStore.fetchRegu({ limit: limit.value, page: page.value })
     }
   } finally {
     showConfirmation.value = false
@@ -375,7 +388,7 @@ onMounted(async () => {
   if (masterReguStore.page) page.value = masterReguStore.page
 
   if (masterReguStore.page === 0) {
-    await masterReguStore.fetchRegu({ limit: 10, page: page.value })
+    await masterReguStore.fetchRegu({ limit: limit.value, page: page.value })
   }
 })
 </script>
@@ -398,7 +411,8 @@ onMounted(async () => {
         <DataTableRegu :data="masterReguStore.regu" :meta="masterReguStore.meta" :loading="masterReguStore.loading"
           :has-more="masterReguStore.hasMore" :has-filter="masterReguStore.hasFilter" @edit="handleEditData"
           @delete="handleShowConfirmDelData" @update-status="handleShowConfirmUpdateStatus"
-          @show-anggota="handleShowAnggota" @load-more="handleLoadMore" />
+          @show-anggota="handleShowAnggota" @load-more="handleLoadMore" @change-page="handleChangePage"
+          @change-limit="handleChangeLimit" />
       </VCol>
     </VRow>
 

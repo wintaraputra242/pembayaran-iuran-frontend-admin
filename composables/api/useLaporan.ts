@@ -1,8 +1,7 @@
-import type {
-  GetPembayaranResponse
-} from '@/types/api/pembayaran'
-
 import { useApi } from './useApi'
+import type {
+  GetPembayaranResponse,
+} from '@/types/api/pembayaran'
 
 export const useLaporan = () => {
   const { api } = useApi()
@@ -24,7 +23,10 @@ export const useLaporan = () => {
   }
 
   const exportPdfLaporan = async (params: {
-    id_informasi_iuran: number
+    id_informasi_iuran?: number
+    jenis_iuran?: string
+    start_date?: string
+    end_date?: string
   }): Promise<Blob> => {
     return await api<Blob>('/laporan/export-pdf', {
       query: params,

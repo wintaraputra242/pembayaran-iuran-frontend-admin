@@ -20,10 +20,14 @@ const refNav = ref()
 
 const route = useRoute()
 
+// Auto-close sidebar saat pindah halaman HANYA di mode overlay (mobile/tablet, <1280px).
+// Di desktop sidebar tampil menetap, jadi tidak perlu (dan tidak masuk akal) ikut tertutup
+// setiap kali navigasi.
 watch(
   () => route.path,
   () => {
-    props.toggleIsOverlayNavActive(false)
+    if (mdAndDown.value)
+      props.toggleIsOverlayNavActive(false)
   })
 
 const isVerticalNavScrolled = ref(false)
@@ -138,12 +142,23 @@ onUnmounted(() => {
   inset-inline-start: var(--nav-left, 0px) !important;
   inset-block-start: 0 !important;
   block-size: 100dvh !important; // pastikan full height
-  z-index: 9999;
-  max-width: 768px;
-  margin-inline: auto;
 
-  &:not(.visible) {
-    transform: translateX(-#{variables.$layout-vertical-nav-width}) !important;
+  // Mobile/tablet (<1280px): harus di atas navbar mobile yang fixed (z-index 1000 di
+  // DefaultLayoutWithVerticalNav.vue) supaya drawer tetap tampil penuh/ter-highlight saat dibuka.
+  z-index: 1005;
+
+  // Desktop (>=1280px): sidebar tampil menetap, jadi harus di BAWAH z-index default
+  // overlay/dialog Vuetify (2000). Sebelumnya nilainya 9999 di semua ukuran layar — membuat
+  // sidebar selalu tampil DI ATAS overlay gelap setiap dialog (Tambah Informasi Iuran, dst di
+  // semua halaman), jadi sidebar tidak ikut ter-dim saat dialog terbuka di desktop.
+  @media (min-width: 1280px) {
+    z-index: 200;
+  }
+
+  // Senada dengan bingkai 768px di .layout-wrapper (VerticalNavLayout.vue) — hanya untuk layar kecil
+  @media (max-width: 767px) {
+    max-width: 768px;
+    margin-inline: auto;
   }
 
   .nav-header {
@@ -189,7 +204,10 @@ onUnmounted(() => {
   }
 }
 
-// @media (max-width: 1279px) {
+// Sidebar disembunyikan (translateX ke luar layar) kalau sedang tidak "visible" — berlaku di
+// semua ukuran layar, supaya tombol close/hamburger benar-benar berfungsi di desktop maupun mobile.
+// Status defaultnya sendiri sudah diatur berbeda per breakpoint di script VerticalNavLayout.vue
+// (terbuka di desktop, tertutup di mobile/tablet).
 .layout-vertical-nav {
   &:not(.visible) {
     transform: translateX(calc(-#{variables.$layout-vertical-nav-width} - var(--nav-left, 0px))) !important;
@@ -201,6 +219,4 @@ onUnmounted(() => {
 
   transition: transform 0.25s ease-in-out;
 }
-
-// }
 </style>

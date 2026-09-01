@@ -21,7 +21,7 @@ const headers = [
   { label: 'Judul Iuran', key: 'judul_iuran', width: '250px' },
   { label: 'Jenis', key: 'jenis_iuran', width: '150px', align: 'center' },
   { label: 'Tgl. Buat', key: 'tgl_buat', width: '180px' },
-  { label: 'Jumlah Iuran yang Harus Dibayar', key: 'jumlah_iuran', width: '180px' },
+  { label: 'Jumlah Iuran yang Harus Dibayar', key: 'jumlah_iuran', width: '220px' },
   { key: 'actions' },
 ]
 

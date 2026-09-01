@@ -1,11 +1,13 @@
 <script setup lang="ts">
 // import qris from '@images/pages/qris.png'
 import type { Pembayaran, UnpaidWarga } from '@/types/api/pembayaran';
+import type { PaginationMeta } from '@/types/common';
 import qris from '@images/pages/qris.png';
 
 
 const props = withDefaults(defineProps<{
   data: Pembayaran[]
+  meta?: null | PaginationMeta
   loading: boolean
   hasMore: boolean
 }>(), {})
@@ -14,6 +16,8 @@ const emit = defineEmits<{
   (e: 'loadMore'): void
   (e: 'showBuktiBayar', item: Pembayaran): void;
   (e: 'sendNotif', item: UnpaidWarga): void
+  (e: 'changePage', page: number): void
+  (e: 'changeLimit', limit: number): void
 }>()
 
 const config = useRuntimeConfig()
@@ -77,8 +81,9 @@ const statusText: Record<
 </script>
 
 <template>
-  <AppDataTable :headers="headers" :items="data" :loading="loading" :has-more="hasMore"
-    no-data-text="Belum ada transaksi pembayaran yang telah berhasil dilakukan">
+  <AppDataTable :headers="headers" :items="data" :meta="meta" :loading="loading" :has-more="hasMore"
+    no-data-text="Belum ada transaksi pembayaran yang telah berhasil dilakukan" @load-more="emit('loadMore')"
+    @change-page="emit('changePage', $event)" @change-limit="emit('changeLimit', $event)">
 
     <!-- ID Transaksi -->
     <template #cell-transaksi_id="{ item }">

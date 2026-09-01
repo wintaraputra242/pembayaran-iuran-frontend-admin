@@ -7,10 +7,23 @@ definePageMeta({ onlyAdmin: true })
 const activityStore = useActivityStore()
 
 const page = ref(1)
+const limit = ref(10)
 
 const handleLoadMore = async () => {
   page.value += 1
-  await activityStore.fetchActivities({ limit: 10, page: page.value })
+  await activityStore.fetchActivities({ limit: limit.value, page: page.value })
+}
+
+// Pagination desktop (server-side) — ganti data (bukan menambahkan) sesuai halaman/jumlah baris yang dipilih.
+const handleChangePage = async (newPage: number) => {
+  page.value = newPage
+  await activityStore.fetchActivities({ limit: limit.value, page: page.value, replace: true })
+}
+
+const handleChangeLimit = async (newLimit: number) => {
+  limit.value = newLimit
+  page.value = 1
+  await activityStore.fetchActivities({ limit: limit.value, page: page.value, replace: true })
 }
 
 const handleFilter = async (filters: {
@@ -32,7 +45,7 @@ const handleFilter = async (filters: {
   activityStore.setFilter('action', filters.action || '')
   activityStore.setFilter('user', filters.user || '')
 
-  await activityStore.fetchActivities({ limit: 10, page: page.value })
+  await activityStore.fetchActivities({ limit: limit.value, page: page.value })
 }
 
 const handleReload = async () => {
@@ -42,7 +55,7 @@ const handleReload = async () => {
 
   await activityStore.fetchActivities({
     page: 1,
-    limit: 10,
+    limit: limit.value,
   })
 }
 
@@ -73,7 +86,8 @@ onMounted(async () => {
 
       <VCol cols="12">
         <DataTableActivity :data="activityStore.activities" :meta="activityStore.meta" :loading="activityStore.loading"
-          :has-more="activityStore.hasMore" :has-filter="activityStore.hasFilter" @load-more="handleLoadMore" />
+          :has-more="activityStore.hasMore" :has-filter="activityStore.hasFilter" @load-more="handleLoadMore"
+          @change-page="handleChangePage" @change-limit="handleChangeLimit" />
       </VCol>
     </VRow>
   </div>

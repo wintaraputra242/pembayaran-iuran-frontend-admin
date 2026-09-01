@@ -30,6 +30,9 @@ export const useMasterReguStore = defineStore('master-regu', {
     async fetchRegu(params?: {
       page?: number
       limit?: number
+      // true = ganti seluruh data dengan hasil fetch ini (dipakai pagination desktop).
+      // false/undefined = tambahkan ke data yang sudah ada (dipakai infinite-scroll mobile).
+      replace?: boolean
     }) {
       if (this.reload) {
         this.regu = []
@@ -55,7 +58,7 @@ export const useMasterReguStore = defineStore('master-regu', {
           ...newFilter,
         })
 
-        this.regu = [...this.regu, ...res.data.data]
+        this.regu = params?.replace ? res.data.data : [...this.regu, ...res.data.data]
 
         const { data, ...meta } = res.data
         this.meta = meta

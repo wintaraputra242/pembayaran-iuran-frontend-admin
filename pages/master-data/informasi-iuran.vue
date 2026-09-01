@@ -93,6 +93,7 @@ const handleShowAnggota = (item: MasterInformasiIuran) => {
 // }
 
 const page = ref(1)
+const limit = ref(10)
 
 const handleShowFormData = () => {
   isEdit.value = false
@@ -106,14 +107,14 @@ const handleFilter = (filters: { keyword: string, status_aktif: null | number, j
   Object.entries(filters).forEach(([key, value]) => {
     masterInformasiIuranStore.setFilter(key as 'status_aktif' | 'keyword' | 'jenis_iuran', value as string)
   })
-  masterInformasiIuranStore.fetchInformasiIuran({ limit: 10, page: page.value, mode: 'admin' })
+  masterInformasiIuranStore.fetchInformasiIuran({ limit: limit.value, page: page.value, mode: 'admin' })
 }
 
 const handleReload = () => {
   page.value = 1
   masterInformasiIuranStore.reload = true
   masterInformasiIuranStore.resetFilter()
-  masterInformasiIuranStore.fetchInformasiIuran({ limit: 10, page: page.value, mode: 'admin' })
+  masterInformasiIuranStore.fetchInformasiIuran({ limit: limit.value, page: page.value, mode: 'admin' })
 }
 
 const handleDelete = async () => {
@@ -125,7 +126,7 @@ const handleDelete = async () => {
 
       page.value = 1
       masterInformasiIuranStore.reload = true
-      await masterInformasiIuranStore.fetchInformasiIuran({ limit: 10, page: page.value, mode: 'admin' })
+      await masterInformasiIuranStore.fetchInformasiIuran({ limit: limit.value, page: page.value, mode: 'admin' })
     }
   } finally {
     showConfirmation.value = false
@@ -154,7 +155,7 @@ const handleUpdateStatus = async () => {
 
       page.value = 1
       masterInformasiIuranStore.reload = true
-      await masterInformasiIuranStore.fetchInformasiIuran({ limit: 10, page: page.value, mode: 'admin' })
+      await masterInformasiIuranStore.fetchInformasiIuran({ limit: limit.value, page: page.value, mode: 'admin' })
     }
   } finally {
     showConfirmation.value = false
@@ -184,7 +185,19 @@ const handleShowConfirmUpdateStatus = (item: MasterInformasiIuran) => {
 
 const handleLoadMore = async () => {
   page.value += 1
-  await masterInformasiIuranStore.fetchInformasiIuran({ limit: 10, page: page.value, mode: 'admin' })
+  await masterInformasiIuranStore.fetchInformasiIuran({ limit: limit.value, page: page.value, mode: 'admin' })
+}
+
+// Pagination desktop (server-side) — ganti data (bukan menambahkan) sesuai halaman/jumlah baris yang dipilih.
+const handleChangePage = async (newPage: number) => {
+  page.value = newPage
+  await masterInformasiIuranStore.fetchInformasiIuran({ limit: limit.value, page: page.value, mode: 'admin', replace: true })
+}
+
+const handleChangeLimit = async (newLimit: number) => {
+  limit.value = newLimit
+  page.value = 1
+  await masterInformasiIuranStore.fetchInformasiIuran({ limit: limit.value, page: page.value, mode: 'admin', replace: true })
 }
 
 const isFetchSuccess = ref(false)
@@ -200,7 +213,7 @@ const handleUpdate = async (params: AddInformasiIuranPayload) => {
 
     page.value = 1
     masterInformasiIuranStore.reload = true
-    await masterInformasiIuranStore.fetchInformasiIuran({ limit: 10, page: page.value, mode: 'admin' })
+    await masterInformasiIuranStore.fetchInformasiIuran({ limit: limit.value, page: page.value, mode: 'admin' })
   }
 }
 
@@ -216,7 +229,7 @@ const handleAddData = async (params: AddInformasiIuranPayload) => {
 
     page.value = 1
     masterInformasiIuranStore.reload = true
-    await masterInformasiIuranStore.fetchInformasiIuran({ limit: 10, page: page.value, mode: 'admin' })
+    await masterInformasiIuranStore.fetchInformasiIuran({ limit: limit.value, page: page.value, mode: 'admin' })
   }
 }
 
@@ -224,7 +237,7 @@ onMounted(async () => {
   if (masterInformasiIuranStore.page) page.value = masterInformasiIuranStore.page
 
   if (masterInformasiIuranStore.page === 0) {
-    await masterInformasiIuranStore.fetchInformasiIuran({ limit: 10, page: page.value, mode: 'admin' })
+    await masterInformasiIuranStore.fetchInformasiIuran({ limit: limit.value, page: page.value, mode: 'admin' })
   }
 
   await dropdownStore.fetchWargaForDropdown()
@@ -249,7 +262,8 @@ onMounted(async () => {
         <DataTableInformasiIuran :data="masterInformasiIuranStore.informasiIuran" :meta="masterInformasiIuranStore.meta"
           :loading="masterInformasiIuranStore.loading" :has-more="masterInformasiIuranStore.hasMore"
           :has-filter="masterInformasiIuranStore.hasFilter" @edit="handleEditData" @delete="handleShowConfirmDelData"
-          @update-status="handleShowConfirmUpdateStatus" @load-more="handleLoadMore" />
+          @update-status="handleShowConfirmUpdateStatus" @load-more="handleLoadMore" @change-page="handleChangePage"
+          @change-limit="handleChangeLimit" />
       </VCol>
     </VRow>
 

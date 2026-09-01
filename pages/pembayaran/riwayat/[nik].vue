@@ -18,6 +18,7 @@ const pembayaranStore = usePembayaranStore()
 const dropdownStore = useDropdownStore()
 
 const page = ref(1)
+const limit = ref(10)
 
 const showFormData = ref(false)
 const isEdit = ref(false)
@@ -142,12 +143,24 @@ watch(showPaymentProof, val => {
 
 const handleLoadMoreHistoryPaid = async () => {
   page.value += 1
-  await pembayaranStore.fetchHistoryPaid({ limit: 10, page: page.value })
+  await pembayaranStore.fetchHistoryPaid({ limit: limit.value, page: page.value })
+}
+
+// Pagination desktop (server-side) — ganti data (bukan menambahkan) sesuai halaman/jumlah baris yang dipilih.
+const handleChangePageHistoryPaid = async (newPage: number) => {
+  page.value = newPage
+  await pembayaranStore.fetchHistoryPaid({ limit: limit.value, page: page.value, replace: true })
+}
+
+const handleChangeLimitHistoryPaid = async (newLimit: number) => {
+  limit.value = newLimit
+  page.value = 1
+  await pembayaranStore.fetchHistoryPaid({ limit: limit.value, page: page.value, replace: true })
 }
 
 const handleLoadMoreHistoryUnpaid = async () => {
   page.value += 1
-  await pembayaranStore.fetchHistoryUnpaid({ limit: 10, page: page.value })
+  await pembayaranStore.fetchHistoryUnpaid({ limit: limit.value, page: page.value })
 }
 
 const filters = reactive<{
@@ -198,7 +211,7 @@ watch(() => filters.informasi_iuran, async (val: any) => {
 
     pembayaranStore.isReloadDataUnpaidWarga = true
 
-    await pembayaranStore.fetchUnpaidPembayaran({ limit: 10, page: page.value })
+    await pembayaranStore.fetchUnpaidPembayaran({ limit: limit.value, page: page.value })
 
     return
   }
@@ -228,7 +241,7 @@ watch(() => filters.bulan, async (val) => {
 
     pembayaranStore.isReloadDataUnpaidWarga = true
 
-    await pembayaranStore.fetchUnpaidPembayaran({ limit: 10, page: page.value })
+    await pembayaranStore.fetchUnpaidPembayaran({ limit: limit.value, page: page.value })
     return
   }
 
@@ -277,21 +290,21 @@ watch(tab, async (val) => {
     pembayaranStore.historyPaid = []
     page.value = 1
     if ('nik' in route.params) pembayaranStore.setFilter('nikWarga', route.params.nik)
-    await pembayaranStore.fetchHistoryPaid({ page: page.value, limit: 10 })
+    await pembayaranStore.fetchHistoryPaid({ page: page.value, limit: limit.value })
   }
 
   if (val === 'no-payment') {
     pembayaranStore.historyUnpaid = []
     page.value = 1
     if ('nik' in route.params) pembayaranStore.setFilter('nikWarga', route.params.nik)
-    await pembayaranStore.fetchHistoryUnpaid({ page: page.value, limit: 10 })
+    await pembayaranStore.fetchHistoryUnpaid({ page: page.value, limit: limit.value })
   }
 })
 
 const handleGetData = async () => {
   pembayaranStore.historyPaid = []
   if ('nik' in route.params) pembayaranStore.setFilter('nikWarga', route.params.nik)
-  await pembayaranStore.fetchHistoryPaid({ page: 1, limit: 10 })
+  await pembayaranStore.fetchHistoryPaid({ page: 1, limit: limit.value })
 }
 
 onMounted(() => {
@@ -334,9 +347,10 @@ onMounted(() => {
 
           <!-- ================= HISTORY ================= -->
           <VTabsWindowItem value="history">
-            <DataTableRiwayat :data="pembayaranStore.historyPaid" :loading="pembayaranStore.loading"
-              :has-more="pembayaranStore.hasMoreHistoryPaid" @load-more="handleLoadMoreHistoryPaid"
-              @show-bukti-bayar="handleShowBuktiBayar" />
+            <DataTableRiwayat :data="pembayaranStore.historyPaid" :meta="pembayaranStore.metaHistoryPaid"
+              :loading="pembayaranStore.loading" :has-more="pembayaranStore.hasMoreHistoryPaid"
+              @load-more="handleLoadMoreHistoryPaid" @show-bukti-bayar="handleShowBuktiBayar"
+              @change-page="handleChangePageHistoryPaid" @change-limit="handleChangeLimitHistoryPaid" />
           </VTabsWindowItem>
 
           <!-- ================= BELUM BAYAR ================= -->

@@ -30,7 +30,13 @@ export const useActivityStore = defineStore('activity', {
   },
 
   actions: {
-    async fetchActivities(params?: { page?: number; limit?: number }) {
+    async fetchActivities(params?: {
+      page?: number
+      limit?: number
+      // true = ganti seluruh data dengan hasil fetch ini (dipakai pagination desktop).
+      // false/undefined = tambahkan ke data yang sudah ada (dipakai infinite-scroll mobile).
+      replace?: boolean
+    }) {
       if (this.reload) {
         this.activities = []
         this.reload = false
@@ -52,7 +58,7 @@ export const useActivityStore = defineStore('activity', {
           ...newFilter,
         })
 
-        this.activities = [...this.activities, ...res.data.data]
+        this.activities = params?.replace ? res.data.data : [...this.activities, ...res.data.data]
 
         const { data, ...meta } = res.data
         this.meta = meta

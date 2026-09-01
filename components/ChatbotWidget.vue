@@ -124,7 +124,7 @@ onUnmounted(() => {
         <div v-if="chatbotStore.isOpen" style="
             position: fixed;
             bottom: 100px;
-            right: 16px;
+            left: 16px;
             width: 380px;
             max-width: calc(100vw - 32px);
             height: 560px;

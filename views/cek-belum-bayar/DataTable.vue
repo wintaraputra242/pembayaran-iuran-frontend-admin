@@ -1,9 +1,11 @@
 <script setup lang="ts">
 // import qris from '@images/pages/qris.png'
 import type { UnpaidWarga } from '@/types/api/pembayaran';
+import type { PaginationMeta } from '@/types/common';
 
 const props = withDefaults(defineProps<{
   data: UnpaidWarga[]
+  meta?: null | PaginationMeta
   loading: boolean
   loadingSendNotif: boolean
   hasMore: boolean
@@ -15,6 +17,8 @@ const props = withDefaults(defineProps<{
 const emit = defineEmits<{
   (e: 'loadMore'): void
   (e: 'sendNotif', item: UnpaidWarga): void
+  (e: 'changePage', page: number): void
+  (e: 'changeLimit', limit: number): void
 }>()
 
 const headers = [
@@ -23,8 +27,8 @@ const headers = [
   { label: 'No. HP', key: 'no_hp', width: '250px' },
   { label: 'Alamat', key: 'alamat', width: '250px' },
   { label: 'Regu', key: 'regu', width: '200px' },
-  { label: 'Jumlah Iuran yang Harus Dibayar', key: 'jumlah_iuran', width: '180px' },
-  { key: 'actions' },
+  { label: 'Jumlah Iuran yang Harus Dibayar', key: 'jumlah_iuran', width: '220px' },
+  { label: 'Aksi', key: 'aksi', width: '160px', align: 'center', sortable: false },
 ]
 
 type PaymentStatus = 'pending' | 'success' | 'failed' | 'expired' | 'cancelled'
@@ -39,9 +43,10 @@ const statusChipsColor: Record<PaymentStatus, string> = {
 </script>
 
 <template>
-  <AppDataTable :headers="headers" :items="props.data" :loading="props.loading" :has-more="props.hasMore"
+  <AppDataTable :headers="headers" :items="props.data" :meta="props.meta" :loading="props.loading"
+    :has-more="props.hasMore"
     :no-data-text="!hasFilter ? 'Tolong lakukan pencaharian informasi iuran terlebih dahulu' : 'Tidak ada data'"
-    @loadMore="emit('loadMore')">
+    @load-more="emit('loadMore')" @change-page="emit('changePage', $event)" @change-limit="emit('changeLimit', $event)">
 
     <!-- Nama Warga -->
     <template #cell-nama_warga="{ item }">
@@ -61,11 +66,14 @@ const statusChipsColor: Record<PaymentStatus, string> = {
     </template>
 
     <!-- Aksi -->
-    <template #cell-actions="{ item }">
-      <IconBtn variant="outlined" class="rounded-lg" size="small" color="secondary"
-        :loading="loadingSendNotif && (item.nik === nikNotifSended)" @click="emit('sendNotif', item)">
-        <VIcon icon="ri-bell-line" />
-      </IconBtn>
+    <template #cell-aksi="{ item }">
+      <div class="d-flex gap-1 justify-center">
+        <VBtn size="small" variant="flat" color="secondary"
+          :loading="loadingSendNotif && (item.nik === nikNotifSended)" @click="emit('sendNotif', item)">
+          <VIcon icon="ri-bell-line" class="me-1" />
+          Kirim Notif
+        </VBtn>
+      </div>
     </template>
 
   </AppDataTable>

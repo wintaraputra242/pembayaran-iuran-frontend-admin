@@ -6,6 +6,8 @@ const emit = defineEmits<{
   (e: 'delete', item: any): void
   (e: 'updateStatus', item: any): void
   (e: 'loadMore'): void
+  (e: 'changePage', page: number): void
+  (e: 'changeLimit', limit: number): void
 }>()
 
 const props = withDefaults(defineProps<{
@@ -28,8 +30,9 @@ const headers = [
 </script>
 
 <template>
-  <AppDataTable :headers="headers" :items="props.data" :loading="props.loading" :has-more="props.hasMore"
-    :has-filter="props.hasFilter" @load-more="emit('loadMore')">
+  <AppDataTable :headers="headers" :items="props.data" :meta="props.meta" :loading="props.loading"
+    :has-more="props.hasMore" :has-filter="props.hasFilter" @load-more="emit('loadMore')"
+    @change-page="emit('changePage', $event)" @change-limit="emit('changeLimit', $event)">
     <!-- Judul -->
     <template #cell-judul_iuran="{ item }">
       <div class="d-flex flex-column">

@@ -14,6 +14,8 @@ const emit = defineEmits<{
   (e: 'getPassword', item: MasterUser): void
   (e: 'delete', item: MasterUser): void
   (e: 'loadMore'): void
+  (e: 'changePage', page: number): void
+  (e: 'changeLimit', limit: number): void
 }>()
 
 const headers = [
@@ -27,8 +29,9 @@ const headers = [
 </script>
 
 <template>
-  <AppDataTable :headers="headers" :items="props.data" :loading="props.loading" :has-more="props.hasMore"
-    :has-filter="props.hasFilter" @load-more="emit('loadMore')">
+  <AppDataTable :headers="headers" :items="props.data" :meta="props.meta" :loading="props.loading"
+    :has-more="props.hasMore" :has-filter="props.hasFilter" @load-more="emit('loadMore')"
+    @change-page="emit('changePage', $event)" @change-limit="emit('changeLimit', $event)">
     <!-- Nama -->
     <template #cell-name="{ item }">
       <div class="d-flex flex-column">

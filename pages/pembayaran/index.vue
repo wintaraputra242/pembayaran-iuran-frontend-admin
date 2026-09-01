@@ -17,6 +17,7 @@ const router = useRouter()
 const route = useRoute()
 
 const page = ref(1)
+const limit = ref(10)
 
 const showFormData = ref(false)
 const isEdit = ref(false)
@@ -203,19 +204,31 @@ const handleFilter = (filters: {
   if (nonNullFilters.length === 0) pembayaranStore.resetFilter()
 
   // panggil fetch setelah set semua filter
-  pembayaranStore.fetchPembayaran({ limit: 10, page: page.value })
+  pembayaranStore.fetchPembayaran({ limit: limit.value, page: page.value })
 }
 
 const handleReload = () => {
   page.value = 1
   pembayaranStore.reload = true
   pembayaranStore.resetFilter()
-  pembayaranStore.fetchPembayaran({ limit: 10, page: page.value })
+  pembayaranStore.fetchPembayaran({ limit: limit.value, page: page.value })
 }
 
 const handleLoadMore = async () => {
   page.value += 1
-  await pembayaranStore.fetchPembayaran({ limit: 10, page: page.value })
+  await pembayaranStore.fetchPembayaran({ limit: limit.value, page: page.value })
+}
+
+// Pagination desktop (server-side) — ganti data (bukan menambahkan) sesuai halaman/jumlah baris yang dipilih.
+const handleChangePage = async (newPage: number) => {
+  page.value = newPage
+  await pembayaranStore.fetchPembayaran({ limit: limit.value, page: page.value, replace: true })
+}
+
+const handleChangeLimit = async (newLimit: number) => {
+  limit.value = newLimit
+  page.value = 1
+  await pembayaranStore.fetchPembayaran({ limit: limit.value, page: page.value, replace: true })
 }
 
 const handleGetDropdownRegu = async () => {
@@ -247,7 +260,7 @@ const applyPembayaranIdFilterFromQuery = async (pembayaranId: string) => {
   pembayaranStore.pembayaran = []
   pembayaranStore.setFilter('pembayaran_id', pembayaranId)
   page.value = 1
-  await pembayaranStore.fetchPembayaran({ limit: 10, page: 1 })
+  await pembayaranStore.fetchPembayaran({ limit: limit.value, page: 1 })
 
   // Bersihkan query dari URL supaya tidak ke-apply lagi kalau user reload manual
   router.replace({ path: '/pembayaran' })
@@ -281,7 +294,7 @@ const handleConfirmApprove = async () => {
       }
     }
 
-    showConfirmation.value = false
+    showConfirmationApprove.value = false
     showSuccessConfirm.value = true
     successMessage.value = `Pembayaran dari ${itemSelected.value.warga.nama_warga} berhasil disetujui.`
   } finally {
@@ -298,6 +311,11 @@ const confirmOptionsAprrove = ref({
   confirmIcon: '',
 })
 
+// State terpisah dari "showConfirmation" (dipakai dialog Hapus Data) — sebelumnya keduanya
+// memakai variabel yang sama, jadi dua ConfirmDialog terbuka bersamaan setiap kali approve
+// diklik, menumpuk dua lapis overlay gelap.
+const showConfirmationApprove = ref(false)
+
 const handleApprove = (item: Pembayaran) => {
   itemSelected.value = item
   confirmOptionsAprrove.value = {
@@ -308,7 +326,7 @@ const handleApprove = (item: Pembayaran) => {
     confirmColor: 'success',
     confirmIcon: 'ri-check-line',
   }
-  showConfirmation.value = true
+  showConfirmationApprove.value = true
 }
 
 const showRejectDialog = ref(false)
@@ -364,7 +382,7 @@ onMounted(async () => {
   if (pembayaranStore.needsReload) {
     pembayaranStore.needsReload = false
     pembayaranStore.pembayaran = []
-    await pembayaranStore.fetchPembayaran({ limit: 10, page: 1 })
+    await pembayaranStore.fetchPembayaran({ limit: limit.value, page: 1 })
     page.value = 1
     return
   }
@@ -372,7 +390,7 @@ onMounted(async () => {
   if (pembayaranStore.page) page.value = pembayaranStore.page
 
   if (pembayaranStore.page === 0) {
-    await pembayaranStore.fetchPembayaran({ limit: 10, page: page.value })
+    await pembayaranStore.fetchPembayaran({ limit: limit.value, page: page.value })
   }
 
   handleGetDropdownRegu()
@@ -414,7 +432,8 @@ onBeforeRouteLeave(() => {
           @delete="handleDeleteData" @show-anggota="handleShowAnggota" @show-bukti-bayar="handleShowBuktiBayar"
           @show-history-payment="handleHistoryPayment" @send-notif="handleSendNotif" @load-more="handleLoadMore"
           @show-rejection-reason="handleShowRejectionReason" @cancel="pembayaranStore.openCancelDialog"
-          @approved="handleApprove" @reject="handleReject" />
+          @approved="handleApprove" @reject="handleReject" @change-page="handleChangePage"
+          @change-limit="handleChangeLimit" />
       </VCol>
     </VRow>
 
@@ -441,7 +460,7 @@ onBeforeRouteLeave(() => {
 
     <DialogShowNote v-model="showRejectionReason" :item="itemSelected" />
 
-    <ConfirmDialog v-model="showConfirmation" :title="confirmOptionsAprrove.title"
+    <ConfirmDialog v-model="showConfirmationApprove" :title="confirmOptionsAprrove.title"
       :message="confirmOptionsAprrove.message" :confirm-text="confirmOptionsAprrove.confirmText"
       :cancel-text="confirmOptionsAprrove.cancelText" :confirm-color="confirmOptionsAprrove.confirmColor"
       :confirm-icon="confirmOptionsAprrove.confirmIcon" :loading="isLoadingConfirm" @confirm="handleConfirmApprove" />

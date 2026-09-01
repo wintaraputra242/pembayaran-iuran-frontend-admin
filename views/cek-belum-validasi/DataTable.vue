@@ -15,6 +15,8 @@ const emit = defineEmits<{
   (e: 'approve', item: Pembayaran): void
   (e: 'reject', item: Pembayaran): void
   (e: 'loadMore'): void
+  (e: 'changePage', page: number): void
+  (e: 'changeLimit', limit: number): void
 }>()
 
 const config = useRuntimeConfig()
@@ -35,8 +37,9 @@ const headers = [
 </script>
 
 <template>
-  <AppDataTable :headers="headers" :items="props.data" :loading="props.loading" :has-more="props.hasMore"
-    :has-filter="false" @loadMore="emit('loadMore')">
+  <AppDataTable :headers="headers" :items="props.data" :meta="props.meta" :loading="props.loading"
+    :has-more="props.hasMore" :has-filter="false" @load-more="emit('loadMore')"
+    @change-page="emit('changePage', $event)" @change-limit="emit('changeLimit', $event)">
 
     <!-- Warga -->
     <template #cell-warga="{ item }">

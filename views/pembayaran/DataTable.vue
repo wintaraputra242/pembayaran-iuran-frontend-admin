@@ -19,6 +19,8 @@ const emit = defineEmits<{
   (e: 'approved', item: Pembayaran): void
   (e: 'reject', item: Pembayaran): void
   (e: 'cancel', item: Pembayaran): void  // ← tambah ini
+  (e: 'changePage', page: number): void
+  (e: 'changeLimit', limit: number): void
 }>()
 
 const config = useRuntimeConfig()
@@ -55,8 +57,9 @@ const statusText: Record<string, string> = {
 </script>
 
 <template>
-  <AppDataTable :headers="headers" :items="props.data" :loading="props.loading" :has-more="props.hasMore"
-    :has-filter="props.hasFilter" @loadMore="emit('loadMore')">
+  <AppDataTable :headers="headers" :items="props.data" :meta="props.meta" :loading="props.loading"
+    :has-more="props.hasMore" :has-filter="props.hasFilter" @load-more="emit('loadMore')"
+    @change-page="emit('changePage', $event)" @change-limit="emit('changeLimit', $event)">
 
     <!-- Tanggal Bayar -->
     <template #cell-tanggal_bayar="{ item }">

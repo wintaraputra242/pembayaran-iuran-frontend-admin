@@ -20,7 +20,7 @@ const { isScrolled } = useScrollStatus(20)
     <template #navbar="{ toggleVerticalOverlayNavActive }">
       <div class="transition" :class="{
         'w-100 top-0 left-0 py-3 px-5': isMobile,
-        'h-100': !isMobile,
+        'h-100 px-5': !isMobile,
         'bg-surface elevation-3': isScrolled && isMobile  // ← elevation lebih tinggi saat scroll
       }" :style="isMobile ? {
         position: 'fixed',
@@ -33,7 +33,7 @@ const { isScrolled } = useScrollStatus(20)
         boxShadow: isScrolled ? '0 2px 8px rgba(0,0,0,0.12)' : 'none',
       } : {}">
         <div class="d-flex h-100 align-center">
-          <IconBtn v-if="authStore.user?.role === 'admin'" :class="{ 'ms-n3': !isMobile }"
+          <IconBtn v-if="authStore.user?.role === 'admin'"
             @click="toggleVerticalOverlayNavActive(true)">
             <VIcon icon="ri-menu-line" />
           </IconBtn>
