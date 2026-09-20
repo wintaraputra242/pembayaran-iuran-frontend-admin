@@ -1,4 +1,3 @@
-
 export default defineNuxtPlugin(async () => {
   // const authStore = useAuthStore()
   const uiStore = useUiStore()
@@ -13,6 +12,7 @@ export default defineNuxtPlugin(async () => {
   // } catch (e) {
   //   authStore.logout()
   // } finally {
-    uiStore.endLoading()
+  uiStore.endLoading()
+
   // }
 })

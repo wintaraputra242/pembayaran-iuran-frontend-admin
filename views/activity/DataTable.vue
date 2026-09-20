@@ -1,11 +1,5 @@
 <script setup lang="ts">
-import type { PaginationMeta } from '@/types/common';
-
-const emit = defineEmits<{
-  (e: 'loadMore'): void
-  (e: 'changePage', page: number): void
-  (e: 'changeLimit', limit: number): void
-}>()
+import type { PaginationMeta } from '@/types/common'
 
 const props = withDefaults(defineProps<{
   data: any[]
@@ -14,6 +8,12 @@ const props = withDefaults(defineProps<{
   hasMore: boolean
   hasFilter: boolean
 }>(), {})
+
+const emit = defineEmits<{
+  (e: 'loadMore'): void
+  (e: 'changePage', page: number): void
+  (e: 'changeLimit', limit: number): void
+}>()
 
 const authStore = useAuthStore()
 
@@ -26,29 +26,49 @@ const baseHeaders = [
 ]
 
 const headers = computed(() => {
-  if (authStore.user?.role === 'ketua_regu') {
+  if (authStore.user?.role === 'ketua_regu')
     return baseHeaders.filter(h => h.key !== 'petugas')
-  }
+
   return baseHeaders
 })
 
 const actionColor: Record<string, string> = {
-  create: 'success', update: 'info', delete: 'error',
-  login: 'primary', logout: 'secondary', export: 'warning',
-  import: 'info', send_notification: 'primary', download: 'success',
+  create: 'success',
+  update: 'info',
+  delete: 'error',
+  login: 'primary',
+  logout: 'secondary',
+  export: 'warning',
+  import: 'info',
+  send_notification: 'primary',
+  download: 'success',
 }
 
 const actionLabel: Record<string, string> = {
-  create: 'Tambah', update: 'Ubah', delete: 'Hapus',
-  login: 'Login', logout: 'Logout', export: 'Export',
-  import: 'Import', send_notification: 'Kirim Notifikasi', download: 'Download',
+  create: 'Tambah',
+  update: 'Ubah',
+  delete: 'Hapus',
+  login: 'Login',
+  logout: 'Logout',
+  export: 'Export',
+  import: 'Import',
+  send_notification: 'Kirim Notifikasi',
+  download: 'Download',
 }
 </script>
 
 <template>
-  <AppDataTable :headers="headers" :items="props.data" :meta="props.meta" :loading="props.loading"
-    :has-more="props.hasMore" :has-filter="props.hasFilter" @load-more="emit('loadMore')"
-    @change-page="emit('changePage', $event)" @change-limit="emit('changeLimit', $event)">
+  <AppDataTable
+    :headers="headers"
+    :items="props.data"
+    :meta="props.meta"
+    :loading="props.loading"
+    :has-more="props.hasMore"
+    :has-filter="props.hasFilter"
+    @load-more="emit('loadMore')"
+    @change-page="emit('changePage', $event)"
+    @change-limit="emit('changeLimit', $event)"
+  >
     <!-- Petugas -->
     <template #cell-petugas="{ item }">
       <span class="font-weight-medium">{{ item?.user?.name ?? '-' }}</span>
@@ -61,7 +81,12 @@ const actionLabel: Record<string, string> = {
 
     <!-- Aksi -->
     <template #cell-action="{ item }">
-      <VChip size="small" class="text-capitalize" :color="actionColor[item.action] || 'secondary'" variant="tonal">
+      <VChip
+        size="small"
+        class="text-capitalize"
+        :color="actionColor[item.action] || 'secondary'"
+        variant="tonal"
+      >
         {{ actionLabel[item.action] || item.action }}
       </VChip>
     </template>

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { NavGroup } from '@layouts/types';
+import type { NavGroup } from '@layouts/types'
 
 const props = defineProps<{
   item: Omit<NavGroup, 'children'>
@@ -7,9 +7,10 @@ const props = defineProps<{
 
 const isOpen = ref(false)
 
-watch(() => props.item.open, (newVal) => {
+watch(() => props.item.open, newVal => {
   if (newVal) {
     isOpen.value = true
+
     return
   }
   isOpen.value = false

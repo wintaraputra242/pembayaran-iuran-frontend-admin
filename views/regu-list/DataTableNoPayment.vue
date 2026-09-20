@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { PaginationMeta } from '@/types/common'
 
-const props = withDefaults(defineProps<{
+withDefaults(defineProps<{
   data: any[]
   meta?: null | PaginationMeta
   loading: boolean
@@ -40,10 +40,17 @@ const handleSendNotif = (item: any, index: number) => {
 </script>
 
 <template>
-  <AppDataTable :headers="headers" :items="data" :meta="meta" :loading="loading" :has-more="hasMore"
+  <AppDataTable
+    :headers="headers"
+    :items="data"
+    :meta="meta"
+    :loading="loading"
+    :has-more="hasMore"
     :no-data-text="!hasFilter ? 'Pilih informasi iuran dan klik Cek' : 'Semua warga sudah membayar'"
-    @load-more="emit('loadMore')" @change-page="emit('changePage', $event)"
-    @change-limit="emit('changeLimit', $event)">
+    @load-more="emit('loadMore')"
+    @change-page="emit('changePage', $event)"
+    @change-limit="emit('changeLimit', $event)"
+  >
     <!-- Nama Warga -->
     <template #cell-nama_warga="{ item }">
       <div class="d-flex flex-column">
@@ -55,15 +62,34 @@ const handleSendNotif = (item: any, index: number) => {
     <!-- No HP -->
     <template #cell-no_hp="{ item }">
       <!-- <span v-if="item.no_hp">{{ item.no_hp }}</span> -->
-      <a v-if="item.no_hp" :href="`https://wa.me/${item.no_hp.replace(/\D/g, '').replace(/^0/, '62')}`" target="_blank"
-        rel="noopener noreferrer" class="text-decoration-none d-inline-flex align-center gap-1 px-2 py-1 rounded-lg"
-        style="background: rgba(37, 211, 102, 0.1); border: 1px solid rgba(37, 211, 102, 0.3);">
-        <VIcon icon="ri-whatsapp-line" size="13" color="success" />
-        <p class="ma-0 text-caption font-weight-medium" style="color: #25d366;">{{
+      <a
+        v-if="item.no_hp"
+        :href="`https://wa.me/${item.no_hp.replace(/\D/g, '').replace(/^0/, '62')}`"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="text-decoration-none d-inline-flex align-center gap-1 px-2 py-1 rounded-lg"
+        style="background: rgba(37, 211, 102, 0.1); border: 1px solid rgba(37, 211, 102, 0.3);"
+      >
+        <VIcon
+          icon="ri-whatsapp-line"
+          size="13"
+          color="success"
+        />
+        <p
+          class="ma-0 text-caption font-weight-medium"
+          style="color: #25d366;"
+        >{{
           item.no_hp }}</p>
-        <VIcon icon="ri-external-link-line" size="11" style="color: #25d366; opacity: 0.7;" />
+        <VIcon
+          icon="ri-external-link-line"
+          size="11"
+          style="color: #25d366; opacity: 0.7;"
+        />
       </a>
-      <span v-else class="text-medium-emphasis">-</span>
+      <span
+        v-else
+        class="text-medium-emphasis"
+      >-</span>
     </template>
 
     <!-- Regu -->
@@ -73,7 +99,11 @@ const handleSendNotif = (item: any, index: number) => {
 
     <!-- Status -->
     <template #cell-status_keaktifan="{ item }">
-      <VChip size="small" :color="item.status_keaktifan === 'aktif' ? 'success' : 'error'" variant="tonal">
+      <VChip
+        size="small"
+        :color="item.status_keaktifan === 'aktif' ? 'success' : 'error'"
+        variant="tonal"
+      >
         {{ item.status_keaktifan === 'aktif' ? 'Aktif' : 'Tidak Aktif' }}
       </VChip>
     </template>
@@ -83,9 +113,16 @@ const handleSendNotif = (item: any, index: number) => {
       <div class="d-flex justify-center">
         <VTooltip text="Kirim Notifikasi">
           <template #activator="{ props: tooltipProps }">
-            <IconBtn v-bind="tooltipProps" variant="outlined" class="rounded-lg" size="small" color="primary"
-              :loading="index === indexSelected && loadingSendNotif" :disabled="!item.no_hp"
-              @click="handleSendNotif(item, index as number)">
+            <IconBtn
+              v-bind="tooltipProps"
+              variant="outlined"
+              class="rounded-lg"
+              size="small"
+              color="primary"
+              :loading="index === indexSelected && loadingSendNotif"
+              :disabled="!item.no_hp"
+              @click="handleSendNotif(item, index as number)"
+            >
               <VIcon icon="ri-bell-line" />
             </IconBtn>
           </template>

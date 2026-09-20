@@ -12,7 +12,7 @@ export default defineNuxtConfig({
       meta: [
         { name: 'apple-mobile-web-app-capable', content: 'yes' },
         { name: 'apple-mobile-web-app-status-bar-style', content: 'default' },
-        { name: 'apple-mobile-web-app-title', content: 'PembayaranIuran' }
+        { name: 'apple-mobile-web-app-title', content: 'PembayaranIuran' },
       ],
 
       link: [
@@ -24,30 +24,30 @@ export default defineNuxtConfig({
         { rel: 'apple-touch-icon', href: '/icons/apple-touch-icon.png' },
         { rel: 'mask-icon', href: '/icons/safari-pinned-tab.svg', color: '#003366' },
         {
-          rel: "apple-touch-startup-image",
-          href: "/splash/launch-828x1792.png",
+          rel: 'apple-touch-startup-image',
+          href: '/splash/launch-828x1792.png',
           media:
-            "(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2)",
+            '(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2)',
         },
         {
-          rel: "apple-touch-startup-image",
-          href: "/splash/launch-1125x2436.png",
+          rel: 'apple-touch-startup-image',
+          href: '/splash/launch-1125x2436.png',
           media:
-            "(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)",
+            '(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)',
         },
         {
-          rel: "apple-touch-startup-image",
-          href: "/splash/launch-1242x2688.png",
+          rel: 'apple-touch-startup-image',
+          href: '/splash/launch-1242x2688.png',
           media:
-            "(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3)",
+            '(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3)',
         },
         { rel: 'apple-touch-startup-image', href: '/icons/safari-pinned-tab.svg', color: '#003366' },
-        { rel: 'manifest', href: '/manifest.webmanifest' }
+        { rel: 'manifest', href: '/manifest.webmanifest' },
       ],
 
       script: [
         {
-          src: 'https://app.sandbox.midtrans.com/snap/snap.js',
+          'src': 'https://app.sandbox.midtrans.com/snap/snap.js',
           'data-client-key': process.env.NUXT_PUBLIC_MIDTRANS_CLIENT_KEY,
         },
         {
@@ -167,8 +167,8 @@ export default defineNuxtConfig({
     ],
 
     server: {
-      allowedHosts: ['possession-slip-adds-withdrawal.trycloudflare.com']
-    }
+      allowedHosts: ['possession-slip-adds-withdrawal.trycloudflare.com'],
+    },
   },
 
   build: {
@@ -179,7 +179,7 @@ export default defineNuxtConfig({
     '@vueuse/nuxt',
     '@nuxtjs/device',
     '@pinia/nuxt',
-    '@vite-pwa/nuxt'
+    '@vite-pwa/nuxt',
   ],
 
   compatibilityDate: '2025-01-01',
@@ -217,55 +217,55 @@ export default defineNuxtConfig({
       lang: 'id',
       icons: [
         {
-          "src": "/icons/icon-48x48.png",
-          "sizes": "48x48",
-          "type": "image/png"
+          src: '/icons/icon-48x48.png',
+          sizes: '48x48',
+          type: 'image/png',
         },
         {
-          "src": "/icons/icon-72x72.png",
-          "sizes": "72x72",
-          "type": "image/png"
+          src: '/icons/icon-72x72.png',
+          sizes: '72x72',
+          type: 'image/png',
         },
         {
-          "src": "/icons/icon-96x96.png",
-          "sizes": "96x96",
-          "type": "image/png"
+          src: '/icons/icon-96x96.png',
+          sizes: '96x96',
+          type: 'image/png',
         },
         {
-          "src": "/icons/icon-128x128.png",
-          "sizes": "128x128",
-          "type": "image/png"
+          src: '/icons/icon-128x128.png',
+          sizes: '128x128',
+          type: 'image/png',
         },
         {
-          "src": "/icons/icon-144x144.png",
-          "sizes": "144x144",
-          "type": "image/png"
+          src: '/icons/icon-144x144.png',
+          sizes: '144x144',
+          type: 'image/png',
         },
         {
-          "src": "/icons/icon-152x152.png",
-          "sizes": "152x152",
-          "type": "image/png"
+          src: '/icons/icon-152x152.png',
+          sizes: '152x152',
+          type: 'image/png',
         },
         {
-          "src": "/icons/icon-192x192.png",
-          "sizes": "192x192",
-          "type": "image/png"
+          src: '/icons/icon-192x192.png',
+          sizes: '192x192',
+          type: 'image/png',
         },
         {
-          "src": "/icons/icon-256x256.png",
-          "sizes": "256x256",
-          "type": "image/png"
+          src: '/icons/icon-256x256.png',
+          sizes: '256x256',
+          type: 'image/png',
         },
         {
-          "src": "/icons/icon-384x384.png",
-          "sizes": "384x384",
-          "type": "image/png"
+          src: '/icons/icon-384x384.png',
+          sizes: '384x384',
+          type: 'image/png',
         },
         {
-          "src": "/icons/icon-512x512.png",
-          "sizes": "512x512",
-          "type": "image/png"
-        }
+          src: '/icons/icon-512x512.png',
+          sizes: '512x512',
+          type: 'image/png',
+        },
       ],
     },
 
@@ -279,7 +279,7 @@ export default defineNuxtConfig({
       // (bukan versi lama yang di-cache Service Worker). PWA tetap berfungsi normal di production build.
       enabled: false,
       type: 'module',
-      navigateFallbackAllowlist: [/^\//, /^\//]
+      navigateFallbackAllowlist: [/^\//, /^\//],
     },
   },
 })

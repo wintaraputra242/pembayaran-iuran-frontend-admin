@@ -1,14 +1,14 @@
-import type { PaginatedResponse } from "../common"
-import type { MasterWarga } from "./master-warga"
+import type { PaginatedResponse } from '../common'
+import type { MasterWarga } from './master-warga'
 
 export interface CreateReguPayload {
   nama_regu: string
 }
 
 export interface CreateReguResponse {
-  success: boolean,
-  code: number,
-  message: string,
+  success: boolean
+  code: number
+  message: string
   data: null
 }
 
@@ -32,23 +32,23 @@ export interface GetMasterReguResponse {
 }
 
 export interface UpdateReguResponse {
-  success: boolean,
-  code: number,
-  message: string,
+  success: boolean
+  code: number
+  message: string
   data: null
 }
 
 export interface DeleteReguResponse {
-  success: boolean,
-  code: number,
-  message: string,
+  success: boolean
+  code: number
+  message: string
   data: null
 }
 
 export interface UpdateStatusReguResponse {
-  success: boolean,
-  code: number,
-  message: string,
+  success: boolean
+  code: number
+  message: string
   data: null
 }
 
@@ -77,41 +77,41 @@ export interface GetAnggotaReguResponse {
 }
 
 export interface AddAnggotaPayload {
-  id_regu: number,
+  id_regu: number
   niks: string[]
 }
 
 export interface AddAnggotaResponse {
-  success: boolean,
-  code: number,
-  message: string,
+  success: boolean
+  code: number
+  message: string
   data: null
 }
 
 export interface ResetAnggotaResponse {
-  success: boolean,
-  code: number,
-  message: string,
+  success: boolean
+  code: number
+  message: string
   data: null
 }
 
 export interface ResetAnggotaByReguResponse {
-  success: boolean,
-  code: number,
-  message: string,
+  success: boolean
+  code: number
+  message: string
   data: null
 }
 
 export interface ResetAnggotaAllResponse {
-  success: boolean,
-  code: number,
-  message: string,
+  success: boolean
+  code: number
+  message: string
   data: null
 }
 
 export interface SetLeaderAnggotaResponse {
-  success: boolean,
-  code: number,
-  message: string,
+  success: boolean
+  code: number
+  message: string
   data: null
 }

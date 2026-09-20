@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { AddWargaPayload, MasterWarga } from '@/types/api/master-warga';
-import DataTableWarga from '@/views/warga/DataTable.vue';
-import DialogFormDataWarga from '@/views/warga/DialogFormData.vue';
-import FormFilterWarga from '@/views/warga/FormFilter.vue';
+import type { AddWargaPayload, MasterWarga } from '@/types/api/master-warga'
+import DataTableWarga from '@/views/warga/DataTable.vue'
+import DialogFormDataWarga from '@/views/warga/DialogFormData.vue'
+import FormFilterWarga from '@/views/warga/FormFilter.vue'
 
 definePageMeta({ onlyAdmin: true })
 
@@ -52,10 +52,10 @@ const handleDelete = async () => {
       masterWargaStore.reload = true
       await masterWargaStore.fetchWarga({ limit: limit.value, page: page.value })
     }
-  } finally {
+  }
+  finally {
     showConfirmation.value = false
   }
-
 }
 
 const handleShowConfirmDelData = (item: MasterWarga) => {
@@ -88,9 +88,11 @@ const handleShowConfirmUpdateStatus = (item: MasterWarga) => {
   const statusAktif = item.status_keaktifan
 
   const setMessageWhenToActive = () => {
-    if (item.is_deleted) return `Sebelumnya data warga dengan nama ${item?.nama_warga} sudah anda hapus, Yakin ingin mengaktifkan kembali data warga ini?.`
+    if (item.is_deleted)
+      return `Sebelumnya data warga dengan nama ${item?.nama_warga} sudah anda hapus, Yakin ingin mengaktifkan kembali data warga ini?.`
 
-    if (statusAktif) return `Apakah Anda yakin ingin mengaktifkan kembali data warga atas nama ${item?.nama_warga}?.`
+    if (statusAktif)
+      return `Apakah Anda yakin ingin mengaktifkan kembali data warga atas nama ${item?.nama_warga}?.`
   }
 
   confirmOptions.title = statusAktif === 'aktif' ? 'Nonaktif Warga?' : 'Aktifkan Kembali?'
@@ -108,7 +110,7 @@ const handleShowConfirmUpdateStatus = (item: MasterWarga) => {
 const page = ref(1)
 const limit = ref(10)
 
-const handleFilter = (filters: { keyword: string, status_keaktifan: null | string }) => {
+const handleFilter = (filters: { keyword: string; status_keaktifan: null | string }) => {
   page.value = 1
   masterWargaStore.reload = true
   Object.entries(filters).forEach(([key, value]) => {
@@ -160,7 +162,6 @@ const handleAddData = async (params: AddWargaPayload) => {
   }
 }
 
-
 const handleShowFormData = () => {
   isEdit.value = false
 
@@ -185,6 +186,7 @@ const handleImport = async (file: File) => {
 
 const handleUpdate = async (params: AddWargaPayload) => {
   isFetchSuccess.value = false
+
   const res = await masterWargaStore.fetchUpdateWarga(params, itemSelected.value?.nik as string)
 
   if (res.success) {
@@ -205,30 +207,27 @@ const handleSubmitRegu = async ({ nik, id_regu }: { nik: string; id_regu: number
       niks: [nik],
     })
 
-    if (res.success) {
+    if (res.success)
       uiStore.showSuccess(res.message ?? 'Warga berhasil dimasukkan ke regu')
-    }
-  } catch (e) {
+  }
+  catch (e) {
     // error sudah dihandle useApi
   }
 }
 
-
 const handleSubmit = (params: AddWargaPayload) => {
-  if (isEdit.value) {
+  if (isEdit.value)
     handleUpdate(params)
-  } else {
+  else
     handleAddData(params)
-  }
 }
 
-
 onMounted(async () => {
-  if (masterWargaStore.page) page.value = masterWargaStore.page
+  if (masterWargaStore.page)
+    page.value = masterWargaStore.page
 
-  if (masterWargaStore.page === 0) {
+  if (masterWargaStore.page === 0)
     await masterWargaStore.fetchWarga({ limit: limit.value, page: page.value })
-  }
 
   await dropdownStore.fetchReguForDropdown()
 })
@@ -243,27 +242,56 @@ onMounted(async () => {
     </div>
     <VRow class="match-height">
       <VCol cols="12">
-        <FormFilterWarga :initial-keyword="masterWargaStore.filters?.keyword ?? ''"
+        <FormFilterWarga
+          :initial-keyword="masterWargaStore.filters?.keyword ?? ''"
           :initial-status-keaktifan="masterWargaStore.filters?.status_keaktifan ? masterWargaStore.filters?.status_keaktifan : null"
-          @filter="handleFilter" @reload="handleReload" @show-form-data="handleShowFormData" />
+          @filter="handleFilter"
+          @reload="handleReload"
+          @show-form-data="handleShowFormData"
+        />
       </VCol>
 
       <VCol cols="12">
-        <DataTableWarga :data="masterWargaStore.warga" :meta="masterWargaStore.meta" :loading="masterWargaStore.loading"
-          :has-more="masterWargaStore.hasMore" :has-filter="masterWargaStore.hasFilter" @edit="handleEditData"
-          @delete="handleShowConfirmDelData" @update-status="handleShowConfirmUpdateStatus"
-          @load-more="handleLoadMore" @change-page="handleChangePage" @change-limit="handleChangeLimit" />
+        <DataTableWarga
+          :data="masterWargaStore.warga"
+          :meta="masterWargaStore.meta"
+          :loading="masterWargaStore.loading"
+          :has-more="masterWargaStore.hasMore"
+          :has-filter="masterWargaStore.hasFilter"
+          @edit="handleEditData"
+          @delete="handleShowConfirmDelData"
+          @update-status="handleShowConfirmUpdateStatus"
+          @load-more="handleLoadMore"
+          @change-page="handleChangePage"
+          @change-limit="handleChangeLimit"
+        />
       </VCol>
     </VRow>
 
-    <DialogFormDataWarga :is-show="showFormData" :is-edit="isEdit" :loading="masterWargaStore.loading"
-      :is-fetch-success="isFetchSuccess" :item="itemSelected" :regu-options="dropdownStore.reguForDropdown"
-      :loading-regu-options="dropdownStore.loading.reguForDropdown" @close="handleCloseFormData" @submit="handleSubmit"
-      @import="handleImport" @submit-regu="handleSubmitRegu" />
+    <DialogFormDataWarga
+      :is-show="showFormData"
+      :is-edit="isEdit"
+      :loading="masterWargaStore.loading"
+      :is-fetch-success="isFetchSuccess"
+      :item="itemSelected"
+      :regu-options="dropdownStore.reguForDropdown"
+      :loading-regu-options="dropdownStore.loading.reguForDropdown"
+      @close="handleCloseFormData"
+      @submit="handleSubmit"
+      @import="handleImport"
+      @submit-regu="handleSubmitRegu"
+    />
 
-    <ConfirmDialog v-model="showConfirmation" :title="confirmOptions.title" :message="confirmOptions.message"
-      :confirm-text="confirmOptions.confirmText" :cancel-text="confirmOptions.cancelText"
-      :confirm-color="confirmOptions.confirmColor" :confirm-icon="confirmOptions.confirmIcon"
-      :loading="masterWargaStore.loading" @confirm="confirmOptions.action" />
+    <ConfirmDialog
+      v-model="showConfirmation"
+      :title="confirmOptions.title"
+      :message="confirmOptions.message"
+      :confirm-text="confirmOptions.confirmText"
+      :cancel-text="confirmOptions.cancelText"
+      :confirm-color="confirmOptions.confirmColor"
+      :confirm-icon="confirmOptions.confirmIcon"
+      :loading="masterWargaStore.loading"
+      @confirm="confirmOptions.action"
+    />
   </div>
 </template>

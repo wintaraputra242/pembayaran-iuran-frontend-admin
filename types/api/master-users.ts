@@ -1,4 +1,4 @@
-import type { PaginatedResponse } from "../common"
+import type { PaginatedResponse } from '../common'
 
 export interface MasterUser {
   id: number
@@ -32,9 +32,8 @@ export interface UpdateUserPayload {
 }
 
 export interface UpdateUserResponse {
-  success: boolean,
-  code: number,
-  message: string,
+  success: boolean
+  code: number
+  message: string
   data: null
 }
-

@@ -37,7 +37,8 @@ const handleFilter = async (filters: {
   if (filters.date && Array.isArray(filters.date)) {
     activityStore.setFilter('start_date', formatDateToYMD(filters.date[0]))
     activityStore.setFilter('end_date', formatDateToYMD(filters.date[1]))
-  } else {
+  }
+  else {
     activityStore.setFilter('start_date', '')
     activityStore.setFilter('end_date', '')
   }
@@ -60,7 +61,8 @@ const handleReload = async () => {
 }
 
 onMounted(async () => {
-  if (activityStore.page) page.value = activityStore.page
+  if (activityStore.page)
+    page.value = activityStore.page
 
   if (activityStore.page === 0) {
     await activityStore.fetchActivities({
@@ -80,14 +82,25 @@ onMounted(async () => {
     </div>
     <VRow class="match-height">
       <VCol cols="12">
-        <FormFilterActivity :initial-action="activityStore.filters?.action || null"
-          :initial-user="activityStore.filters?.user ?? ''" @filter="handleFilter" @reload="handleReload" />
+        <FormFilterActivity
+          :initial-action="activityStore.filters?.action || null"
+          :initial-user="activityStore.filters?.user ?? ''"
+          @filter="handleFilter"
+          @reload="handleReload"
+        />
       </VCol>
 
       <VCol cols="12">
-        <DataTableActivity :data="activityStore.activities" :meta="activityStore.meta" :loading="activityStore.loading"
-          :has-more="activityStore.hasMore" :has-filter="activityStore.hasFilter" @load-more="handleLoadMore"
-          @change-page="handleChangePage" @change-limit="handleChangeLimit" />
+        <DataTableActivity
+          :data="activityStore.activities"
+          :meta="activityStore.meta"
+          :loading="activityStore.loading"
+          :has-more="activityStore.hasMore"
+          :has-filter="activityStore.hasFilter"
+          @load-more="handleLoadMore"
+          @change-page="handleChangePage"
+          @change-limit="handleChangeLimit"
+        />
       </VCol>
     </VRow>
   </div>

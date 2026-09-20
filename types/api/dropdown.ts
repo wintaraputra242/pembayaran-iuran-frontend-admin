@@ -1,6 +1,6 @@
 export interface WargaForDropdown {
-  nik: string,
-  nama_warga: string,
+  nik: string
+  nama_warga: string
 }
 
 export interface WargaPembayaranForDropdown {
@@ -11,21 +11,21 @@ export interface WargaPembayaranForDropdown {
 }
 
 export interface InformasiIuranForDropdown {
-  id: number,
-  judul_iuran: string,
-  jenis_iuran: string,
-  jumlah_iuran: string,
+  id: number
+  judul_iuran: string
+  jenis_iuran: string
+  jumlah_iuran: string
 }
 
 export interface ReguForDropdown {
-  id: number,
-  nama_regu: string,
+  id: number
+  nama_regu: string
 }
 
 export interface AnggotaReguForDropdown {
-  id: number,
-  nik: string,
-  nama_warga: string,
+  id: number
+  nik: string
+  nama_warga: string
   is_leader: string
 }
 

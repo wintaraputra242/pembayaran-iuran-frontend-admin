@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useAuth } from '@/composables/api/useAuth';
+import { useAuth } from '@/composables/api/useAuth'
 
 const router = useRouter()
 const route = useRoute()
@@ -10,6 +10,7 @@ const uiStore = useUiStore()
 const authStore = useAuthStore()
 
 const isLoadingLogout = ref(false)
+
 const logoutUser = async () => {
   isLoadingLogout.value = true
 
@@ -18,33 +19,60 @@ const logoutUser = async () => {
 
     // uiStore.startLoading()
     const fromPath = useCookie('from-path')
+
     fromPath.value = route.path
 
     router.push('/login')
-  } catch (e: any) {
+  }
+  catch (e: any) {
     uiStore.showError(e.errors ?? 'Terjadi kesalahan saat logout', 'Gagal Logout')
-  } finally {
+  }
+  finally {
     isLoadingLogout.value = false
   }
 }
-
 </script>
 
 <template>
-  <VBadge dot location="bottom right" offset-x="3" offset-y="3" color="success" bordered>
-    <VAvatar class="cursor-pointer" color="primary" variant="tonal">
-      <i class="ri-user-fill text-lg"></i>
+  <VBadge
+    dot
+    location="bottom right"
+    offset-x="3"
+    offset-y="3"
+    color="success"
+    bordered
+  >
+    <VAvatar
+      class="cursor-pointer"
+      color="primary"
+      variant="tonal"
+    >
+      <i class="ri-user-fill text-lg" />
 
       <!-- SECTION Menu -->
-      <VMenu activator="parent" width="230" location="bottom end" offset="14px">
+      <VMenu
+        activator="parent"
+        width="230"
+        location="bottom end"
+        offset="14px"
+      >
         <VList>
           <!-- 👉 User Avatar & Name -->
           <VListItem>
             <template #prepend>
               <VListItemAction start>
-                <VBadge dot location="bottom right" offset-x="3" offset-y="3" color="success">
-                  <VAvatar color="primary" variant="tonal">
-                    <i class="ri-user-fill text-lg"></i>
+                <VBadge
+                  dot
+                  location="bottom right"
+                  offset-x="3"
+                  offset-y="3"
+                  color="success"
+                >
+                  <VAvatar
+                    color="primary"
+                    variant="tonal"
+                  >
+                    <i class="ri-user-fill text-lg" />
                   </VAvatar>
                 </VBadge>
               </VListItemAction>
@@ -53,23 +81,44 @@ const logoutUser = async () => {
             <VListItemTitle class="font-weight-semibold">
               {{ authStore.user?.name }}
             </VListItemTitle>
-            <VListItemSubtitle class="text-capitalize">{{ authStore.user?.role }}</VListItemSubtitle>
+            <VListItemSubtitle class="text-capitalize">
+              {{ authStore.user?.role }}
+            </VListItemSubtitle>
           </VListItem>
-          <VDivider v-if="authStore.user?.role !== 'admin'" class="my-2" />
+          <VDivider
+            v-if="authStore.user?.role !== 'admin'"
+            class="my-2"
+          />
 
           <!-- 👉 Profile -->
-          <VListItem v-if="authStore.user?.role !== 'admin'" link to="/regu-list">
+          <VListItem
+            v-if="authStore.user?.role !== 'admin'"
+            link
+            to="/regu-list"
+          >
             <template #prepend>
-              <VIcon class="me-2" icon="ri-team-line" size="22" />
+              <VIcon
+                class="me-2"
+                icon="ri-team-line"
+                size="22"
+              />
             </template>
 
             <VListItemTitle>Regu Saya</VListItemTitle>
           </VListItem>
 
           <!-- 👉 Settings -->
-          <VListItem v-if="authStore.user?.role !== 'admin'" link to="/my-activity">
+          <VListItem
+            v-if="authStore.user?.role !== 'admin'"
+            link
+            to="/my-activity"
+          >
             <template #prepend>
-              <VIcon class="me-2" icon="ri-time-line" size="22" />
+              <VIcon
+                class="me-2"
+                icon="ri-time-line"
+                size="22"
+              />
             </template>
 
             <VListItemTitle>Riwayat Transaksi</VListItemTitle>
@@ -81,7 +130,11 @@ const logoutUser = async () => {
           <!-- 👉 Logout -->
           <VListItem @click="logoutUser">
             <template #prepend>
-              <VIcon class="me-2" icon="ri-logout-box-r-line" size="22" />
+              <VIcon
+                class="me-2"
+                icon="ri-logout-box-r-line"
+                size="22"
+              />
             </template>
 
             <VListItemTitle>Logout</VListItemTitle>

@@ -18,11 +18,11 @@ const filters = reactive({
 })
 
 const kematianItems = computed(() =>
-  masterStore.informasiIuran.filter(i => i.jenis_iuran === 'kematian')
+  masterStore.informasiIuran.filter(i => i.jenis_iuran === 'kematian'),
 )
 
 const bulananItems = computed(() =>
-  masterStore.informasiIuran.filter(i => i.jenis_iuran === 'bulanan')
+  masterStore.informasiIuran.filter(i => i.jenis_iuran === 'bulanan'),
 )
 
 const loadData = async (type: 'kematian' | 'bulanan') => {
@@ -35,35 +35,39 @@ const loadData = async (type: 'kematian' | 'bulanan') => {
     page: page.value,
     limit: 10,
     jenis_iuran: type,
-    keyword: filters[type]
+    keyword: filters[type],
   })
 }
 
-watch(tab, (val) => loadData(val), { immediate: true })
+watch(tab, val => loadData(val), { immediate: true })
 
 let debounceTimer: any
 
-watch(() => filters.kematian, (val) => {
-  if (tab.value !== 'kematian') return
+watch(() => filters.kematian, () => {
+  if (tab.value !== 'kematian')
+    return
 
-  if (debounceTimer) clearTimeout(debounceTimer)
+  if (debounceTimer)
+    clearTimeout(debounceTimer)
 
   debounceTimer = setTimeout(() => {
     loadData('kematian')
   }, 500)
 })
 
-watch(() => filters.bulanan, (val) => {
-  if (tab.value !== 'bulanan') return
+watch(() => filters.bulanan, () => {
+  if (tab.value !== 'bulanan')
+    return
 
-  if (debounceTimer) clearTimeout(debounceTimer)
+  if (debounceTimer)
+    clearTimeout(debounceTimer)
 
   debounceTimer = setTimeout(() => {
     loadData('bulanan')
   }, 500)
 })
 
-watch(() => route.query.jenis_iuran, (newVal) => {
+watch(() => route.query.jenis_iuran, newVal => {
   tab.value = (newVal as 'kematian' | 'bulanan') ?? 'kematian'
 }, { immediate: true })
 
@@ -73,7 +77,7 @@ const handleLoadMore = async () => {
   await masterStore.fetchInformasiIuranActive({
     page: page.value,
     limit: 10,
-    jenis_iuran: tab.value
+    jenis_iuran: tab.value,
   })
 }
 
@@ -83,6 +87,7 @@ const handleBack = () => {
   // filters.nama_warga = null
 
   const referrer = sessionStorage.getItem('pembayaran_referrer') ?? '/pembayaran'
+
   sessionStorage.removeItem('pembayaran_referrer')
 
   router.push(referrer)
@@ -103,9 +108,11 @@ onMounted(() => {
 
     if (referrer.includes('/dashboard')) {
       sessionStorage.setItem('pembayaran_referrer', '/dashboard')
-    } else if (referrer.includes('/pembayaran')) {
+    }
+    else if (referrer.includes('/pembayaran')) {
       sessionStorage.setItem('pembayaran_referrer', '/pembayaran')
-    } else {
+    }
+    else {
       // Fallback default kalau referrer tidak dikenali (misal direct access/refresh)
       sessionStorage.setItem('pembayaran_referrer', '/pembayaran')
     }
@@ -118,38 +125,78 @@ onMounted(() => {
 <template>
   <div class="mt-n5">
     <div class="mb-4">
-      <div v-if="authStore.user?.role === 'admin'" class="mb-3">
-        <VBtn class="px-0 py-1" variant="text" size="large" @click="handleBack">
-          <VIcon icon="ri-arrow-left-s-line" class="me-2" />
+      <div
+        v-if="authStore.user?.role === 'admin'"
+        class="mb-3"
+      >
+        <VBtn
+          class="px-0 py-1"
+          variant="text"
+          size="large"
+          @click="handleBack"
+        >
+          <VIcon
+            icon="ri-arrow-left-s-line"
+            class="me-2"
+          />
           Kembali
         </VBtn>
       </div>
       <h2>Informasi Iuran</h2>
       <span>Pilih informasi iuran terlebih dahulu sebelum menambahkan pembayaran</span>
     </div>
-    <VTabs v-model="tab" color="primary">
-      <VTab value="kematian">Kematian</VTab>
-      <VTab value="bulanan">Bulanan</VTab>
+    <VTabs
+      v-model="tab"
+      color="primary"
+    >
+      <VTab value="kematian">
+        Kematian
+      </VTab>
+      <VTab value="bulanan">
+        Bulanan
+      </VTab>
     </VTabs>
 
-    <VDivider></VDivider>
+    <VDivider />
 
     <VTabsWindow v-model="tab">
-      <VTabsWindowItem class="py-5" value="kematian">
+      <VTabsWindowItem
+        class="py-5"
+        value="kematian"
+      >
         <div class="mb-3">
-          <VTextField v-model="filters.kematian" placeholder="Cari informasi iuran kematian"
-            prepend-inner-icon="ri-search-2-line" />
+          <VTextField
+            v-model="filters.kematian"
+            placeholder="Cari informasi iuran kematian"
+            prepend-inner-icon="ri-search-2-line"
+          />
         </div>
-        <ListInformasiIuranCreatePembayaran :has-more="masterStore.hasMore" :loading="masterStore.loading"
-          :items="kematianItems" :keyword="filters.kematian" @load-more="handleLoadMore" />
+        <ListInformasiIuranCreatePembayaran
+          :has-more="masterStore.hasMore"
+          :loading="masterStore.loading"
+          :items="kematianItems"
+          :keyword="filters.kematian"
+          @load-more="handleLoadMore"
+        />
       </VTabsWindowItem>
-      <VTabsWindowItem class="py-5" value="bulanan">
+      <VTabsWindowItem
+        class="py-5"
+        value="bulanan"
+      >
         <div class="mb-3">
-          <VTextField v-model="filters.bulanan" placeholder="Cari informasi iuran bulanan"
-            prepend-inner-icon="ri-search-2-line" />
+          <VTextField
+            v-model="filters.bulanan"
+            placeholder="Cari informasi iuran bulanan"
+            prepend-inner-icon="ri-search-2-line"
+          />
         </div>
-        <ListInformasiIuranCreatePembayaran :has-more="masterStore.hasMore" :loading="masterStore.loading"
-          :items="bulananItems" :keyword="filters.bulanan" @load-more="handleLoadMore" />
+        <ListInformasiIuranCreatePembayaran
+          :has-more="masterStore.hasMore"
+          :loading="masterStore.loading"
+          :items="bulananItems"
+          :keyword="filters.bulanan"
+          @load-more="handleLoadMore"
+        />
       </VTabsWindowItem>
     </VTabsWindow>
   </div>

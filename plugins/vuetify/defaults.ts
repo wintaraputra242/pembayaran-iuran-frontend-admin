@@ -143,6 +143,7 @@ export default {
   VDialog: {
     maxWidth: '500px',
     scrollable: true,
+
     // tambah default props lainnya di sini
   },
 }

@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import type { AnggotaRegu, CreateReguPayload, MasterRegu } from '@/types/api/master-regu';
-import DataTableRegu from '@/views/regu/DataTable.vue';
-import DialogDataTableAnggota from '@/views/regu/DialogDataTableAnggota.vue';
-import DialogFormDataRegu from '@/views/regu/DialogFormData.vue';
-import FormFilterRegu from '@/views/regu/FormFilter.vue';
+import type { AnggotaRegu, CreateReguPayload, MasterRegu } from '@/types/api/master-regu'
+import DataTableRegu from '@/views/regu/DataTable.vue'
+import DialogDataTableAnggota from '@/views/regu/DialogDataTableAnggota.vue'
+import DialogFormDataRegu from '@/views/regu/DialogFormData.vue'
+import FormFilterRegu from '@/views/regu/FormFilter.vue'
 
 definePageMeta({ onlyAdmin: true })
 
@@ -17,7 +17,8 @@ const showFormData = ref(false)
 const isEdit = ref(false)
 
 const handleCloseFormData = () => {
-  if (isEdit.value) isEdit.value = false
+  if (isEdit.value)
+    isEdit.value = false
 
   showFormData.value = false
 }
@@ -41,19 +42,6 @@ const handleEditData = async (item: MasterRegu) => {
 }
 
 const showConfirmation = ref(false)
-const isLoadingConfirm = ref(false)
-
-async function deleteItem() {
-  isLoadingConfirm.value = true
-
-  // contoh request
-  await new Promise(res => setTimeout(res, 1000))
-
-  isLoadingConfirm.value = false
-  showConfirmation.value = false
-
-  // console.log("Item dihapus!")
-}
 
 const confirmOptions = {
   title: '',
@@ -77,7 +65,8 @@ const handleDelete = async () => {
       masterReguStore.reload = true
       await masterReguStore.fetchRegu({ limit: limit.value, page: page.value })
     }
-  } finally {
+  }
+  finally {
     showConfirmation.value = false
   }
 }
@@ -98,7 +87,6 @@ const handleShowConfirmDelData = (item: MasterRegu) => {
 }
 
 const showAnggota = ref(false)
-const isLoadingGetAnggota = ref(false)
 
 const handleShowAnggota = async (item: MasterRegu) => {
   showAnggota.value = true
@@ -124,23 +112,19 @@ const handleFetchSetLeaderAnggota = async (nik: string) => {
   uiStore.showSuccess(res.message)
 }
 
-
-watch(() => showConfirmation.value, (newVal) => {
+watch(() => showConfirmation.value, newVal => {
   if (!newVal) {
     if (fromDialog.value && fromDialog.value === 'data-table-anggota-regu') {
       showAnggota.value = true
+
       return
     }
 
     fromDialog.value = ''
   }
 
-  if (newVal) {
-    if (fromDialog.value && fromDialog.value === 'data-table-anggota-regu') {
-      showAnggota.value = false
-      return
-    }
-  }
+  if (newVal && fromDialog.value && fromDialog.value === 'data-table-anggota-regu')
+    showAnggota.value = false
 })
 
 const handleSetLeaderAnggota = (item: AnggotaRegu) => {
@@ -158,6 +142,7 @@ const handleSetLeaderAnggota = (item: AnggotaRegu) => {
   }
 
   showConfirmation.value = true
+
   // itemSelected.value = item
 }
 
@@ -222,11 +207,10 @@ const handleResetAnggota = (item?: AnggotaRegu) => {
   confirmOptions.confirmColor = 'error'
   confirmOptions.confirmIcon = 'ri-user-community-line'
   confirmOptions.action = () => {
-    if (item) {
+    if (item)
       handleResetOneAnggota(item.id)
-    } else {
+    else
       handleResetAnggotaByRegu()
-    }
   }
 
   showConfirmation.value = true
@@ -242,6 +226,7 @@ const handleSubmit = async (params: CreateReguPayload) => {
     masterUsersStore.reload = true
     masterUsersStore.resetFilter()
     navigateTo('/master-data/users')
+
     return
   }
 
@@ -254,10 +239,9 @@ const handleSubmit = async (params: CreateReguPayload) => {
   uiStore.showSuccess(res.message)
 }
 
-watch(() => showFormData.value, (newVal) => {
-  if (!newVal) {
+watch(() => showFormData.value, newVal => {
+  if (!newVal)
     localStorage.removeItem('from')
-  }
 })
 
 const handleShowFormData = () => {
@@ -271,7 +255,7 @@ const limit = ref(10)
 
 const isFetchSuccess = ref(false)
 
-const handleFilter = (filters: { nama_regu: string, status_keaktifan: 'aktif' | 'tidak_aktif' | null }) => {
+const handleFilter = (filters: { nama_regu: string; status_keaktifan: 'aktif' | 'tidak_aktif' | null }) => {
   page.value = 1
   masterReguStore.reload = true
   Object.entries(filters).forEach(([key, value]) => {
@@ -282,6 +266,7 @@ const handleFilter = (filters: { nama_regu: string, status_keaktifan: 'aktif' | 
 
 const handleUpdate = async (params: CreateReguPayload) => {
   isFetchSuccess.value = false
+
   const res = await masterReguStore.fetchUpdateRegu(params, itemSelected.value?.id as number)
 
   if (res.success) {
@@ -330,19 +315,23 @@ const handleUpdateStatus = async () => {
       masterReguStore.reload = true
       await masterReguStore.fetchRegu({ limit: limit.value, page: page.value })
     }
-  } finally {
+  }
+  finally {
     showConfirmation.value = false
   }
 }
 
 const handleShowConfirmUpdateStatus = (item: MasterRegu) => {
   const statusAktif = item.status_keaktifan
+
   confirmFrom.value = 'not-anggota'
 
   const setMessageWhenToActive = () => {
-    if (item.is_deleted) return `Sebelumnya data regu dengan nama ${item?.nama_regu} sudah anda hapus, Yakin ingin mengaktifkan kembali data regu ini?.`
+    if (item.is_deleted)
+      return `Sebelumnya data regu dengan nama ${item?.nama_regu} sudah anda hapus, Yakin ingin mengaktifkan kembali data regu ini?.`
 
-    if (statusAktif) return `Apakah Anda yakin ingin mengaktifkan kembali data regu atas nama ${item?.nama_regu}?.`
+    if (statusAktif)
+      return `Apakah Anda yakin ingin mengaktifkan kembali data regu atas nama ${item?.nama_regu}?.`
   }
 
   confirmOptions.title = statusAktif === 'aktif' ? 'Nonaktif Regu?' : 'Aktifkan Kembali?'
@@ -381,15 +370,14 @@ const handleSubmitAddAnggota = async (params: { warga: string[] | null }) => {
 }
 
 onMounted(async () => {
-  if (localStorage.getItem('from') && localStorage.getItem('from') === 'create-user') {
+  if (localStorage.getItem('from') && localStorage.getItem('from') === 'create-user')
     showAnnouncement.value = true
-  }
 
-  if (masterReguStore.page) page.value = masterReguStore.page
+  if (masterReguStore.page)
+    page.value = masterReguStore.page
 
-  if (masterReguStore.page === 0) {
+  if (masterReguStore.page === 0)
     await masterReguStore.fetchRegu({ limit: limit.value, page: page.value })
-  }
 })
 </script>
 
@@ -401,41 +389,77 @@ onMounted(async () => {
     </div>
     <VRow class="match-height">
       <VCol cols="12">
-        <FormFilterRegu :initial-nama-regu="masterReguStore.filters?.nama_regu ?? ''"
+        <FormFilterRegu
+          :initial-nama-regu="masterReguStore.filters?.nama_regu ?? ''"
           :initial-status-keaktifan="masterReguStore.filters?.status_keaktifan ? masterReguStore.filters?.status_keaktifan : null"
-          @filter="handleFilter" @reload="handleReload" @show-form-data="handleShowFormData"
-          @reset-all-anggota="handleResetAllAnggota" />
+          @filter="handleFilter"
+          @reload="handleReload"
+          @show-form-data="handleShowFormData"
+          @reset-all-anggota="handleResetAllAnggota"
+        />
       </VCol>
 
       <VCol cols="12">
-        <DataTableRegu :data="masterReguStore.regu" :meta="masterReguStore.meta" :loading="masterReguStore.loading"
-          :has-more="masterReguStore.hasMore" :has-filter="masterReguStore.hasFilter" @edit="handleEditData"
-          @delete="handleShowConfirmDelData" @update-status="handleShowConfirmUpdateStatus"
-          @show-anggota="handleShowAnggota" @load-more="handleLoadMore" @change-page="handleChangePage"
-          @change-limit="handleChangeLimit" />
+        <DataTableRegu
+          :data="masterReguStore.regu"
+          :meta="masterReguStore.meta"
+          :loading="masterReguStore.loading"
+          :has-more="masterReguStore.hasMore"
+          :has-filter="masterReguStore.hasFilter"
+          @edit="handleEditData"
+          @delete="handleShowConfirmDelData"
+          @update-status="handleShowConfirmUpdateStatus"
+          @show-anggota="handleShowAnggota"
+          @load-more="handleLoadMore"
+          @change-page="handleChangePage"
+          @change-limit="handleChangeLimit"
+        />
       </VCol>
     </VRow>
 
-    <DialogFormDataRegu :is-fetch-success="isFetchSuccess" :is-show="showFormData" :is-edit="isEdit"
-      :item="itemSelected" :loading="masterReguStore.loading" @close="handleCloseFormData"
-      @submit="isEdit ? handleUpdate($event) : handleSubmit($event)" />
+    <DialogFormDataRegu
+      :is-fetch-success="isFetchSuccess"
+      :is-show="showFormData"
+      :is-edit="isEdit"
+      :item="itemSelected"
+      :loading="masterReguStore.loading"
+      @close="handleCloseFormData"
+      @submit="isEdit ? handleUpdate($event) : handleSubmit($event)"
+    />
 
-    <DialogDataTableAnggota :is-show="showAnggota" :data="masterReguStore.anggotaRegu" :item="itemSelected"
-      :loading="masterReguStore.loadingAnggota" :loading-dropdown-add-anggota="dropdownStore.loading.wargaForAddAnggota"
-      :item-dropdown-add-anggota="dropdownStore.itemWargaForAddAnggota" :is-fetch-success="isFetchSuccess"
-      :is-leader-available="masterReguStore.leaderAvailable" @close="handleCloseShowAnggota"
-      @detail-anggota="handleDetailAnggota" @fetch-dropdown-add-anggota="handleGetDropdownForAddAnggota"
-      @reset-anggota="handleResetAnggota" @submit-add-anggota="handleSubmitAddAnggota"
-      @set-leader="handleSetLeaderAnggota" />
+    <DialogDataTableAnggota
+      :is-show="showAnggota"
+      :data="masterReguStore.anggotaRegu"
+      :item="itemSelected"
+      :loading="masterReguStore.loadingAnggota"
+      :loading-dropdown-add-anggota="dropdownStore.loading.wargaForAddAnggota"
+      :item-dropdown-add-anggota="dropdownStore.itemWargaForAddAnggota"
+      :is-fetch-success="isFetchSuccess"
+      :is-leader-available="masterReguStore.leaderAvailable"
+      @close="handleCloseShowAnggota"
+      @detail-anggota="handleDetailAnggota"
+      @fetch-dropdown-add-anggota="handleGetDropdownForAddAnggota"
+      @reset-anggota="handleResetAnggota"
+      @submit-add-anggota="handleSubmitAddAnggota"
+      @set-leader="handleSetLeaderAnggota"
+    />
 
-    <ConfirmDialog v-model="showConfirmation" :title="confirmOptions.title" :message="confirmOptions.message"
-      :confirm-text="confirmOptions.confirmText" :cancel-text="confirmOptions.cancelText"
-      :confirm-color="confirmOptions.confirmColor" :confirm-icon="confirmOptions.confirmIcon"
+    <ConfirmDialog
+      v-model="showConfirmation"
+      :title="confirmOptions.title"
+      :message="confirmOptions.message"
+      :confirm-text="confirmOptions.confirmText"
+      :cancel-text="confirmOptions.cancelText"
+      :confirm-color="confirmOptions.confirmColor"
+      :confirm-icon="confirmOptions.confirmIcon"
       :loading="confirmFrom === 'anggota' ? masterReguStore.loadingAnggota : masterReguStore.loading"
-      @confirm="confirmOptions.action" />
+      @confirm="confirmOptions.action"
+    />
 
-    <AnnouncementDialog v-model="showAnnouncement"
+    <AnnouncementDialog
+      v-model="showAnnouncement"
       message="Akun Ketua Regu tidak dapat dibuat secara manual. Sistem akan membuatkannya secara otomatis setelah data Regu baru berhasil disimpan."
-      @close="showAnnouncement = false; showFormData = true" />
+      @close="showAnnouncement = false; showFormData = true"
+    />
   </div>
 </template>

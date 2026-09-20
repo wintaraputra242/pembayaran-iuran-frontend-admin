@@ -48,7 +48,7 @@ module.exports = {
     '@typescript-eslint/no-explicit-any': 'off',
 
     // indentation (Already present in TypeScript)
-    'indent': ['error', 2],
+    'indent': ['error', 2, { SwitchCase: 1 }],
 
     // Enforce trailing comma (Already present in TypeScript)
     'comma-dangle': ['error', 'always-multiline'],
@@ -56,8 +56,9 @@ module.exports = {
     // Enforce consistent spacing inside braces of object (Already present in TypeScript)
     'object-curly-spacing': ['error', 'always'],
 
-    // Enforce camelCase naming convention
-    'camelcase': 'error',
+    // Enforce camelCase naming convention (snake_case allowed for object properties/destructuring
+    // since the backend API contract uses snake_case field names throughout this project)
+    'camelcase': ['error', { properties: 'never', ignoreDestructuring: true, allow: ['id_regu', 'regu_id', 'id_informasi_iuran', 'rejection_reason', 'alasan_pembatalan'] }],
 
     // Disable max-len
     'max-len': 'off',
@@ -141,6 +142,9 @@ module.exports = {
     '@typescript-eslint/no-shadow': ['error'],
 
     '@typescript-eslint/consistent-type-imports': 'error',
+
+    // referencing later-declared consts from inside functions is safe (evaluated after setup completes)
+    '@typescript-eslint/no-use-before-define': ['error', { functions: false, variables: false }],
 
     // Plugin: eslint-plugin-promise
     'promise/always-return': 'off',

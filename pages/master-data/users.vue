@@ -28,10 +28,10 @@ const confirmOptions = reactive({
 // LOAD
 // -------------------------------------------------------
 onMounted(async () => {
-  if (masterUsersStore.page) page.value = masterUsersStore.page
-  if (masterUsersStore.page === 0) {
+  if (masterUsersStore.page)
+    page.value = masterUsersStore.page
+  if (masterUsersStore.page === 0)
     await masterUsersStore.fetchUsers({ limit: limit.value, page: page.value })
-  }
 })
 
 // -------------------------------------------------------
@@ -89,7 +89,8 @@ const handleDeleteConfirm = (item: MasterUser) => {
 }
 
 const handleDeleteItem = async () => {
-  if (!itemSelected.value) return
+  if (!itemSelected.value)
+    return
   isLoadingConfirm.value = true
 
   try {
@@ -99,7 +100,8 @@ const handleDeleteItem = async () => {
       showConfirmation.value = false
       handleReload()
     }
-  } finally {
+  }
+  finally {
     isLoadingConfirm.value = false
   }
 }
@@ -120,45 +122,80 @@ const handleDownloadCredentials = async () => {
 
     <VRow class="match-height">
       <VCol cols="12">
-        <FormFilterUsers :loading-download="masterUsersStore.loadingDownload"
+        <FormFilterUsers
+          :loading-download="masterUsersStore.loadingDownload"
           :initial-keyword="masterUsersStore.filters?.keyword ?? ''"
           :initial-role="masterUsersStore.filters?.role ? masterUsersStore.filters?.role : null"
-          @download-credentials="handleDownloadCredentials" @filter="handleFilter" @reload="handleReload" />
+          @download-credentials="handleDownloadCredentials"
+          @filter="handleFilter"
+          @reload="handleReload"
+        />
       </VCol>
 
       <VCol cols="12">
-        <DataTableUsers :data="masterUsersStore.users" :meta="masterUsersStore.meta" :loading="masterUsersStore.loading"
-          :has-more="masterUsersStore.hasMore" :has-filter="masterUsersStore.hasFilter"
-          @get-password="handleGetPassword" @delete="handleDeleteConfirm" @load-more="handleLoadMore"
-          @change-page="handleChangePage" @change-limit="handleChangeLimit" />
+        <DataTableUsers
+          :data="masterUsersStore.users"
+          :meta="masterUsersStore.meta"
+          :loading="masterUsersStore.loading"
+          :has-more="masterUsersStore.hasMore"
+          :has-filter="masterUsersStore.hasFilter"
+          @get-password="handleGetPassword"
+          @delete="handleDeleteConfirm"
+          @load-more="handleLoadMore"
+          @change-page="handleChangePage"
+          @change-limit="handleChangeLimit"
+        />
       </VCol>
     </VRow>
 
     <!-- Dialog credential -->
-    <VDialog v-model="showCredential" max-width="400">
+    <VDialog
+      v-model="showCredential"
+      max-width="400"
+    >
       <VCard rounded="lg">
         <VCardTitle class="pa-4 d-flex align-center gap-2">
-          <VIcon icon="ri-key-line" color="primary" />
+          <VIcon
+            icon="ri-key-line"
+            color="primary"
+          />
           Informasi Akun
         </VCardTitle>
         <VDivider />
         <VCardText class="pa-4">
           <div class="d-flex flex-column gap-3">
             <div>
-              <p class="text-caption text-medium-emphasis mb-1">Nama</p>
-              <p class="font-weight-bold mb-0">{{ (itemSelected as MasterUser)?.name }}</p>
+              <p class="text-caption text-medium-emphasis mb-1">
+                Nama
+              </p>
+              <p class="font-weight-bold mb-0">
+                {{ (itemSelected as MasterUser)?.name }}
+              </p>
             </div>
             <div>
-              <p class="text-caption text-medium-emphasis mb-1">Username</p>
-              <VTextField :model-value="(itemSelected as MasterUser)?.username" readonly density="compact"
-                variant="outlined" append-inner-icon="ri-file-copy-line" @click:append-inner="() => {
+              <p class="text-caption text-medium-emphasis mb-1">
+                Username
+              </p>
+              <VTextField
+                :model-value="(itemSelected as MasterUser)?.username"
+                readonly
+                density="compact"
+                variant="outlined"
+                append-inner-icon="ri-file-copy-line"
+                @click:append-inner="() => {
                   navigator.clipboard.writeText((itemSelected as MasterUser)?.username ?? '')
                   uiStore.showSuccess('Username disalin!')
-                }" />
+                }"
+              />
             </div>
             <div>
-              <p class="text-caption text-medium-emphasis mb-1">Role</p>
-              <VChip size="small" :color="(itemSelected as MasterUser)?.role === 'admin' ? 'success' : 'info'">
+              <p class="text-caption text-medium-emphasis mb-1">
+                Role
+              </p>
+              <VChip
+                size="small"
+                :color="(itemSelected as MasterUser)?.role === 'admin' ? 'success' : 'info'"
+              >
                 {{ (itemSelected as MasterUser)?.role === 'admin' ? 'Admin' : 'Ketua Regu' }}
               </VChip>
             </div>
@@ -166,7 +203,12 @@ const handleDownloadCredentials = async () => {
         </VCardText>
         <VDivider />
         <VCardText class="pa-4">
-          <VBtn block variant="tonal" color="secondary" @click="showCredential = false">
+          <VBtn
+            block
+            variant="tonal"
+            color="secondary"
+            @click="showCredential = false"
+          >
             Tutup
           </VBtn>
         </VCardText>
@@ -174,9 +216,16 @@ const handleDownloadCredentials = async () => {
     </VDialog>
 
     <!-- Dialog konfirmasi hapus -->
-    <ConfirmDialog v-model="showConfirmation" :title="confirmOptions.title" :message="confirmOptions.message"
-      :confirm-text="confirmOptions.confirmText" :cancel-text="confirmOptions.cancelText"
-      :confirm-color="confirmOptions.confirmColor" :confirm-icon="confirmOptions.confirmIcon"
-      :loading="isLoadingConfirm" @confirm="handleDeleteItem" />
+    <ConfirmDialog
+      v-model="showConfirmation"
+      :title="confirmOptions.title"
+      :message="confirmOptions.message"
+      :confirm-text="confirmOptions.confirmText"
+      :cancel-text="confirmOptions.cancelText"
+      :confirm-color="confirmOptions.confirmColor"
+      :confirm-icon="confirmOptions.confirmIcon"
+      :loading="isLoadingConfirm"
+      @confirm="handleDeleteItem"
+    />
   </div>
 </template>

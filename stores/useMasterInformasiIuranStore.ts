@@ -1,7 +1,28 @@
+import { defineStore } from 'pinia'
 import { useMasterInformasiIuran } from '@/composables/api/useMasterInformasiIuran'
 import type { AddInformasiIuranPayload, MasterInformasiIuran } from '@/types/api/master-informasi-iuran'
 import type { PaginationMeta } from '@/types/common'
-import { defineStore } from 'pinia'
+
+const buildInformasiIuranPayload = (params: AddInformasiIuranPayload) => {
+  const newParams: any = {}
+
+  Object.entries(params).forEach(([key, value]) => {
+    if (key === 'periode' && params.jenis_iuran === 'kematian')
+      return
+    if ((key === 'nama_warga_meninggal' || key === 'nik_penanggung_jawab') && params.jenis_iuran === 'bulanan')
+      return
+
+    if (key === 'jumlah_iuran' && typeof params.jumlah_iuran === 'string') {
+      newParams[key] = params.jumlah_iuran ? Number(params.jumlah_iuran.replace(/\./g, '')) : params.jumlah_iuran
+
+      return
+    }
+
+    newParams[key] = value
+  })
+
+  return newParams
+}
 
 export const useMasterInformasiIuranStore = defineStore('master-informasi-iuran', {
   state: () => ({
@@ -20,9 +41,9 @@ export const useMasterInformasiIuranStore = defineStore('master-informasi-iuran'
   }),
 
   getters: {
-    hasData: (state) => state.informasiIuran.length > 0,
-    hasMore: (state) => state.meta?.total !== state.informasiIuran.length,
-    hasFilter: (state) => !!state.filters.keyword || !!state.filters.status_aktif || !!state.filters.jenis_iuran
+    hasData: state => state.informasiIuran.length > 0,
+    hasMore: state => state.meta?.total !== state.informasiIuran.length,
+    hasFilter: state => !!state.filters.keyword || !!state.filters.status_aktif || !!state.filters.jenis_iuran,
   },
 
   actions: {
@@ -31,6 +52,7 @@ export const useMasterInformasiIuranStore = defineStore('master-informasi-iuran'
       limit?: number
       mode?: string
       jenis_iuran?: string
+
       // true = ganti seluruh data dengan hasil fetch ini (dipakai pagination desktop).
       // false/undefined = tambahkan ke data yang sudah ada (dipakai infinite-scroll mobile).
       replace?: boolean
@@ -41,16 +63,15 @@ export const useMasterInformasiIuranStore = defineStore('master-informasi-iuran'
       }
 
       const api = useMasterInformasiIuran()
+
       this.loading = true
 
       try {
         const newFilter: Record<string, string> = {}
 
         Object.entries(this.filters).forEach(([key, value]) => {
-
-          if (value) {
+          if (value)
             newFilter[key] = value
-          }
         })
 
         const res = await api.getInformasiIuran({
@@ -63,11 +84,13 @@ export const useMasterInformasiIuranStore = defineStore('master-informasi-iuran'
 
         this.informasiIuran = params?.replace ? res.data.data : [...this.informasiIuran, ...res.data.data]
 
-        const { data, ...meta } = res.data
+        const { data: _, ...meta } = res.data
+
         this.meta = meta
 
         this.page = params?.page as number
-      } finally {
+      }
+      finally {
         this.loading = false
       }
     },
@@ -84,6 +107,7 @@ export const useMasterInformasiIuranStore = defineStore('master-informasi-iuran'
       }
 
       const api = useMasterInformasiIuran()
+
       this.loading = true
 
       try {
@@ -96,24 +120,28 @@ export const useMasterInformasiIuranStore = defineStore('master-informasi-iuran'
 
         this.informasiIuran = [...this.informasiIuran, ...res.data.data]
 
-        const { data, ...meta } = res.data
+        const { data: _, ...meta } = res.data
+
         this.meta = meta
 
         this.page = params?.page as number
-      } finally {
+      }
+      finally {
         this.loading = false
       }
     },
 
     async fetchDetailInformasiIuran(id: number | string) {
       const api = useMasterInformasiIuran()
+
       this.loading = true
 
       try {
         const res = await api.getDetailInformasiIuran(id)
 
         this.detailInformasiIuran = res.data
-      } finally {
+      }
+      finally {
         this.loading = false
       }
     },
@@ -126,102 +154,62 @@ export const useMasterInformasiIuranStore = defineStore('master-informasi-iuran'
       this.filters = {
         keyword: '',
         status_aktif: '',
-        jenis_iuran: ''
+        jenis_iuran: '',
       }
     },
 
     async fetchAddInformasiIuran(params: AddInformasiIuranPayload) {
       const api = useMasterInformasiIuran()
+
       this.loading = true
 
-      let newParams: any = {}
-
-      const changeToNumber = () => {
-        if (params.jumlah_iuran && typeof params.jumlah_iuran === 'string') {
-          return Number(params.jumlah_iuran.replace(/\./g, ''))
-        }
-
-        return params.jumlah_iuran as number
-      }
-
-      Object.entries(params).forEach(([key, value]) => {
-        if (key === 'periode' && params.jenis_iuran === 'kematian') return
-        if ((key === 'nama_warga_meninggal' || key === 'nik_penanggung_jawab') && params.jenis_iuran === 'bulanan') return
-
-        if (key === 'jumlah_iuran') {
-          newParams[key] = changeToNumber()
-          return
-        }
-
-        newParams[key] = value
-      })
+      const newParams = buildInformasiIuranPayload(params)
 
       try {
-        const res = await api.addInformasiIuran(newParams)
-
-        return res
-      } finally {
+        return await api.addInformasiIuran(newParams)
+      }
+      finally {
         this.loading = false
       }
     },
 
     async fetchUpdateInformasiIuran(params: AddInformasiIuranPayload, id: number) {
       const api = useMasterInformasiIuran()
+
       this.loading = true
 
-      let newParams: any = {}
-
-      const changeToNumber = () => {
-        if (params.jumlah_iuran && typeof params.jumlah_iuran === 'string') {
-          return Number(params.jumlah_iuran.replace(/\./g, ''))
-        }
-
-        return params.jumlah_iuran as number
-      }
-
-      Object.entries(params).forEach(([key, value]) => {
-        if (key === 'periode' && params.jenis_iuran === 'kematian') return
-        if ((key === 'nama_warga_meninggal' || key === 'nik_penanggung_jawab') && params.jenis_iuran === 'bulanan') return
-
-        if (key === 'jumlah_iuran') {
-          newParams[key] = changeToNumber()
-          return
-        }
-
-        newParams[key] = value
-      })
+      const newParams = buildInformasiIuranPayload(params)
 
       try {
-        const res = await api.updateInformasiIuran(newParams, id)
-
-        return res
-      } finally {
+        return await api.updateInformasiIuran(newParams, id)
+      }
+      finally {
         this.loading = false
       }
     },
 
-    async fetchUpdateStatus(params: { id: number, status_aktif: number }) {
+    async fetchUpdateStatus(params: { id: number; status_aktif: number }) {
       const api = useMasterInformasiIuran()
+
       this.loading = true
 
       try {
-        const res = await api.updateStatusInformasiIuran(params)
-
-        return res
-      } finally {
+        return await api.updateStatusInformasiIuran(params)
+      }
+      finally {
         this.loading = false
       }
     },
 
     async fetchDeleteInformasiIuran(id: number) {
       const api = useMasterInformasiIuran()
+
       this.loading = true
 
       try {
-        const res = await api.deleteInformasiIuran(id)
-
-        return res
-      } finally {
+        return await api.deleteInformasiIuran(id)
+      }
+      finally {
         this.loading = false
       }
     },

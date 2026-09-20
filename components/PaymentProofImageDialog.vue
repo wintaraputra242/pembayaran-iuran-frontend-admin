@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref } from 'vue'
 
 const props = defineProps({
   modelValue: { type: Boolean, default: false },
@@ -14,50 +14,57 @@ const props = defineProps({
   src: {
     type: String,
     required: false,
-    default: '/images/no-image.png'
+    default: '/images/no-image.png',
   },
   lazySrc: {
     type: String,
-    default: '/images/placeholder.png'
+    default: '/images/placeholder.png',
   },
   item: {
     type: Object,
     default: () => ({
       transaction_id: '',
       judul_iuran: '',
-      nama_warga: ''
-    })
-  }
+      nama_warga: '',
+    }),
+  },
 })
 
-const emit = defineEmits(["update:modelValue", "close"])
+const emit = defineEmits(['update:modelValue', 'close'])
 
 // Local state agar dialog tetap bisa dikontrol dari dalam
 const modelValueLocal = ref(props.modelValue)
 
 watch(
   () => props.modelValue,
-  val => (modelValueLocal.value = val)
+  val => (modelValueLocal.value = val),
 )
 
-watch(modelValueLocal, val => emit("update:modelValue", val))
+watch(modelValueLocal, val => emit('update:modelValue', val))
 
 const handleClose = () => {
-  emit("close")
+  emit('close')
   modelValueLocal.value = false
 }
-const dialog = ref(false)
 </script>
 
 <template>
   <div>
-    <VDialog v-model="modelValueLocal" max-width="600">
+    <VDialog
+      v-model="modelValueLocal"
+      max-width="600"
+    >
       <VCard>
         <VCardTitle class="text-h6 px-0">
           <div class="d-flex align-center justify-space-between">
             <span class="px-4">Bukti Pembayaran</span>
             <div class="px-2">
-              <IconBtn variant="text" color="secondary" size="x-small" @click="handleClose">
+              <IconBtn
+                variant="text"
+                color="secondary"
+                size="x-small"
+                @click="handleClose"
+              >
                 <VIcon icon="ri-close-line" />
               </IconBtn>
             </div>
@@ -66,11 +73,20 @@ const dialog = ref(false)
 
         <VCardText>
           <div class="mb-3">
-            <p class="pa-0 ma-0 text-caption">Judul Iuran: {{ props.judulIuran || '-' }}</p>
-            <p class="pa-0 ma-0 text-caption">Nama Warga: {{ props.namaWarga || '-' }}</p>
+            <p class="pa-0 ma-0 text-caption">
+              Judul Iuran: {{ props.judulIuran || '-' }}
+            </p>
+            <p class="pa-0 ma-0 text-caption">
+              Nama Warga: {{ props.namaWarga || '-' }}
+            </p>
           </div>
 
-          <VImg :src="src" height="450" rounded="lg" :lazy-src="lazySrc">
+          <VImg
+            :src="src"
+            height="450"
+            rounded="lg"
+            :lazy-src="lazySrc"
+          >
             <template #placeholder>
               <VResponsive class="w-100 h-100">
                 <VSkeletonLoader type="image" />

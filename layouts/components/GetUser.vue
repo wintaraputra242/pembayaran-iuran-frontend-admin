@@ -1,19 +1,17 @@
 <script setup lang="ts">
 import { useAuth } from '@/composables/api/useAuth'
 
-  const router = useRouter()
+const router = useRouter()
 
-  const { user, role } = useAuthStore()
-  const { fetchUser } = useAuth()
+const { user, role } = useAuthStore()
+const { fetchUser } = useAuth()
 
-  const getUser = async () => {
-    const ok = await fetchUser()
-    if (ok) {
-      router.push(role === 'admin' ? '/' : '/create-pembayaran')
-    }
-  }
+const getUser = async () => {
+  const ok = await fetchUser()
+  if (ok)
+    router.push(role === 'admin' ? '/' : '/create-pembayaran')
+}
 
-  if (!user) {
-    getUser()
-  }
+if (!user)
+  getUser()
 </script>

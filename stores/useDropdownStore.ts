@@ -1,6 +1,6 @@
+import { defineStore } from 'pinia'
 import { useDropdown } from '@/composables/api/useDropdown'
 import type { AnggotaReguForDropdown, InformasiIuranForDropdown, ReguForDropdown, WargaForDropdown, WargaPembayaranForDropdown } from '@/types/api/dropdown'
-import { defineStore } from 'pinia'
 
 export const useDropdownStore = defineStore('dropdown', {
   state: () => ({
@@ -16,38 +16,38 @@ export const useDropdownStore = defineStore('dropdown', {
       wargaForPembayaran: false,
       informasiIuranForDropdown: false,
       reguForDropdown: false,
-      anggotaReguForDropdown: false
-    }
+      anggotaReguForDropdown: false,
+    },
   }),
 
   getters: {
-    hasDataWargaForAddAnggota: (state) => state.itemWargaForAddAnggota?.length > 0,
-    hasDataWargaForDropdown: (state) => state.itemWargaForAddAnggota?.length > 0,
-    hasDataInformasiIuranForDropdown: (state) => state.itemInformasiIuranForDropdown?.length > 0,
+    hasDataWargaForAddAnggota: state => state.itemWargaForAddAnggota?.length > 0,
+    hasDataWargaForDropdown: state => state.itemWargaForAddAnggota?.length > 0,
+    hasDataInformasiIuranForDropdown: state => state.itemInformasiIuranForDropdown?.length > 0,
   },
 
   actions: {
     async fetchWargaForAddAnggota() {
-
       const api = useDropdown()
+
       this.loading.wargaForAddAnggota = true
       this.itemWargaForAddAnggota = []
 
       try {
-
         const res = await api.getWargaForDropdownAddAnggota()
 
         this.itemWargaForAddAnggota = res.data
 
         return res
-      } finally {
+      }
+      finally {
         this.loading.wargaForAddAnggota = false
       }
     },
 
     async fetchWargaForDropdown() {
-
       const api = useDropdown()
+
       this.loading.wargaForDropdown = true
       this.itemWargaForDropdown = []
 
@@ -58,16 +58,16 @@ export const useDropdownStore = defineStore('dropdown', {
 
         // console.log(this.itemWargaForDropdown);
 
-
         return res
-      } finally {
+      }
+      finally {
         this.loading.wargaForDropdown = false
       }
     },
 
     async fetchWargaForPembayaran(id_informasi_iuran: number, regu_id?: number | string) {
-
       const api = useDropdown()
+
       this.loading.wargaForPembayaran = true
       this.itemWargaForPembayaran = []
 
@@ -78,16 +78,16 @@ export const useDropdownStore = defineStore('dropdown', {
 
         // console.log(this.itemWargaForPembayaran);
 
-
         return res
-      } finally {
+      }
+      finally {
         this.loading.wargaForPembayaran = false
       }
     },
 
     async fetchInformasiIuranForDropdown() {
-
       const api = useDropdown()
+
       this.loading.informasiIuranForDropdown = true
       this.itemInformasiIuranForDropdown = []
 
@@ -97,14 +97,15 @@ export const useDropdownStore = defineStore('dropdown', {
         this.itemInformasiIuranForDropdown = res.data
 
         return res
-      } finally {
+      }
+      finally {
         this.loading.informasiIuranForDropdown = false
       }
     },
 
     async fetchReguForDropdown() {
-
       const api = useDropdown()
+
       this.loading.reguForDropdown = true
       this.reguForDropdown = []
 
@@ -114,14 +115,15 @@ export const useDropdownStore = defineStore('dropdown', {
         this.reguForDropdown = res.data
 
         return res
-      } finally {
+      }
+      finally {
         this.loading.reguForDropdown = false
       }
     },
 
     async fetchAnggotaReguForDropdown() {
-
       const api = useDropdown()
+
       this.loading.anggotaReguForDropdown = true
       this.anggotaReguForDropdown = []
 
@@ -131,7 +133,8 @@ export const useDropdownStore = defineStore('dropdown', {
         this.anggotaReguForDropdown = res.data
 
         return res
-      } finally {
+      }
+      finally {
         this.loading.anggotaReguForDropdown = false
       }
     },

@@ -1,5 +1,5 @@
-import type { AddWargaPayload, AddWargaResponse, DeleteWargaResponse, GetDetailMasterWargaResponse, GetMasterWargaResponse, ImportAddWargaResponse, UpdateStatusWargaResponse, UpdateWargaResponse } from '@/types/api/master-warga'
 import { useApi } from './useApi'
+import type { AddWargaPayload, AddWargaResponse, DeleteWargaResponse, GetDetailMasterWargaResponse, GetMasterWargaResponse, ImportAddWargaResponse, UpdateStatusWargaResponse, UpdateWargaResponse } from '@/types/api/master-warga'
 
 export const useMasterWarga = () => {
   const { api } = useApi()
@@ -24,6 +24,7 @@ export const useMasterWarga = () => {
 
   const importAddDataWarga = async (file: File): Promise<ImportAddWargaResponse> => {
     const formData = new FormData()
+
     formData.append('file', file)
 
     return await api<ImportAddWargaResponse>('/warga/import-excel', {
@@ -68,7 +69,6 @@ export const useMasterWarga = () => {
     })
   }
 
-
   return {
     getWarga,
     addWarga,
@@ -77,6 +77,6 @@ export const useMasterWarga = () => {
     updateWarga,
     updateStatusWarga,
     deleteWarga,
-    downloadTemplateImport
+    downloadTemplateImport,
   }
 }

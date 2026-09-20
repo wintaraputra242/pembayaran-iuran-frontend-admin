@@ -18,11 +18,12 @@ export const useApi = () => {
 
     onRequestError({ error }) {
       if (
-        error.message?.includes('Failed to fetch') ||
-        error.message?.includes('NetworkError') ||
-        error.message?.includes('fetch')
+        error.message?.includes('Failed to fetch')
+        || error.message?.includes('NetworkError')
+        || error.message?.includes('fetch')
       ) {
         uiStore.showError('Coba cek internet Anda.', 'Tidak Ada Internet')
+
         return
       }
 
@@ -41,22 +42,20 @@ export const useApi = () => {
           router.push('/login')
         }
 
-        throw {
+        throw Object.assign(new Error(data?.message || 'Terjadi kesalahan'), {
           status,
-          message: data?.message || 'Terjadi kesalahan',
           errors: data?.errors || null,
           raw: response,
-        }
+        })
       }
 
       uiStore.showError(data?.errors ?? data?.message, 'Gagal')
 
-      throw {
+      throw Object.assign(new Error(data?.message || 'Terjadi kesalahan'), {
         status,
-        message: data?.message || 'Terjadi kesalahan',
         errors: data?.errors || null,
         raw: response,
-      }
+      })
     },
   })
 

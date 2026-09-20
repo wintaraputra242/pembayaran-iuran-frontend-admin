@@ -57,15 +57,15 @@ const handleCloseShowHistoryPaymentWarga = () => {
 
 async function deleteItem() {
   isLoadingConfirm.value = true
-  await new Promise(res => setTimeout(res, 1000))
+  await new Promise(resolve => setTimeout(resolve, 1000))
   isLoadingConfirm.value = false
   showConfirmation.value = false
 }
 
 const handleDeleteData = (item: Pembayaran) => {
   confirmOptions.title = 'Hapus Data?'
-  confirmOptions.message =
-    'Apakah Anda yakin ingin menghapus data ini? Tindakan ini tidak dapat dibatalkan.'
+  confirmOptions.message
+    = 'Apakah Anda yakin ingin menghapus data ini? Tindakan ini tidak dapat dibatalkan.'
   confirmOptions.confirmText = 'Hapus'
   confirmOptions.cancelText = 'Batal'
   confirmOptions.confirmColor = 'error'
@@ -77,8 +77,8 @@ const handleDeleteData = (item: Pembayaran) => {
 
 const handleResetAllAnggota = () => {
   confirmOptions.title = 'Reset Semua Anggota?'
-  confirmOptions.message =
-    'Apakah Anda yakin ingin me-reset semua anggota? Tindakan ini tidak dapat dibatalkan.'
+  confirmOptions.message
+    = 'Apakah Anda yakin ingin me-reset semua anggota? Tindakan ini tidak dapat dibatalkan.'
   confirmOptions.confirmText = 'Reset'
   confirmOptions.cancelText = 'Batal'
   confirmOptions.confirmColor = 'error'
@@ -100,7 +100,7 @@ const handleHistoryPayment = (item: Pembayaran) => {
   pembayaranStore.itemSelected = item
   itemSelected.value = item
 
-  router.push('/pembayaran/riwayat/' + item.warga.nik)
+  router.push(`/pembayaran/riwayat/${item.warga.nik}`)
 }
 
 const handleShowBuktiBayarHistoryPayment = () => {
@@ -110,13 +110,11 @@ const handleShowBuktiBayarHistoryPayment = () => {
 }
 
 const handleShowNoPayment = () => {
-
   // showNoPaymentList.value = true
   router.push('/pembayaran/cek-belum-bayar')
 }
 
 const handleShowNoValidation = () => {
-
   // showNoPaymentList.value = true
   router.push('/pembayaran/cek-belum-validasi')
 }
@@ -134,13 +132,11 @@ const handleSendNotif = (type?: string) => {
 
 watch(showSuccessConfirm, val => {
   if (!val) {
-    if (fromDialog.value === 'history') {
+    if (fromDialog.value === 'history')
       showHistoryPayment.value = true
-    }
 
-    if (fromDialog.value === 'no-payment') {
+    if (fromDialog.value === 'no-payment')
       showNoPaymentList.value = true
-    }
 
     fromDialog.value = ''
   }
@@ -172,10 +168,12 @@ const handleFilter = (filters: {
       if (Array.isArray(value) && value[0] && value[1]) {
         pembayaranStore.setFilter('start_date', formatDateToYMD(value[0] as any))
         pembayaranStore.setFilter('end_date', formatDateToYMD(value[1] as any))
-      } else {
+      }
+      else {
         pembayaranStore.setFilter('start_date', '')
         pembayaranStore.setFilter('end_date', '')
       }
+
       return
     }
 
@@ -190,18 +188,19 @@ const handleFilter = (filters: {
       status_bayar: 'status_bayar',
     }
 
-    if (mapping[key]) {
+    if (mapping[key])
       pembayaranStore.setFilter(mapping[key], value as string ?? '')
-    }
   })
 
   const nonNullFilters: any[] = []
 
-  Object.values(filters).forEach((val) => {
-    if (val) nonNullFilters.push(val)
+  Object.values(filters).forEach(val => {
+    if (val)
+      nonNullFilters.push(val)
   })
 
-  if (nonNullFilters.length === 0) pembayaranStore.resetFilter()
+  if (nonNullFilters.length === 0)
+    pembayaranStore.resetFilter()
 
   // panggil fetch setelah set semua filter
   pembayaranStore.fetchPembayaran({ limit: limit.value, page: page.value })
@@ -268,16 +267,16 @@ const applyPembayaranIdFilterFromQuery = async (pembayaranId: string) => {
 
 watch(
   () => route.query.pembayaran_id,
-  (newVal) => {
-    if (newVal) {
+  newVal => {
+    if (newVal)
       applyPembayaranIdFilterFromQuery(newVal as string)
-    }
   },
-  { immediate: true }
+  { immediate: true },
 )
 
 const handleConfirmApprove = async () => {
-  if (!itemSelected.value) return
+  if (!itemSelected.value)
+    return
   isLoadingConfirm.value = true
 
   try {
@@ -289,6 +288,7 @@ const handleConfirmApprove = async () => {
       pembayaranStore.pembayaran[index] = {
         ...pembayaranStore.pembayaran[index],
         status_bayar: 'approved',
+
         // Kalau backend approve juga set tanggal_bayar/processed_by, sesuaikan di sini juga
         // tanggal_bayar: new Date().toISOString(),
       }
@@ -297,7 +297,8 @@ const handleConfirmApprove = async () => {
     showConfirmationApprove.value = false
     showSuccessConfirm.value = true
     successMessage.value = `Pembayaran dari ${itemSelected.value.warga.nama_warga} berhasil disetujui.`
-  } finally {
+  }
+  finally {
     isLoadingConfirm.value = false
   }
 }
@@ -340,7 +341,8 @@ const handleReject = (item: Pembayaran) => {
 }
 
 const handleConfirmReject = async () => {
-  if (!itemSelected.value || !rejectReason.value) return
+  if (!itemSelected.value || !rejectReason.value)
+    return
   isLoadingValidasi.value = true
 
   try {
@@ -359,39 +361,42 @@ const handleConfirmReject = async () => {
     showRejectDialog.value = false
     showSuccessConfirm.value = true
     successMessage.value = `Pembayaran dari ${itemSelected.value.warga.nama_warga} berhasil ditolak.`
-  } finally {
+  }
+  finally {
     isLoadingValidasi.value = false
   }
 }
 
 onActivated(() => {
   const pembayaranIdFromQuery = route.query.pembayaran_id as string | undefined
-  if (pembayaranIdFromQuery) {
+  if (pembayaranIdFromQuery)
     applyPembayaranIdFilterFromQuery(pembayaranIdFromQuery)
-  }
 })
 
 onMounted(async () => {
   const authStore = useAuthStore()
-  if (!authStore.token) return
+  if (!authStore.token)
+    return
 
   // Kalau pembayaran_id ada di query, biarkan watcher immediate di atas
   // yang menangani — supaya logic tidak dobel di sini.
-  if (route.query.pembayaran_id) return
+  if (route.query.pembayaran_id)
+    return
 
   if (pembayaranStore.needsReload) {
     pembayaranStore.needsReload = false
     pembayaranStore.pembayaran = []
     await pembayaranStore.fetchPembayaran({ limit: limit.value, page: 1 })
     page.value = 1
+
     return
   }
 
-  if (pembayaranStore.page) page.value = pembayaranStore.page
+  if (pembayaranStore.page)
+    page.value = pembayaranStore.page
 
-  if (pembayaranStore.page === 0) {
+  if (pembayaranStore.page === 0)
     await pembayaranStore.fetchPembayaran({ limit: limit.value, page: page.value })
-  }
 
   handleGetDropdownRegu()
 })
@@ -403,8 +408,9 @@ const goToCreatePembayaran = () => {
 
 onBeforeRouteLeave(() => {
   const authStore = useAuthStore()
-  if (!authStore.token) return
-  pembayaranStore.needsReload = true  // ✅ set flag saja
+  if (!authStore.token)
+    return
+  pembayaranStore.needsReload = true // ✅ set flag saja
 })
 </script>
 
@@ -418,73 +424,147 @@ onBeforeRouteLeave(() => {
     <VRow class="match-height">
       <VCol cols="12">
         <div>
-          <FormFilterPembayaran :regu-options="dropdownStore.reguForDropdown"
-            :loading-regu-options="dropdownStore.loading.reguForDropdown" :initial-filters="initialFiltersForForm"
-            @show-form-data="goToCreatePembayaran" @filter="handleFilter" @reload="handleReload"
-            @reset-all-anggota="handleResetAllAnggota" @show-no-payment="handleShowNoPayment"
-            @show-no-validation="handleShowNoValidation" />
+          <FormFilterPembayaran
+            :regu-options="dropdownStore.reguForDropdown"
+            :loading-regu-options="dropdownStore.loading.reguForDropdown"
+            :initial-filters="initialFiltersForForm"
+            @show-form-data="goToCreatePembayaran"
+            @filter="handleFilter"
+            @reload="handleReload"
+            @reset-all-anggota="handleResetAllAnggota"
+            @show-no-payment="handleShowNoPayment"
+            @show-no-validation="handleShowNoValidation"
+          />
         </div>
       </VCol>
 
       <VCol cols="12">
-        <DataTablePembayaran :data="pembayaranStore.pembayaran" :meta="pembayaranStore.meta"
-          :loading="pembayaranStore.loading" :has-more="pembayaranStore.hasMore" :has-filter="pembayaranStore.hasFilter"
-          @delete="handleDeleteData" @show-anggota="handleShowAnggota" @show-bukti-bayar="handleShowBuktiBayar"
-          @show-history-payment="handleHistoryPayment" @send-notif="handleSendNotif" @load-more="handleLoadMore"
-          @show-rejection-reason="handleShowRejectionReason" @cancel="pembayaranStore.openCancelDialog"
-          @approved="handleApprove" @reject="handleReject" @change-page="handleChangePage"
-          @change-limit="handleChangeLimit" />
+        <DataTablePembayaran
+          :data="pembayaranStore.pembayaran"
+          :meta="pembayaranStore.meta"
+          :loading="pembayaranStore.loading"
+          :has-more="pembayaranStore.hasMore"
+          :has-filter="pembayaranStore.hasFilter"
+          @delete="handleDeleteData"
+          @show-anggota="handleShowAnggota"
+          @show-bukti-bayar="handleShowBuktiBayar"
+          @show-history-payment="handleHistoryPayment"
+          @send-notif="handleSendNotif"
+          @load-more="handleLoadMore"
+          @show-rejection-reason="handleShowRejectionReason"
+          @cancel="pembayaranStore.openCancelDialog"
+          @approved="handleApprove"
+          @reject="handleReject"
+          @change-page="handleChangePage"
+          @change-limit="handleChangeLimit"
+        />
       </VCol>
     </VRow>
 
-    <DialogFormDataPembayaran :is-show="showFormData" :is-edit="isEdit" :item="itemSelected"
-      @close="handleCloseFormData" />
+    <DialogFormDataPembayaran
+      :is-show="showFormData"
+      :is-edit="isEdit"
+      :item="itemSelected"
+      @close="handleCloseFormData"
+    />
 
-    <ConfirmDialog v-model="showConfirmation" :title="confirmOptions.title" :message="confirmOptions.message"
-      :confirm-text="confirmOptions.confirmText" :cancel-text="confirmOptions.cancelText"
-      :confirm-color="confirmOptions.confirmColor" :confirm-icon="confirmOptions.confirmIcon"
-      :loading="isLoadingConfirm" @confirm="deleteItem" />
+    <ConfirmDialog
+      v-model="showConfirmation"
+      :title="confirmOptions.title"
+      :message="confirmOptions.message"
+      :confirm-text="confirmOptions.confirmText"
+      :cancel-text="confirmOptions.cancelText"
+      :confirm-color="confirmOptions.confirmColor"
+      :confirm-icon="confirmOptions.confirmIcon"
+      :loading="isLoadingConfirm"
+      @confirm="deleteItem"
+    />
 
-    <PaymentProofImageDialog v-model="showPaymentProof" :judul-iuran="itemSelected?.informasi_iuran.judul_iuran"
+    <PaymentProofImageDialog
+      v-model="showPaymentProof"
+      :judul-iuran="itemSelected?.informasi_iuran.judul_iuran"
       :nama-warga="itemSelected?.warga.nama_warga"
-      :src="config.public.backendUrl + '/storage/' + itemSelected?.bukti_pembayaran"
-      :item="(itemSelected as Pembayaran)" />
+      :src="`${config.public.backendUrl}/storage/${itemSelected?.bukti_pembayaran}`"
+      :item="itemSelected as Pembayaran"
+    />
 
-    <DialogHistoryPaymentWargaPembayaran :is-show="showHistoryPayment" @close="handleCloseShowHistoryPaymentWarga"
-      @show-bukti-bayar="handleShowBuktiBayarHistoryPayment" @send-notif="handleSendNotif" />
+    <DialogHistoryPaymentWargaPembayaran
+      :is-show="showHistoryPayment"
+      @close="handleCloseShowHistoryPaymentWarga"
+      @show-bukti-bayar="handleShowBuktiBayarHistoryPayment"
+      @send-notif="handleSendNotif"
+    />
 
-    <DialogNoPaymentPembayaran :is-show="showNoPaymentList" @close="showNoPaymentList = false"
-      @send-notif="handleSendNotif" />
+    <DialogNoPaymentPembayaran
+      :is-show="showNoPaymentList"
+      @close="showNoPaymentList = false"
+      @send-notif="handleSendNotif"
+    />
 
-    <SuccessDialog v-model="showSuccessConfirm" :title="successTitle" :message="successMessage" />
+    <SuccessDialog
+      v-model="showSuccessConfirm"
+      :title="successTitle"
+      :message="successMessage"
+    />
 
-    <DialogShowNote v-model="showRejectionReason" :item="itemSelected" />
+    <DialogShowNote
+      v-model="showRejectionReason"
+      :item="itemSelected"
+    />
 
-    <ConfirmDialog v-model="showConfirmationApprove" :title="confirmOptionsAprrove.title"
-      :message="confirmOptionsAprrove.message" :confirm-text="confirmOptionsAprrove.confirmText"
-      :cancel-text="confirmOptionsAprrove.cancelText" :confirm-color="confirmOptionsAprrove.confirmColor"
-      :confirm-icon="confirmOptionsAprrove.confirmIcon" :loading="isLoadingConfirm" @confirm="handleConfirmApprove" />
+    <ConfirmDialog
+      v-model="showConfirmationApprove"
+      :title="confirmOptionsAprrove.title"
+      :message="confirmOptionsAprrove.message"
+      :confirm-text="confirmOptionsAprrove.confirmText"
+      :cancel-text="confirmOptionsAprrove.cancelText"
+      :confirm-color="confirmOptionsAprrove.confirmColor"
+      :confirm-icon="confirmOptionsAprrove.confirmIcon"
+      :loading="isLoadingConfirm"
+      @confirm="handleConfirmApprove"
+    />
 
     <!-- Dialog Reject -->
-    <VDialog v-model="showRejectDialog" max-width="450">
+    <VDialog
+      v-model="showRejectDialog"
+      max-width="450"
+    >
       <VCard>
         <VCardItem>
-          <VCardTitle class="mb-1">Tolak Pembayaran</VCardTitle>
+          <VCardTitle class="mb-1">
+            Tolak Pembayaran
+          </VCardTitle>
           <p class="text-body-2 text-medium-emphasis mb-4">
             Pembayaran iuran dari warga atas nama
             <strong>{{ itemSelected?.warga.nama_warga }}</strong>
           </p>
 
-          <VTextarea v-model="rejectReason" label="Alasan Penolakan" placeholder="Masukkan alasan penolakan..." rows="3"
-            auto-grow />
+          <VTextarea
+            v-model="rejectReason"
+            label="Alasan Penolakan"
+            placeholder="Masukkan alasan penolakan..."
+            rows="3"
+            auto-grow
+          />
 
           <div class="d-flex gap-2 justify-end mt-4">
-            <VBtn variant="text" @click="showRejectDialog = false">
+            <VBtn
+              variant="text"
+              @click="showRejectDialog = false"
+            >
               Batal
             </VBtn>
-            <VBtn color="error" variant="flat" :loading="isLoadingValidasi" :disabled="!rejectReason"
-              @click="handleConfirmReject">
-              <VIcon icon="ri-close-line" class="me-1" />
+            <VBtn
+              color="error"
+              variant="flat"
+              :loading="isLoadingValidasi"
+              :disabled="!rejectReason"
+              @click="handleConfirmReject"
+            >
+              <VIcon
+                icon="ri-close-line"
+                class="me-1"
+              />
               Tolak Pembayaran
             </VBtn>
           </div>
@@ -493,10 +573,16 @@ onBeforeRouteLeave(() => {
     </VDialog>
 
     <!-- Dialog Batalkan Pembayaran -->
-    <VDialog v-model="pembayaranStore.cancelDialog" max-width="480">
+    <VDialog
+      v-model="pembayaranStore.cancelDialog"
+      max-width="480"
+    >
       <VCard rounded="lg">
         <VCardTitle class="pa-4 d-flex align-center gap-2">
-          <VIcon icon="ri-close-circle-line" color="error" />
+          <VIcon
+            icon="ri-close-circle-line"
+            color="error"
+          />
           Batalkan Pembayaran
         </VCardTitle>
         <VDivider />
@@ -506,25 +592,41 @@ onBeforeRouteLeave(() => {
             <strong>{{ pembayaranStore.itemToCancel?.warga?.nama_warga }}</strong>.
             Tindakan ini tidak dapat dibatalkan.
           </p>
-          <VTextarea v-model="pembayaranStore.cancelReason" label="Alasan Pembatalan"
-            placeholder="Masukkan alasan pembatalan..." variant="outlined" auto-grow />
+          <VTextarea
+            v-model="pembayaranStore.cancelReason"
+            label="Alasan Pembatalan"
+            placeholder="Masukkan alasan pembatalan..."
+            variant="outlined"
+            auto-grow
+          />
         </VCardText>
         <VDivider />
         <VCardText class="pa-4">
           <div class="d-flex justify-end gap-2">
-            <VBtn variant="tonal" color="secondary" :disabled="pembayaranStore.isLoadingCancel"
-              @click="pembayaranStore.closeCancelDialog">
+            <VBtn
+              variant="tonal"
+              color="secondary"
+              :disabled="pembayaranStore.isLoadingCancel"
+              @click="pembayaranStore.closeCancelDialog"
+            >
               Batal
             </VBtn>
-            <VBtn variant="flat" color="error" :loading="pembayaranStore.isLoadingCancel"
-              :disabled="!pembayaranStore.cancelReason.trim()" @click="pembayaranStore.submitCancel">
-              <VIcon icon="ri-close-circle-line" class="me-1" />
+            <VBtn
+              variant="flat"
+              color="error"
+              :loading="pembayaranStore.isLoadingCancel"
+              :disabled="!pembayaranStore.cancelReason.trim()"
+              @click="pembayaranStore.submitCancel"
+            >
+              <VIcon
+                icon="ri-close-circle-line"
+                class="me-1"
+              />
               Batalkan Pembayaran
             </VBtn>
           </div>
         </VCardText>
       </VCard>
     </VDialog>
-
   </div>
 </template>

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-
 const ui = useUiStore()
 
 // import { useAuth } from '@/composables/api/useAuth';
@@ -12,7 +11,7 @@ const ui = useUiStore()
 // const getUser = async () => {
 //   const ok = await fetchUser()
 //   // console.log(authStore.role);
-  
+
 //   // if (ok) {
 //   //   router.push(authStore.role === 'admin' ? '/' : '/create-pembayaran')
 //   // }
@@ -30,7 +29,12 @@ const ui = useUiStore()
   >
     <slot />
   </div>
-  <ErrorDialog :show="ui.errorDialog.show" :title="ui.errorDialog.title" :message="ui.errorDialog.message" @close="ui.closeError" />
+  <ErrorDialog
+    :show="ui.errorDialog.show"
+    :title="ui.errorDialog.title"
+    :message="ui.errorDialog.message"
+    @close="ui.closeError"
+  />
 </template>
 
 <style>

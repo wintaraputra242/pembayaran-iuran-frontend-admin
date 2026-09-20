@@ -1,5 +1,5 @@
-import { useQrSetting, type QrSetting } from '@/composables/api/useQrSetting'
 import { defineStore } from 'pinia'
+import { type QrSetting, useQrSetting } from '@/composables/api/useQrSetting'
 
 export const useQrSettingStore = defineStore('qrSetting', {
   state: () => ({
@@ -15,23 +15,23 @@ export const useQrSettingStore = defineStore('qrSetting', {
   }),
 
   getters: {
-    hasData: (state) => state.qrSettings.length > 0,
+    hasData: state => state.qrSettings.length > 0,
 
-    hasFilter: (state) =>
+    hasFilter: state =>
       !!(state.filters.keyword || state.filters.status),
 
     // List yang sudah difilter di sisi client
-    filteredQrSettings: (state) => {
+    filteredQrSettings: state => {
       return state.qrSettings.filter(item => {
-        const matchKeyword =
-          !state.filters.keyword ||
-          item.nama_rekening?.toLowerCase().includes(state.filters.keyword.toLowerCase()) ||
-          item.nomor_rekening?.toLowerCase().includes(state.filters.keyword.toLowerCase()) ||
-          item.keterangan?.toLowerCase().includes(state.filters.keyword.toLowerCase())
+        const matchKeyword
+          = !state.filters.keyword
+          || item.nama_rekening?.toLowerCase().includes(state.filters.keyword.toLowerCase())
+          || item.nomor_rekening?.toLowerCase().includes(state.filters.keyword.toLowerCase())
+          || item.keterangan?.toLowerCase().includes(state.filters.keyword.toLowerCase())
 
-        const matchStatus =
-          !state.filters.status ||
-          (state.filters.status === 'aktif' ? item.is_active : !item.is_active)
+        const matchStatus
+          = !state.filters.status
+          || (state.filters.status === 'aktif' ? item.is_active : !item.is_active)
 
         return matchKeyword && matchStatus
       })
@@ -41,18 +41,22 @@ export const useQrSettingStore = defineStore('qrSetting', {
   actions: {
     async fetchQrSettings() {
       const api = useQrSetting()
+
       this.loading = true
 
       try {
         const res = await api.getQrSettings()
+
         this.qrSettings = res.data
-      } finally {
+      }
+      finally {
         this.loading = false
       }
     },
 
     async storeQrSetting(payload: FormData) {
       const api = useQrSetting()
+
       this.loadingAction = true
 
       try {
@@ -64,13 +68,15 @@ export const useQrSettingStore = defineStore('qrSetting', {
         this.qrSettings.unshift(res.data)
 
         return res
-      } finally {
+      }
+      finally {
         this.loadingAction = false
       }
     },
 
     async setActive(id: number) {
       const api = useQrSetting()
+
       this.loadingAction = true
 
       try {
@@ -80,19 +86,22 @@ export const useQrSettingStore = defineStore('qrSetting', {
         this.qrSettings = this.qrSettings
           .map(q => ({ ...q, is_active: q.id === id }))
           .sort((a, b) => Number(b.is_active) - Number(a.is_active))
-      } finally {
+      }
+      finally {
         this.loadingAction = false
       }
     },
 
     async destroyQrSetting(id: number) {
       const api = useQrSetting()
+
       this.loadingAction = true
 
       try {
         await api.destroyQrSetting(id)
         this.qrSettings = this.qrSettings.filter(q => q.id !== id)
-      } finally {
+      }
+      finally {
         this.loadingAction = false
       }
     },

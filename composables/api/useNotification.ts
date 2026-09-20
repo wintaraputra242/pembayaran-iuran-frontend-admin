@@ -1,10 +1,9 @@
+import { useApi } from './useApi'
 import type {
   GetNotificationsResponse,
   GetUnreadNotificationCountResponse,
   MarkNotificationReadResponse,
 } from '@/types/api/notification'
-
-import { useApi } from './useApi'
 
 export const useNotification = () => {
   const { api } = useApi()

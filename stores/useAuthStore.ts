@@ -1,5 +1,5 @@
-import type { AuthUser } from "@/types/api/auth"
-import { defineStore } from "pinia"
+import { defineStore } from 'pinia'
+import type { AuthUser } from '@/types/api/auth'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -9,8 +9,8 @@ export const useAuthStore = defineStore('auth', {
   }),
 
   getters: {
-    isLoggedIn: (state) => !!state.user,
-    role: (state) => state.user?.role,
+    isLoggedIn: state => !!state.user,
+    role: state => state.user?.role,
   },
 
   actions: {
@@ -21,18 +21,16 @@ export const useAuthStore = defineStore('auth', {
 
     setToken(token: string) {
       this.token = token
-      if (import.meta.client) {
+      if (import.meta.client)
         localStorage.setItem('auth_token', token)
-      }
     },
 
     logout() {
       this.user = null
       this.token = ''
       this.fetched = true
-      if (import.meta.client) {
+      if (import.meta.client)
         localStorage.removeItem('auth_token')
-      }
     },
   },
 })

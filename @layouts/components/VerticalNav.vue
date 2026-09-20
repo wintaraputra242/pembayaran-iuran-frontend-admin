@@ -1,8 +1,8 @@
 <script lang="ts" setup>
-import logo from '@images/logo.svg?raw'
 import type { Component } from 'vue'
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 import { useDisplay } from 'vuetify'
+import logo from '@images/logo.svg?raw'
 
 interface Props {
   tag?: string | Component
@@ -60,6 +60,7 @@ const updateNavLeft = () => {
   const wrapper = document.querySelector('.layout-wrapper')
   if (wrapper) {
     const rect = wrapper.getBoundingClientRect()
+
     document.documentElement.style.setProperty('--nav-left', `${rect.left}px`)
   }
 }
@@ -72,21 +73,31 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('resize', updateNavLeft)
 })
-
 </script>
 
 <template>
-  <Component :is="props.tag" ref="refNav" data-allow-mismatch class="layout-vertical-nav"
-    :style="{ insetInlineStart: navLeft }" :class="[{
+  <Component
+    :is="props.tag"
+    ref="refNav"
+    data-allow-mismatch
+    class="layout-vertical-nav"
+    :style="{ insetInlineStart: navLeft }"
+    :class="[{
       'visible': isOverlayNavActive,
       'scrolled': isVerticalNavScrolled,
       'overlay-nav': mdAndDown,
-    }]">
-
+    }]"
+  >
     <div class="nav-header">
       <slot name="nav-header">
-        <NuxtLink to="/" class="app-logo app-title-wrapper">
-          <div class="d-flex" v-html="logo" />
+        <NuxtLink
+          to="/"
+          class="app-logo app-title-wrapper"
+        >
+          <div
+            class="d-flex"
+            v-html="logo"
+          />
 
           <h1 class="font-weight-medium leading-normal text-xl text-uppercase">
             Materio
@@ -97,9 +108,16 @@ onUnmounted(() => {
     <slot name="before-nav-items">
       <div class="vertical-nav-items-shadow" />
     </slot>
-    <slot name="nav-items" :update-is-vertical-nav-scrolled="updateIsVerticalNavScrolled">
-      <PerfectScrollbar tag="ul" class="nav-items" :options="{ wheelPropagation: false }"
-        @ps-scroll-y="handleNavScroll">
+    <slot
+      name="nav-items"
+      :update-is-vertical-nav-scrolled="updateIsVerticalNavScrolled"
+    >
+      <PerfectScrollbar
+        tag="ul"
+        class="nav-items"
+        :options="{ wheelPropagation: false }"
+        @ps-scroll-y="handleNavScroll"
+      >
         <slot />
       </PerfectScrollbar>
     </slot>
@@ -186,7 +204,6 @@ onUnmounted(() => {
 
   .nav-items {
     block-size: 100%;
-
 
   }
 

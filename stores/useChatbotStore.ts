@@ -1,5 +1,5 @@
-import { useChatbot } from '@/composables/api/useChatbot'
 import { defineStore } from 'pinia'
+import { useChatbot } from '@/composables/api/useChatbot'
 
 interface ChatMessage {
   id: number
@@ -55,24 +55,31 @@ export const useChatbotStore = defineStore('chatbot', {
 
       try {
         const res = await chatbot.sendMessage(message)
+
         this.addMessage('bot', res.message, res.data)
-      } catch {
+      }
+      catch {
         this.addMessage('bot', 'Maaf, terjadi kesalahan. Silakan coba lagi.')
-      } finally {
+      }
+      finally {
         this.loading = false
       }
     },
 
     async fetchSuggestedQuestions() {
-      if (this.suggestedQuestions.length > 0) return
+      if (this.suggestedQuestions.length > 0)
+        return
 
       const chatbot = useChatbot()
+
       this.loadingSuggestions = true
 
       try {
         const res = await chatbot.getSuggestedQuestions()
+
         this.suggestedQuestions = res.data
-      } finally {
+      }
+      finally {
         this.loadingSuggestions = false
       }
     },
