@@ -1,10 +1,4 @@
 <script lang="ts" setup>
-const emit = defineEmits<{
-  (e: 'filter', item: { keyword: string; status_keaktifan: null | string }): void
-  (e: 'reload'): void
-  (e: 'showFormData'): void
-}>()
-
 const props = withDefaults(defineProps<{
   initialKeyword?: string
   initialStatusKeaktifan?: string | null
@@ -13,14 +7,22 @@ const props = withDefaults(defineProps<{
   initialStatusKeaktifan: null,
 })
 
+const emit = defineEmits<{
+  (e: 'filter', item: { keyword: string; status_keaktifan: null | string }): void
+  (e: 'reload'): void
+  (e: 'showFormData'): void
+}>()
+
 const filters = reactive({
   keyword: props.initialKeyword ?? '',
   status_keaktifan: props.initialStatusKeaktifan ?? null,
 })
 
-watch(() => props.initialKeyword, (val) => { filters.keyword = val ?? '' })
-watch(() => props.initialStatusKeaktifan, (val) => {
-  console.log(val);
+watch(() => props.initialKeyword, val => {
+  filters.keyword = val ?? ''
+})
+watch(() => props.initialStatusKeaktifan, val => {
+  console.log(val)
   filters.status_keaktifan = val ?? null
 })
 
@@ -44,24 +46,56 @@ const handleReload = () => {
   <VCard>
     <VCardItem>
       <VRow align="center">
-        <VCol cols="12" sm="5">
-          <VTextField v-model="filters.keyword" placeholder="Cari warga" prepend-inner-icon="ri-search-2-line"
-            hide-details clearable />
+        <VCol
+          cols="12"
+          sm="5"
+        >
+          <VTextField
+            v-model="filters.keyword"
+            placeholder="Cari warga"
+            prepend-inner-icon="ri-search-2-line"
+            hide-details
+            clearable
+          />
         </VCol>
-        <VCol cols="12" sm="4">
-          <VSelect v-model="filters.status_keaktifan" placeholder="Semua Status" item-title="label" item-value="value"
-            hide-details clearable :items="[
+        <VCol
+          cols="12"
+          sm="4"
+        >
+          <VSelect
+            v-model="filters.status_keaktifan"
+            placeholder="Semua Status"
+            item-title="label"
+            item-value="value"
+            hide-details
+            clearable
+            :items="[
               { label: 'Aktif', value: 'aktif' },
               { label: 'Tidak Aktif', value: 'tidak_aktif' },
-            ]" />
+            ]"
+          />
         </VCol>
-        <VCol cols="12" sm="3">
+        <VCol
+          cols="12"
+          sm="3"
+        >
           <div class="d-flex gap-2 align-center">
-            <IconBtn variant="flat" color="primary" @click="handleReload">
+            <IconBtn
+              variant="flat"
+              color="primary"
+              @click="handleReload"
+            >
               <VIcon icon="ri-restart-line" />
-              <VTooltip activator="parent">Reset Filter</VTooltip>
+              <VTooltip activator="parent">
+                Reset Filter
+              </VTooltip>
             </IconBtn>
-            <VBtn variant="flat" color="success" prepend-icon="ri-add-large-line" @click="emit('showFormData')">
+            <VBtn
+              variant="flat"
+              color="success"
+              prepend-icon="ri-add-large-line"
+              @click="emit('showFormData')"
+            >
               Tambah Data
             </VBtn>
           </div>

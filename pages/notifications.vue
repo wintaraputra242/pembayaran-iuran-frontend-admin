@@ -21,23 +21,31 @@ const loadNotifications = async (reset = false) => {
 }
 
 const loadMore = async () => {
-  if (!notificationStore.hasMore || notificationStore.loading) return
+  if (!notificationStore.hasMore || notificationStore.loading)
+    return
   page.value++
   await loadNotifications()
 }
 
 // Fix bug sentinel
 const setupObserver = () => {
-  if (!sentinel.value) return
+  if (!sentinel.value)
+    return
   observer?.disconnect()
   observer = new IntersectionObserver(
-    ([entry]) => { if (entry.isIntersecting) loadMore() },
-    { rootMargin: '100px' }
+    ([entry]) => {
+      if (entry.isIntersecting)
+        loadMore()
+    },
+    { rootMargin: '100px' },
   )
   observer.observe(sentinel.value)
 }
 
-watch(sentinel, (el) => { if (el) setupObserver() })
+watch(sentinel, el => {
+  if (el)
+    setupObserver()
+})
 watch(() => notificationStore.hasMore, () => setupObserver())
 onUnmounted(() => observer?.disconnect())
 
@@ -86,11 +94,13 @@ const handleAction = (notif: any) => {
     if (data.pembayaran_id) {
       selectedPembayaranId.value = data.pembayaran_id
       showDetailPembayaran.value = true
+
       return
     }
 
     // Selain itu (misalnya notif tipe lain), tetap ke riwayat seperti sebelumnya
     router.push('/my-activity')
+
     return
   }
 
@@ -100,25 +110,26 @@ const handleAction = (notif: any) => {
       path: '/pembayaran',
       query: { pembayaran_id: data.pembayaran_id },
     })
+
     return
   }
 
-  if (notif.type === 'pengingat' || notif.type === 'pengingat_iuran') {
+  if (notif.type === 'pengingat' || notif.type === 'pengingat_iuran')
     router.push('/pembayaran/cek-belum-bayar')
-  } else {
+  else
     router.push('/pembayaran')
-  }
 }
 
 const getActionLabel = (notif: any) => {
   const data = getNotifData(notif)
 
-  if (isKetuaRegu.value) {
+  if (isKetuaRegu.value)
     return data.pembayaran_id ? 'Lihat Pembayaran' : 'Lihat Riwayat'
-  }
 
-  if (data.pembayaran_id) return 'Lihat Pembayaran'
-  if (notif.type === 'pengingat' || notif.type === 'pengingat_iuran') return 'Lihat Belum Bayar'
+  if (data.pembayaran_id)
+    return 'Lihat Pembayaran'
+  if (notif.type === 'pengingat' || notif.type === 'pengingat_iuran')
+    return 'Lihat Belum Bayar'
 
   return 'Lihat Pembayaran'
 }
@@ -126,12 +137,13 @@ const getActionLabel = (notif: any) => {
 const getActionIcon = (notif: any) => {
   const data = getNotifData(notif)
 
-  if (isKetuaRegu.value) {
+  if (isKetuaRegu.value)
     return data.pembayaran_id ? 'ri-cash-line' : 'ri-history-line'
-  }
 
-  if (data.pembayaran_id) return 'ri-cash-line'
-  if (notif.type === 'pengingat' || notif.type === 'pengingat_iuran') return 'ri-user-unfollow-line'
+  if (data.pembayaran_id)
+    return 'ri-cash-line'
+  if (notif.type === 'pengingat' || notif.type === 'pengingat_iuran')
+    return 'ri-user-unfollow-line'
 
   return 'ri-cash-line'
 }
@@ -142,9 +154,20 @@ const getActionIcon = (notif: any) => {
     <!-- Header -->
     <div class="mb-4">
       <!-- Tombol back hanya untuk ketua regu -->
-      <div v-if="isKetuaRegu" class="mb-3">
-        <VBtn class="px-0 py-1" variant="text" size="large" to="/create-pembayaran">
-          <VIcon icon="ri-arrow-left-s-line" class="me-2" />
+      <div
+        v-if="isKetuaRegu"
+        class="mb-3"
+      >
+        <VBtn
+          class="px-0 py-1"
+          variant="text"
+          size="large"
+          to="/create-pembayaran"
+        >
+          <VIcon
+            icon="ri-arrow-left-s-line"
+            class="me-2"
+          />
           Kembali
         </VBtn>
       </div>
@@ -159,51 +182,98 @@ const getActionIcon = (notif: any) => {
     </div>
 
     <!-- Loading awal -->
-    <div v-if="notificationStore.loading && !notificationStore.hasData" class="d-flex justify-center py-6">
-      <VProgressCircular size="26" indeterminate />
+    <div
+      v-if="notificationStore.loading && !notificationStore.hasData"
+      class="d-flex justify-center py-6"
+    >
+      <VProgressCircular
+        size="26"
+        indeterminate
+      />
     </div>
 
     <!-- Empty -->
-    <VAlert v-else-if="!notificationStore.hasData && !notificationStore.loading" type="info" variant="tonal"
-      rounded="lg">
+    <VAlert
+      v-else-if="!notificationStore.hasData && !notificationStore.loading"
+      type="info"
+      variant="tonal"
+      rounded="lg"
+    >
       {{ isKetuaRegu ? 'Belum ada pembayaran dari anggota regu Anda.' : 'Tidak ada notifikasi' }}
     </VAlert>
 
     <!-- List -->
     <VRow v-if="notificationStore.hasData">
-      <VCol v-for="notif in notificationStore.notifications" :key="notif.id" cols="12" sm="6">
-        <VCard rounded="lg" border="sm" height="100%" class="d-flex flex-column" :style="!notif.is_read
-          ? 'border-left: 3px solid rgb(var(--v-theme-primary)) !important;'
-          : ''">
+      <VCol
+        v-for="notif in notificationStore.notifications"
+        :key="notif.id"
+        cols="12"
+        sm="6"
+      >
+        <VCard
+          rounded="lg"
+          border="sm"
+          height="100%"
+          class="d-flex flex-column"
+          :style="!notif.is_read
+            ? 'border-left: 3px solid rgb(var(--v-theme-primary)) !important;'
+            : ''"
+        >
           <VCardItem class="pa-4 flex-grow-1">
             <div class="d-flex align-start gap-3">
               <!-- Icon -->
-              <VAvatar :color="getNotifConfig(notif.type).color" variant="tonal" size="40" class="flex-shrink-0">
-                <VIcon size="20">{{ getNotifConfig(notif.type).icon }}</VIcon>
+              <VAvatar
+                :color="getNotifConfig(notif.type).color"
+                variant="tonal"
+                size="40"
+                class="flex-shrink-0"
+              >
+                <VIcon size="20">
+                  {{ getNotifConfig(notif.type).icon }}
+                </VIcon>
               </VAvatar>
 
               <div class="flex-grow-1 min-width-0">
                 <!-- Type chip & badge baru -->
                 <div class="d-flex align-center justify-space-between mb-1 flex-wrap gap-1">
-                  <VChip :color="getNotifConfig(notif.type).color" size="x-small" variant="tonal">
+                  <VChip
+                    :color="getNotifConfig(notif.type).color"
+                    size="x-small"
+                    variant="tonal"
+                  >
                     {{ getNotifConfig(notif.type).label }}
                   </VChip>
-                  <VChip v-if="!notif.is_read" color="primary" size="x-small" variant="flat">
+                  <VChip
+                    v-if="!notif.is_read"
+                    color="primary"
+                    size="x-small"
+                    variant="flat"
+                  >
                     Baru
                   </VChip>
                 </div>
 
                 <!-- Title -->
-                <p class="font-weight-semibold text-body-2 mb-1 mt-1">{{ notif.title }}</p>
+                <p class="font-weight-semibold text-body-2 mb-1 mt-1">
+                  {{ notif.title }}
+                </p>
 
                 <!-- Message -->
-                <p class="text-caption text-medium-emphasis ma-0" style="line-height: 1.5;">
+                <p
+                  class="text-caption text-medium-emphasis ma-0"
+                  style="line-height: 1.5;"
+                >
                   {{ notif.message }}
                 </p>
 
                 <!-- Tanggal -->
                 <p class="text-caption text-medium-emphasis ma-0 mt-2">
-                  <VIcon size="12" class="me-1">ri-time-line</VIcon>
+                  <VIcon
+                    size="12"
+                    class="me-1"
+                  >
+                    ri-time-line
+                  </VIcon>
                   {{ formatDateID(notif.created_at) }}
                 </p>
               </div>
@@ -212,8 +282,14 @@ const getActionIcon = (notif: any) => {
 
           <!-- Action -->
           <VCardActions class="px-4 pb-3 pt-0">
-            <VBtn :color="getNotifConfig(notif.type).color" variant="flat" size="small" block
-              :prepend-icon="getActionIcon(notif)" @click="handleAction(notif)">
+            <VBtn
+              :color="getNotifConfig(notif.type).color"
+              variant="flat"
+              size="small"
+              block
+              :prepend-icon="getActionIcon(notif)"
+              @click="handleAction(notif)"
+            >
               {{ getActionLabel(notif) }}
             </VBtn>
           </VCardActions>
@@ -222,15 +298,28 @@ const getActionIcon = (notif: any) => {
     </VRow>
 
     <!-- Sentinel -->
-    <div ref="sentinel" style="height: 1px;" />
+    <div
+      ref="sentinel"
+      style="height: 1px;"
+    />
 
     <!-- Load more loading -->
-    <div v-if="notificationStore.hasMore && notificationStore.loading" class="d-flex justify-center py-4">
-      <VProgressCircular indeterminate size="26" />
+    <div
+      v-if="notificationStore.hasMore && notificationStore.loading"
+      class="d-flex justify-center py-4"
+    >
+      <VProgressCircular
+        indeterminate
+        size="26"
+      />
     </div>
 
     <!-- Dialog detail pembayaran — khusus ketua regu -->
-    <DialogDetailPembayaran v-if="isKetuaRegu" :is-show="showDetailPembayaran" :pembayaran-id="selectedPembayaranId"
-      @close="handleCloseDetailPembayaran" />
+    <DialogDetailPembayaran
+      v-if="isKetuaRegu"
+      :is-show="showDetailPembayaran"
+      :pembayaran-id="selectedPembayaranId"
+      @close="handleCloseDetailPembayaran"
+    />
   </div>
 </template>

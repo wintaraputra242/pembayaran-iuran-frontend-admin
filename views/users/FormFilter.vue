@@ -1,18 +1,18 @@
 <script lang="ts" setup>
+const props = withDefaults(defineProps<{
+  loadingDownload: boolean
+  initialKeyword?: string // ← tambah
+  initialRole?: string | null // ← tambah
+}>(), {
+  initialKeyword: '',
+  initialRole: null,
+})
+
 const emit = defineEmits<{
   (e: 'filter', item: { keyword: string; role: null | string }): void
   (e: 'reload'): void
   (e: 'downloadCredentials'): void
 }>()
-
-const props = withDefaults(defineProps<{
-  loadingDownload: boolean
-  initialKeyword?: string  // ← tambah
-  initialRole?: string | null  // ← tambah
-}>(), {
-  initialKeyword: '',
-  initialRole: null,
-})
 
 const filters = reactive({
   keyword: props.initialKeyword ?? '',
@@ -20,8 +20,12 @@ const filters = reactive({
 })
 
 // Sync saat props berubah (misalnya setelah reload)
-watch(() => props.initialKeyword, (val) => { filters.keyword = val ?? '' })
-watch(() => props.initialRole, (val) => { filters.role = val ?? null })
+watch(() => props.initialKeyword, val => {
+  filters.keyword = val ?? ''
+})
+watch(() => props.initialRole, val => {
+  filters.role = val ?? null
+})
 
 // Auto-submit saat keyword berubah
 watch(() => filters.keyword, useDebounceFn(() => {
@@ -49,28 +53,62 @@ const handleJumpFromUsers = () => {
   <VCard>
     <VCardItem>
       <VRow align="center">
-        <VCol cols="12" sm="6">
-          <VTextField v-model="filters.keyword" placeholder="Cari pengguna" prepend-inner-icon="ri-search-2-line"
-            hide-details clearable />
+        <VCol
+          cols="12"
+          sm="6"
+        >
+          <VTextField
+            v-model="filters.keyword"
+            placeholder="Cari pengguna"
+            prepend-inner-icon="ri-search-2-line"
+            hide-details
+            clearable
+          />
         </VCol>
-        <VCol cols="12" sm="6">
-          <VSelect v-model="filters.role" placeholder="Semua Role" item-title="label" item-value="value" hide-details
-            clearable :items="[
+        <VCol
+          cols="12"
+          sm="6"
+        >
+          <VSelect
+            v-model="filters.role"
+            placeholder="Semua Role"
+            item-title="label"
+            item-value="value"
+            hide-details
+            clearable
+            :items="[
               { label: 'Admin', value: 'admin' },
               { label: 'Ketua Regu', value: 'ketua_regu' },
-            ]" />
+            ]"
+          />
         </VCol>
         <VCol cols="12">
           <div class="d-flex flex-wrap gap-2">
-            <IconBtn variant="flat" color="primary" @click="handleReload">
+            <IconBtn
+              variant="flat"
+              color="primary"
+              @click="handleReload"
+            >
               <VIcon icon="ri-restart-line" />
-              <VTooltip activator="parent">Reset Filter</VTooltip>
+              <VTooltip activator="parent">
+                Reset Filter
+              </VTooltip>
             </IconBtn>
-            <VBtn variant="flat" color="info" :loading="props.loadingDownload" prepend-icon="ri-printer-line"
-              @click="emit('downloadCredentials')">
+            <VBtn
+              variant="flat"
+              color="info"
+              :loading="props.loadingDownload"
+              prepend-icon="ri-printer-line"
+              @click="emit('downloadCredentials')"
+            >
               Cetak Akun Regu
             </VBtn>
-            <VBtn variant="flat" color="success" prepend-icon="ri-add-large-line" @click="handleJumpFromUsers">
+            <VBtn
+              variant="flat"
+              color="success"
+              prepend-icon="ri-add-large-line"
+              @click="handleJumpFromUsers"
+            >
               Tambah Akun Ketua Regu
             </VBtn>
           </div>

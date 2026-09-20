@@ -6,7 +6,6 @@ import DialogFormDataQris from '@/views/qris/DialogFormData.vue'
 import DialogQrisImagePreview from '@/views/qris/DialogQrisImagePreview.vue'
 import FormFilterQris from '@/views/qris/FormFilter.vue'
 
-
 export interface QrisPayload {
   nama: string
   keterangan: string
@@ -77,10 +76,13 @@ const handleCloseFormData = () => {
 // =====================
 const handleSubmit = async (payload: QrisPayload) => {
   const formData = new FormData()
+
   formData.append('nama_rekening', payload.nama_rekening)
   formData.append('nomor_rekening', payload.nomor_rekening)
-  if (payload.keterangan) formData.append('keterangan', payload.keterangan)
-  if (payload.gambar) formData.append('image', payload.gambar)
+  if (payload.keterangan)
+    formData.append('keterangan', payload.keterangan)
+  if (payload.gambar)
+    formData.append('image', payload.gambar)
 
   await qrSettingStore.storeQrSetting(formData)
   isFetchSuccess.value = true
@@ -102,7 +104,8 @@ const handleShowConfirmDelData = (item: QrSetting) => {
 }
 
 const handleDelete = async () => {
-  if (!itemSelected.value) return
+  if (!itemSelected.value)
+    return
   await qrSettingStore.destroyQrSetting(itemSelected.value.id)
   showConfirmation.value = false
 }
@@ -122,18 +125,18 @@ const handleShowConfirmUpdateStatus = (item: QrSetting) => {
   confirmOptions.confirmText = isActivating ? 'Aktifkan' : 'Nonaktifkan'
   confirmOptions.title = isActivating ? 'Aktifkan QRIS' : 'Nonaktifkan QRIS'
 
-  if (isActivating && hasActive) {
+  if (isActivating && hasActive)
     confirmOptions.message = `QRIS "${item.nama_rekening ?? item.id}" akan diaktifkan. QRIS yang sebelumnya aktif akan otomatis dinonaktifkan. Lanjutkan?`
-  } else {
+  else
     confirmOptions.message = `Apakah Anda yakin ingin ${isActivating ? 'mengaktifkan' : 'menonaktifkan'} QRIS "${item.nama_rekening ?? item.id}"?`
-  }
 
   confirmOptions.action = handleSetActive
   showConfirmation.value = true
 }
 
 const handleSetActive = async () => {
-  if (!itemSelected.value) return
+  if (!itemSelected.value)
+    return
   await qrSettingStore.setActive(itemSelected.value.id)
   showConfirmation.value = false
 }
@@ -159,29 +162,58 @@ const handleShowImage = (item: QrSetting) => {
     <VRow class="match-height">
       <!-- Filter -->
       <VCol cols="12">
-        <FormFilterQris :initial-keyword="qrSettingStore.filters?.keyword ?? ''"
+        <FormFilterQris
+          :initial-keyword="qrSettingStore.filters?.keyword ?? ''"
           :initial-status="qrSettingStore.filters?.status ? qrSettingStore.filters?.status : null"
-          @filter="handleFilter" @reload="handleReload" @show-form-data="handleShowFormData" />
+          @filter="handleFilter"
+          @reload="handleReload"
+          @show-form-data="handleShowFormData"
+        />
       </VCol>
 
       <!-- Tabel -->
       <VCol cols="12">
-        <DataTableQris :data="qrSettingStore.filteredQrSettings" :meta="null" :loading="qrSettingStore.loading"
-          :has-more="false" :has-filter="qrSettingStore.hasFilter" @show-image="handleShowImage"
-          @delete="handleShowConfirmDelData" @update-status="handleShowConfirmUpdateStatus" @load-more="() => { }" />
+        <DataTableQris
+          :data="qrSettingStore.filteredQrSettings"
+          :meta="null"
+          :loading="qrSettingStore.loading"
+          :has-more="false"
+          :has-filter="qrSettingStore.hasFilter"
+          @show-image="handleShowImage"
+          @delete="handleShowConfirmDelData"
+          @update-status="handleShowConfirmUpdateStatus"
+          @load-more="() => { }"
+        />
       </VCol>
     </VRow>
 
     <!-- Dialog Form Tambah -->
-    <DialogFormDataQris :is-show="showFormData" :is-edit="false" :is-fetch-success="isFetchSuccess" :item="null"
-      :loading="qrSettingStore.loadingAction" @close="handleCloseFormData" @submit="handleSubmit" />
+    <DialogFormDataQris
+      :is-show="showFormData"
+      :is-edit="false"
+      :is-fetch-success="isFetchSuccess"
+      :item="null"
+      :loading="qrSettingStore.loadingAction"
+      @close="handleCloseFormData"
+      @submit="handleSubmit"
+    />
 
     <!-- Konfirmasi Delete / Set Active -->
-    <ConfirmDialog v-model="showConfirmation" :title="confirmOptions.title" :message="confirmOptions.message"
-      :confirm-text="confirmOptions.confirmText" :cancel-text="confirmOptions.cancelText"
-      :confirm-color="confirmOptions.confirmColor" :confirm-icon="confirmOptions.confirmIcon"
-      :loading="qrSettingStore.loadingAction" @confirm="confirmOptions.action" />
+    <ConfirmDialog
+      v-model="showConfirmation"
+      :title="confirmOptions.title"
+      :message="confirmOptions.message"
+      :confirm-text="confirmOptions.confirmText"
+      :cancel-text="confirmOptions.cancelText"
+      :confirm-color="confirmOptions.confirmColor"
+      :confirm-icon="confirmOptions.confirmIcon"
+      :loading="qrSettingStore.loadingAction"
+      @confirm="confirmOptions.action"
+    />
 
-    <DialogQrisImagePreview v-model="showPreviewQris" :item="itemSelected" />
+    <DialogQrisImagePreview
+      v-model="showPreviewQris"
+      :item="itemSelected"
+    />
   </div>
 </template>

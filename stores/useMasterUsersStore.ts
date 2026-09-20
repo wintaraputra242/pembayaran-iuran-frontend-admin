@@ -1,7 +1,7 @@
+import { defineStore } from 'pinia'
 import { useMasterUsers } from '@/composables/api/useMasterUsers'
 import type { MasterUser } from '@/types/api/master-users'
 import type { PaginationMeta } from '@/types/common'
-import { defineStore } from 'pinia'
 
 export const useMasterUsersStore = defineStore('master-users', {
   state: () => ({
@@ -19,15 +19,16 @@ export const useMasterUsersStore = defineStore('master-users', {
   }),
 
   getters: {
-    hasData: (state) => state.users.length > 0,
-    hasMore: (state) => state.meta?.total !== state.users.length,
-    hasFilter: (state) => !!state.filters.keyword || !!state.filters.role,
+    hasData: state => state.users.length > 0,
+    hasMore: state => state.meta?.total !== state.users.length,
+    hasFilter: state => !!state.filters.keyword || !!state.filters.role,
   },
 
   actions: {
     async fetchUsers(params?: {
       page?: number
       limit?: number
+
       // true = ganti seluruh data dengan hasil fetch ini (dipakai pagination desktop).
       // false/undefined = tambahkan ke data yang sudah ada (dipakai infinite-scroll mobile).
       replace?: boolean
@@ -38,6 +39,7 @@ export const useMasterUsersStore = defineStore('master-users', {
       }
 
       const api = useMasterUsers()
+
       this.loading = true
 
       try {
@@ -49,17 +51,20 @@ export const useMasterUsersStore = defineStore('master-users', {
 
         this.users = params?.replace ? res.data.data : [...this.users, ...res.data.data]
 
-        const { data, ...meta } = res.data
+        const { data: _, ...meta } = res.data
+
         this.meta = meta
 
         this.page = params?.page as number
-      } finally {
+      }
+      finally {
         this.loading = false
       }
     },
 
     async downloadCredential() {
       const api = useMasterUsers()
+
       this.loadingDownload = true
 
       try {
@@ -67,11 +72,13 @@ export const useMasterUsersStore = defineStore('master-users', {
 
         const url = URL.createObjectURL(blob)
         const a = document.createElement('a')
+
         a.href = url
         a.download = 'credential-regu.pdf'
         a.click()
         URL.revokeObjectURL(url)
-      } finally {
+      }
+      finally {
         this.loadingDownload = false
       }
     },

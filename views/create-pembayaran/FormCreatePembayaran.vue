@@ -1,9 +1,9 @@
 <script lang="ts" setup>
-import { useApi } from '@/composables/api/useApi';
-import type { WargaPembayaranForDropdown } from '@/types/api/dropdown';
-import type { MasterInformasiIuran } from '@/types/api/master-informasi-iuran';
+import { useApi } from '@/composables/api/useApi'
+import type { WargaPembayaranForDropdown } from '@/types/api/dropdown'
+import type { MasterInformasiIuran } from '@/types/api/master-informasi-iuran'
 
-type PaidMonthData = {
+interface PaidMonthData {
   bulan_approved: number[]
   bulan_pending: number[]
   bulan_rejected: number[]
@@ -11,19 +11,6 @@ type PaidMonthData = {
   bulan_mulai_bayar: number
   bulan_maksimal_bayar: number
 }
-
-const emit = defineEmits<{
-  (e: 'submit', params: {
-    total: number | null
-    warga: string | null
-    bulan: { month: number, year: number }[] | null
-    metode_bayar: string | null
-    bukti_pembayaran: File | null
-  }): void
-  (e: 'reload'): void
-  (e: 'close'): void
-  (e: 'getMonthPaid', item: string | null): void
-}>()
 
 const props = withDefaults(defineProps<{
   item: MasterInformasiIuran | null
@@ -41,6 +28,19 @@ const props = withDefaults(defineProps<{
   monthPaidWarga: null,
 })
 
+const emit = defineEmits<{
+  (e: 'submit', params: {
+    total: number | null
+    warga: string | null
+    bulan: { month: number; year: number }[] | null
+    metode_bayar: string | null
+    bukti_pembayaran: File | null
+  }): void
+  (e: 'reload'): void
+  (e: 'close'): void
+  (e: 'getMonthPaid', item: string | null): void
+}>()
+
 const pembayaranStore = usePembayaranStore()
 
 const form = ref()
@@ -54,20 +54,33 @@ const defaultParams = {
   bulan: [] as number[],
   metode_bayar: null as string | null,
 }
+
 const params = reactive({ ...defaultParams })
 
 const rules = {
   warga: (v: string) => !!v || 'Warga yang Membayar wajib diisi',
   bulan: (v: string | string[]) => {
-    if (!v || v.length === 0) return 'Bulan Pembayaran wajib diisi'
+    if (!v || v.length === 0)
+      return 'Bulan Pembayaran wajib diisi'
+
     return true
   },
   metode_bayar: (v: string) => !!v || 'Metode Pembayaran wajib dipilih',
 }
 
 const months = [
-  'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-  'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
+  'Januari',
+  'Februari',
+  'Maret',
+  'April',
+  'Mei',
+  'Juni',
+  'Juli',
+  'Agustus',
+  'September',
+  'Oktober',
+  'November',
+  'Desember',
 ]
 
 const bulanMulaiBayar = computed(() => props.monthPaidWarga?.bulan_mulai_bayar ?? 1)
@@ -111,18 +124,19 @@ const paidMonthsFlat = computed(() => [
   ...(props.monthPaidWarga?.bulan_pending ?? []).map(Number),
 ])
 
-watch(() => params.warga, (newVal) => {
+watch(() => params.warga, newVal => {
   if (!newVal) {
     params.metode_bayar = null
     params.bulan = []
     buktiPembayaran.value = null
     isErrorSubmit.value = false
-  } else {
+  }
+  else {
     params.bulan = []
   }
 })
 
-watch(() => props.isClearForm, (newVal) => {
+watch(() => props.isClearForm, newVal => {
   if (newVal) {
     form.value.reset()
     buktiPembayaran.value = null
@@ -138,33 +152,36 @@ const total = ref(0)
 const adminFee = ref(0)
 
 const setTotalFee = (bulan?: number[] | null, pricePerMonth?: number) => {
-  if (!pricePerMonth) return
+  if (!pricePerMonth)
+    return
 
   adminFee.value = 0
 
   if (props.item?.jenis_iuran === 'kematian') {
     total.value = pricePerMonth
+
     return
   }
 
   const jumlahBulan = bulan && bulan.length > 0 ? bulan.length : 1
+
   total.value = jumlahBulan * pricePerMonth + adminFee.value
 }
 
-watch(() => props.item, (newVal) => setTotalFee(null, newVal?.jumlah_iuran), { immediate: true })
-watch(() => params.bulan, (newVal) => {
+watch(() => props.item, newVal => setTotalFee(null, newVal?.jumlah_iuran), { immediate: true })
+watch(() => params.bulan, newVal => {
   setTotalFee(newVal, props.item?.jumlah_iuran)
 })
 watch(() => params.metode_bayar, () => setTotalFee(params.bulan, props.item?.jumlah_iuran))
 
 const handleMetodeChange = async (val: string | null) => {
-  if (val === 'qris') {
+  if (val === 'qris')
     await pembayaranStore.fetchQris()
-  }
 }
 
 const handleWarga = () => {
-  if (!params.warga) return
+  if (!params.warga)
+    return
   emit('getMonthPaid', params.warga)
 }
 
@@ -174,7 +191,8 @@ const handleSubmit = async () => {
 
   const { valid } = await form.value.validate()
 
-  if (!valid || !buktiPembayaran.value) return
+  if (!valid || !buktiPembayaran.value)
+    return
 
   // Hanya kirim bulan yang baru dipilih user, bukan yang sudah paid
   const bulanBaru = params.bulan.filter(m => !paidMonthsFlat.value.includes(m))
@@ -194,17 +212,20 @@ const handleDownloadQris = async () => {
   downloadingQris.value = true
   try {
     const { api } = useApi()
+
     const blob = await api<Blob>(`/qris/download/${(pembayaranStore.qrisData as any).id}`, {
       responseType: 'blob',
     })
 
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
+
     a.href = url
     a.download = 'qris.png'
     a.click()
     URL.revokeObjectURL(url)
-  } finally {
+  }
+  finally {
     downloadingQris.value = false
   }
 }
@@ -216,52 +237,118 @@ const isKetuaRegu = computed(() => authStore.user?.role === 'ketua_regu')
 <template>
   <VCard>
     <VCardItem>
-      <VForm ref="form" @submit.prevent="handleSubmit">
-        <VRow align="center" class="pt-1">
-
+      <VForm
+        ref="form"
+        @submit.prevent="handleSubmit"
+      >
+        <VRow
+          align="center"
+          class="pt-1"
+        >
           <!-- Pilih Warga -->
           <VCol cols="12">
-            <VAutocomplete v-model="params.warga" placeholder="Pilih warga" clearable item-title="nama_warga"
-              item-value="nik" :loading="isLoadingDropdownWarga"
-              :items="(dropdownWargaOptions as WargaPembayaranForDropdown[])" :rules="[rules.warga]"
-              @update:model-value="handleWarga">
+            <VAutocomplete
+              v-model="params.warga"
+              placeholder="Pilih warga"
+              clearable
+              item-title="nama_warga"
+              item-value="nik"
+              :loading="isLoadingDropdownWarga"
+              :items="dropdownWargaOptions as WargaPembayaranForDropdown[]"
+              :rules="[rules.warga]"
+              @update:model-value="handleWarga"
+            >
               <template #item="{ props: itemProps, item }">
-                <VListItem v-bind="itemProps" :subtitle="isKetuaRegu ? undefined : (item.raw.regu || '-')" />
+                <VListItem
+                  v-bind="itemProps"
+                  :subtitle="isKetuaRegu ? undefined : (item.raw.regu || '-')"
+                />
               </template>
             </VAutocomplete>
           </VCol>
 
           <!-- Pilih Bulan -->
-          <VCol v-if="item?.jenis_iuran === 'bulanan'" cols="12">
-            <VSelect v-model="params.bulan" label="Pilih Bulan" placeholder="Pilih bulan yang ingin dibayar"
-              :items="monthsWithStatus" item-title="label" item-value="value" multiple chips closable-chips
-              :loading="loadingMonthPaidWarga" :disabled="!params.warga || loadingMonthPaidWarga" :rules="[rules.bulan]"
+          <VCol
+            v-if="item?.jenis_iuran === 'bulanan'"
+            cols="12"
+          >
+            <VSelect
+              v-model="params.bulan"
+              label="Pilih Bulan"
+              placeholder="Pilih bulan yang ingin dibayar"
+              :items="monthsWithStatus"
+              item-title="label"
+              item-value="value"
+              multiple
+              chips
+              closable-chips
+              :loading="loadingMonthPaidWarga"
+              :disabled="!params.warga || loadingMonthPaidWarga"
+              :rules="[rules.bulan]"
               @update:model-value="(val: number[]) => {
                 params.bulan = val.filter(m => !paidMonthsFlat.includes(m))
-              }">
+              }"
+            >
               <template #item="{ props, item }">
-                <VListItem v-bind="props" :disabled="item.raw.isDisabled" :title="item.raw.label">
+                <VListItem
+                  v-bind="props"
+                  :disabled="item.raw.isDisabled"
+                  :title="item.raw.label"
+                >
                   <template #prepend="{ isSelected }">
-                    <VCheckboxBtn :model-value="isSelected || item.raw.isPaid" :disabled="item.raw.isDisabled"
-                      :color="item.raw.isApproved ? 'success' : item.raw.isPending ? 'info' : 'primary'" />
+                    <VCheckboxBtn
+                      :model-value="isSelected || item.raw.isPaid"
+                      :disabled="item.raw.isDisabled"
+                      :color="item.raw.isApproved ? 'success' : item.raw.isPending ? 'info' : 'primary'"
+                    />
                   </template>
                   <template #append>
-                    <VChip v-if="item.raw.isApproved" color="success" size="x-small" label>
+                    <VChip
+                      v-if="item.raw.isApproved"
+                      color="success"
+                      size="x-small"
+                      label
+                    >
                       Lunas
                     </VChip>
-                    <VChip v-else-if="item.raw.isPending" color="info" size="x-small" label>
+                    <VChip
+                      v-else-if="item.raw.isPending"
+                      color="info"
+                      size="x-small"
+                      label
+                    >
                       Menunggu Validasi
                     </VChip>
-                    <VChip v-else-if="item.raw.isRejected" color="error" size="x-small" label>
+                    <VChip
+                      v-else-if="item.raw.isRejected"
+                      color="error"
+                      size="x-small"
+                      label
+                    >
                       Ditolak — Bisa Bayar Ulang
                     </VChip>
-                    <VChip v-else-if="item.raw.isCancelled" color="warning" size="x-small" label>
+                    <VChip
+                      v-else-if="item.raw.isCancelled"
+                      color="warning"
+                      size="x-small"
+                      label
+                    >
                       Dibatalkan — Bisa Bayar Ulang
                     </VChip>
-                    <VChip v-else-if="item.raw.isSebelumBergabung" color="secondary" size="x-small" label>
+                    <VChip
+                      v-else-if="item.raw.isSebelumBergabung"
+                      color="secondary"
+                      size="x-small"
+                      label
+                    >
                       Sebelum Bergabung
                     </VChip>
-                    <VChip v-else-if="item.raw.isSesudahNonaktif" color="secondary" size="x-small" label>
+                    <VChip
+                      v-else-if="item.raw.isSesudahNonaktif"
+                      color="secondary"
+                      size="x-small"
+                      label
+                    >
                       Sudah Tidak Aktif
                     </VChip>
                   </template>
@@ -269,54 +356,91 @@ const isKetuaRegu = computed(() => authStore.user?.role === 'ketua_regu')
               </template>
 
               <template #chip="{ item, props }">
-                <VChip v-bind="props" :color="item.raw.isApproved ? 'success' : item.raw.isPending ? 'info' : 'primary'"
-                  :closable="!item.raw.isDisabled">
+                <VChip
+                  v-bind="props"
+                  :color="item.raw.isApproved ? 'success' : item.raw.isPending ? 'info' : 'primary'"
+                  :closable="!item.raw.isDisabled"
+                >
                   {{ item.raw.label }}
                 </VChip>
               </template>
             </VSelect>
           </VCol>
 
-
           <!-- Metode Bayar -->
           <VCol cols="12">
-            <p class="text-body-2 font-weight-medium mb-2">Metode Pembayaran</p>
+            <p class="text-body-2 font-weight-medium mb-2">
+              Metode Pembayaran
+            </p>
             <VRow>
-              <VCol v-for="metode in [
-                { label: 'Tunai', value: 'tunai', icon: 'ri-cash-line' },
-                { label: 'Transfer', value: 'transfer', icon: 'ri-bank-line' },
-                { label: 'QRIS', value: 'qris', icon: 'ri-qr-code-line' },
-              ]" :key="metode.value" cols="4">
-                <VCard :variant="params.metode_bayar === metode.value ? 'tonal' : 'outlined'"
+              <VCol
+                v-for="metode in [
+                  { label: 'Tunai', value: 'tunai', icon: 'ri-cash-line' },
+                  { label: 'Transfer', value: 'transfer', icon: 'ri-bank-line' },
+                  { label: 'QRIS', value: 'qris', icon: 'ri-qr-code-line' },
+                ]"
+                :key="metode.value"
+                cols="4"
+              >
+                <VCard
+                  :variant="params.metode_bayar === metode.value ? 'tonal' : 'outlined'"
                   :color="params.metode_bayar === metode.value ? 'primary' : undefined"
-                  class="cursor-pointer pa-3 d-flex flex-column align-center" :class="{ 'opacity-50': !params.warga }"
+                  class="cursor-pointer pa-3 d-flex flex-column align-center"
+                  :class="{ 'opacity-50': !params.warga }"
                   @click="() => {
                     if (!params.warga) return
                     params.metode_bayar = metode.value
                     handleMetodeChange(metode.value)
-                  }">
-                  <VIcon size="26" class="mb-1">{{ metode.icon }}</VIcon>
+                  }"
+                >
+                  <VIcon
+                    size="26"
+                    class="mb-1"
+                  >
+                    {{ metode.icon }}
+                  </VIcon>
                   <span class="text-caption font-weight-medium">{{ metode.label }}</span>
                 </VCard>
               </VCol>
             </VRow>
-            <p v-if="isErrorSubmit && !params.metode_bayar" class="text-error text-caption mt-1 ms-1">
+            <p
+              v-if="isErrorSubmit && !params.metode_bayar"
+              class="text-error text-caption mt-1 ms-1"
+            >
               Metode pembayaran wajib dipilih
             </p>
 
-            <div v-if="params.metode_bayar === 'qris'" class="d-flex justify-end">
-              <VBtn variant="flat" color="primary" size="small" class="mt-3" prepend-icon="ri-qr-code-line"
-                :loading="pembayaranStore.loadingQris" @click="showQrisDialog = true">
+            <div
+              v-if="params.metode_bayar === 'qris'"
+              class="d-flex justify-end"
+            >
+              <VBtn
+                variant="flat"
+                color="primary"
+                size="small"
+                class="mt-3"
+                prepend-icon="ri-qr-code-line"
+                :loading="pembayaranStore.loadingQris"
+                @click="showQrisDialog = true"
+              >
                 Lihat QRIS
               </VBtn>
             </div>
           </VCol>
 
           <!-- Upload Bukti -->
-          <VCol v-if="params.metode_bayar" cols="12">
-            <p class="text-body-2 font-weight-medium mb-2">Bukti Pembayaran</p>
-            <CameraUpload v-model="buktiPembayaran" :is-error-submit="isErrorSubmit"
-              :rules="[v => !!v || 'Bukti pembayaran wajib diupload']" />
+          <VCol
+            v-if="params.metode_bayar"
+            cols="12"
+          >
+            <p class="text-body-2 font-weight-medium mb-2">
+              Bukti Pembayaran
+            </p>
+            <CameraUpload
+              v-model="buktiPembayaran"
+              :is-error-submit="isErrorSubmit"
+              :rules="[v => !!v || 'Bukti pembayaran wajib diupload']"
+            />
           </VCol>
 
           <!-- Ringkasan -->
@@ -327,61 +451,103 @@ const isKetuaRegu = computed(() => authStore.user?.role === 'ketua_regu')
                 Biaya Iuran : <strong>{{ formatRupiah(item?.jumlah_iuran as number) }}</strong>
               </p>
 
-              <p v-if="params.bulan?.length > 0" class="ma-0 text-body-2">
-                {{params.bulan.map(m => months[m - 1]).join(', ')}} ({{ params.bulan.length }} bulan) :
+              <p
+                v-if="params.bulan?.length > 0"
+                class="ma-0 text-body-2"
+              >
+                {{ params.bulan.map(m => months[m - 1]).join(', ') }} ({{ params.bulan.length }} bulan) :
                 <strong>{{ formatRupiah(params.bulan.length * (item?.jumlah_iuran as number)) }}</strong>
               </p>
 
               <div class="d-flex justify-end py-2">
                 <VDivider style="max-width: 150px" />
               </div>
-              <h3 class="ma-0">Total : {{ formatRupiah(total) }}</h3>
+              <h3 class="ma-0">
+                Total : {{ formatRupiah(total) }}
+              </h3>
             </div>
             <VDivider class="mt-3" />
           </VCol>
 
           <!-- Submit -->
           <VCol cols="12">
-            <VBtn variant="flat" block color="success" type="submit" :loading="loadingSubmit">
+            <VBtn
+              variant="flat"
+              block
+              color="success"
+              type="submit"
+              :loading="loadingSubmit"
+            >
               Tambah Pembayaran
             </VBtn>
           </VCol>
-
         </VRow>
       </VForm>
     </VCardItem>
   </VCard>
 
   <!-- Dialog QRIS -->
-  <VDialog v-model="showQrisDialog" max-width="400">
+  <VDialog
+    v-model="showQrisDialog"
+    max-width="400"
+  >
     <VCard>
       <VCardItem>
-        <VCardTitle class="mb-2">Scan QRIS</VCardTitle>
+        <VCardTitle class="mb-2">
+          Scan QRIS
+        </VCardTitle>
 
         <template v-if="pembayaranStore.qrisData">
-          <p v-if="pembayaranStore.qrisData.nama_rekening" class="text-body-2 mb-1">
+          <p
+            v-if="pembayaranStore.qrisData.nama_rekening"
+            class="text-body-2 mb-1"
+          >
             <span class="font-weight-medium">Nama:</span> {{ pembayaranStore.qrisData.nama_rekening }}
           </p>
-          <p v-if="pembayaranStore.qrisData.keterangan" class="text-body-2 text-medium-emphasis mb-3">
+          <p
+            v-if="pembayaranStore.qrisData.keterangan"
+            class="text-body-2 text-medium-emphasis mb-3"
+          >
             {{ pembayaranStore.qrisData.keterangan }}
           </p>
 
-          <VImg :src="pembayaranStore.qrisData.image" alt="QRIS" class="rounded-lg mb-3" cover />
+          <VImg
+            :src="pembayaranStore.qrisData.image"
+            alt="QRIS"
+            class="rounded-lg mb-3"
+            cover
+          />
 
-          <VBtn variant="flat" block color="primary" class="mb-2" :loading="downloadingQris"
-            @click="handleDownloadQris">
-            <VIcon class="me-2">ri-download-line</VIcon>
+          <VBtn
+            variant="flat"
+            block
+            color="primary"
+            class="mb-2"
+            :loading="downloadingQris"
+            @click="handleDownloadQris"
+          >
+            <VIcon class="me-2">
+              ri-download-line
+            </VIcon>
             Download QRIS
           </VBtn>
         </template>
 
         <template v-else>
           <div class="d-flex justify-center align-center py-8">
-            <VProgressCircular indeterminate color="primary" />
+            <VProgressCircular
+              indeterminate
+              color="primary"
+            />
           </div>
         </template>
 
-        <VBtn variant="text" block class="mt-1" @click="showQrisDialog = false">
+        <VBtn
+          variant="text"
+          block
+          class="mt-1"
+          @click="showQrisDialog = false"
+        >
           Tutup & Upload Bukti
         </VBtn>
       </VCardItem>

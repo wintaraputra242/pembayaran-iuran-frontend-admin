@@ -1,5 +1,5 @@
-import type { GetDropdownAnggotaReguResponse, GetWargaForDropdownAddAnggotaResponse, GetWargaForDropdownInformasiIuranResponse, GetWargaForDropdownPembayaranResponse, GetWargaForDropdownReguResponse, GetWargaForDropdownResponse } from '@/types/api/dropdown'
 import { useApi } from './useApi'
+import type { GetDropdownAnggotaReguResponse, GetWargaForDropdownAddAnggotaResponse, GetWargaForDropdownInformasiIuranResponse, GetWargaForDropdownPembayaranResponse, GetWargaForDropdownReguResponse, GetWargaForDropdownResponse } from '@/types/api/dropdown'
 
 export const useDropdown = () => {
   const { api } = useApi()

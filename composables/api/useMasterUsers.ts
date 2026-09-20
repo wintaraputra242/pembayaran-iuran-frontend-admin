@@ -1,5 +1,5 @@
-import type { GetDetailMasterUsersResponse, GetMasterUsersResponse, UpdateUserPayload, UpdateUserResponse } from '@/types/api/master-users'
 import { useApi } from './useApi'
+import type { GetDetailMasterUsersResponse, GetMasterUsersResponse, UpdateUserPayload, UpdateUserResponse } from '@/types/api/master-users'
 
 export const useMasterUsers = () => {
   const { api } = useApi()

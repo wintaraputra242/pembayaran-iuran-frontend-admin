@@ -1,9 +1,9 @@
+import { defineStore } from 'pinia'
 import { useDashboard } from '@/composables/api/useDashboard'
 import type { ActivityLog } from '@/types/api/activity'
 import type { MasterWarga } from '@/types/api/master-warga'
 import type { Notification } from '@/types/api/notification'
 import type { Pembayaran } from '@/types/api/pembayaran'
-import { defineStore } from 'pinia'
 
 export const useDashboardStore = defineStore('dashboard', {
   state: () => ({
@@ -25,15 +25,16 @@ export const useDashboardStore = defineStore('dashboard', {
   }),
 
   getters: {
-    hasNotifications: (state) => state.notifications.length > 0,
-    hasPayments: (state) => state.payments.length > 0,
-    hasUnpaidResidents: (state) => state.unpaidResidents.length > 0,
-    hasActivityLogs: (state) => state.activityLogs.length > 0,
+    hasNotifications: state => state.notifications.length > 0,
+    hasPayments: state => state.payments.length > 0,
+    hasUnpaidResidents: state => state.unpaidResidents.length > 0,
+    hasActivityLogs: state => state.activityLogs.length > 0,
   },
 
   actions: {
     async fetchDashboard(type: 'notifikasi' | 'pembayaran' | 'warga_belum_bayar' | 'activity_log') {
       const api = useDashboard()
+
       this.loading = true
 
       try {
@@ -62,7 +63,8 @@ export const useDashboardStore = defineStore('dashboard', {
             this.activityLogs = res.data.data as ActivityLog[]
             break
         }
-      } finally {
+      }
+      finally {
         this.loading = false
       }
     },

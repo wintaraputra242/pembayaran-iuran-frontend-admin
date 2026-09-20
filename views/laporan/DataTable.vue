@@ -1,13 +1,7 @@
 <script setup lang="ts">
-import type { PaginationMeta } from '@/types/common';
-import eCommerce2 from '@images/eCommerce/2.png';
-import qris from '@images/pages/qris.png';
-
-const emit = defineEmits<{
-  (e: 'showHistoryPayment', item: any): void
-  (e: 'showBuktiBayar', item: any): void
-  (e: 'loadMore'): void
-}>()
+import type { PaginationMeta } from '@/types/common'
+import eCommerce2 from '@images/eCommerce/2.png'
+import qris from '@images/pages/qris.png'
 
 const props = withDefaults(defineProps<{
   data: any[]
@@ -16,6 +10,12 @@ const props = withDefaults(defineProps<{
   hasMore: boolean
   hasFilter: boolean
 }>(), {})
+
+const emit = defineEmits<{
+  (e: 'showHistoryPayment', item: any): void
+  (e: 'showBuktiBayar', item: any): void
+  (e: 'loadMore'): void
+}>()
 
 const headers = [
   { key: 'no', label: 'No.', width: '70px' },
@@ -60,9 +60,14 @@ const bulanMap: Record<number, string> = {
 </script>
 
 <template>
-  <AppDataTable :headers="headers" :items="props.data" :loading="props.loading" :has-more="props.hasMore"
-    :has-filter="props.hasFilter" @loadMore="emit('loadMore')">
-
+  <AppDataTable
+    :headers="headers"
+    :items="props.data"
+    :loading="props.loading"
+    :has-more="props.hasMore"
+    :has-filter="props.hasFilter"
+    @load-more="emit('loadMore')"
+  >
     <template #cell-tanggal_bayar="{ item }">
       {{ formatDateID(item.tanggal_bayar) }}
     </template>
@@ -74,8 +79,17 @@ const bulanMap: Record<number, string> = {
     </template>
 
     <template #cell-bulan_dibayar="{ item }">
-      <div v-if="item.bulan?.length" class="d-flex flex-wrap gap-1">
-        <VChip v-for="b in item.bulan" :key="b" size="x-small" color="primary" variant="tonal">
+      <div
+        v-if="item.bulan?.length"
+        class="d-flex flex-wrap gap-1"
+      >
+        <VChip
+          v-for="b in item.bulan"
+          :key="b"
+          size="x-small"
+          color="primary"
+          variant="tonal"
+        >
           {{ bulanMap[b] }}
         </VChip>
       </div>
@@ -85,9 +99,16 @@ const bulanMap: Record<number, string> = {
 
     <template #cell-metode_bayar="{ item }">
       <div class="d-flex align-center gap-1 text-capitalize">
-        <VIcon v-if="item.metode_bayar !== 'qris'"
-          :icon="item.metode_bayar === 'transfer' ? 'ri-exchange-line' : 'ri-cash-line'" size="20" />
-        <VImg v-if="item.metode_bayar === 'qris'" :src="qris" max-width="20" />
+        <VIcon
+          v-if="item.metode_bayar !== 'qris'"
+          :icon="item.metode_bayar === 'transfer' ? 'ri-exchange-line' : 'ri-cash-line'"
+          size="20"
+        />
+        <VImg
+          v-if="item.metode_bayar === 'qris'"
+          :src="qris"
+          max-width="20"
+        />
         {{ item.metode_bayar }}
       </div>
     </template>
@@ -99,26 +120,38 @@ const bulanMap: Record<number, string> = {
     <!-- Jenis -->
     <template #cell-jenis_iuran="{ item }">
       <div class="text-capitalize">
-        <VChip size="small" :color="item.jenis_iuran === 'bulanan' ? 'info' : 'error'">
+        <VChip
+          size="small"
+          :color="item.jenis_iuran === 'bulanan' ? 'info' : 'error'"
+        >
           {{ item.jenis_iuran }}
         </VChip>
       </div>
     </template>
 
     <template #cell-status_bayar="{ item }">
-      <VChip size="small" :color="statusChipsColor[item.status_bayar] || 'secondary'">
+      <VChip
+        size="small"
+        :color="statusChipsColor[item.status_bayar] || 'secondary'"
+      >
         {{ statusText[item.status_bayar] || item.status_bayar }}
       </VChip>
     </template>
 
     <template #cell-bukti="{ item }">
       <div class="d-flex justify-center">
-        <div v-ripple class="pa-2 rounded-lg cursor-pointer" @click="emit('showBuktiBayar', item)">
-          <VImg :src="item.bukti_pembayaran || eCommerce2" width="50" />
+        <div
+          v-ripple
+          class="pa-2 rounded-lg cursor-pointer"
+          @click="emit('showBuktiBayar', item)"
+        >
+          <VImg
+            :src="item.bukti_pembayaran || eCommerce2"
+            width="50"
+          />
         </div>
       </div>
     </template>
-
   </AppDataTable>
 </template>
 

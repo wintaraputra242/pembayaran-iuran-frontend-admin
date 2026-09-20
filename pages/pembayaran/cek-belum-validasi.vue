@@ -52,7 +52,8 @@ const handleApprove = (item: Pembayaran) => {
 }
 
 const handleConfirmApprove = async () => {
-  if (!itemSelected.value) return
+  if (!itemSelected.value)
+    return
   isLoadingConfirm.value = true
 
   try {
@@ -61,7 +62,8 @@ const handleConfirmApprove = async () => {
     showSuccessConfirm.value = true
     successMessage.value = `Pembayaran dari ${itemSelected.value.warga.nama_warga} berhasil disetujui.`
     await pembayaranStore.fetchPendingPembayaran()
-  } finally {
+  }
+  finally {
     isLoadingConfirm.value = false
   }
 }
@@ -74,7 +76,8 @@ const handleReject = (item: Pembayaran) => {
 }
 
 const handleConfirmReject = async () => {
-  if (!itemSelected.value || !rejectReason.value) return
+  if (!itemSelected.value || !rejectReason.value)
+    return
   isLoadingValidasi.value = true
 
   try {
@@ -83,7 +86,8 @@ const handleConfirmReject = async () => {
     showSuccessConfirm.value = true
     successMessage.value = `Pembayaran dari ${itemSelected.value.warga.nama_warga} berhasil ditolak.`
     await pembayaranStore.fetchPendingPembayaran()
-  } finally {
+  }
+  finally {
     isLoadingValidasi.value = false
   }
 }
@@ -110,19 +114,25 @@ const handleChangeLimit = async (newLimit: number) => {
 
 const handleBack = () => {
   // Cek apakah ada history yang bisa di-back
-  if (window.history.length > 1) {
+  if (window.history.length > 1)
     router.back()
-  } else {
+  else
     router.push('/pembayaran')
-  }
 }
-
 </script>
 
 <template>
   <div>
-    <VBtn class="px-0 py-1 mb-3" variant="text" size="large" @click="handleBack">
-      <VIcon icon="ri-arrow-left-s-line" class="me-2" />
+    <VBtn
+      class="px-0 py-1 mb-3"
+      variant="text"
+      size="large"
+      @click="handleBack"
+    >
+      <VIcon
+        icon="ri-arrow-left-s-line"
+        class="me-2"
+      />
       Kembali
     </VBtn>
 
@@ -135,19 +145,25 @@ const handleBack = () => {
     </div>
 
     <VRow class="match-height">
-
       <!-- Badge total pending -->
       <VCol cols="12">
-        <VAlert v-if="!pembayaranStore.loading && pembayaranStore.pendingPembayaran.length > 0" type="warning"
-          variant="tonal" class="mb-2">
+        <VAlert
+          v-if="!pembayaranStore.loading && pembayaranStore.pendingPembayaran.length > 0"
+          type="warning"
+          variant="tonal"
+          class="mb-2"
+        >
           <template #prepend>
             <VIcon icon="ri-error-warning-line" />
           </template>
           Terdapat <strong>{{ pembayaranStore.meta?.total ?? 0 }}</strong> pembayaran yang menunggu validasi.
         </VAlert>
 
-        <VAlert v-else-if="!pembayaranStore.loading && pembayaranStore.pendingPembayaran.length === 0" type="success"
-          variant="tonal">
+        <VAlert
+          v-else-if="!pembayaranStore.loading && pembayaranStore.pendingPembayaran.length === 0"
+          type="success"
+          variant="tonal"
+        >
           <template #prepend>
             <VIcon icon="ri-checkbox-circle-line" />
           </template>
@@ -157,46 +173,84 @@ const handleBack = () => {
 
       <!-- Table -->
       <VCol cols="12">
-        <DataTable :data="pembayaranStore.pendingPembayaran" :meta="pembayaranStore.meta"
-          :loading="pembayaranStore.loading" :has-more="pembayaranStore.hasMore"
-          @show-bukti-bayar="handleShowBuktiBayar" @approve="handleApprove" @reject="handleReject"
-          @load-more="handleLoadMore" @change-page="handleChangePage" @change-limit="handleChangeLimit" />
+        <DataTable
+          :data="pembayaranStore.pendingPembayaran"
+          :meta="pembayaranStore.meta"
+          :loading="pembayaranStore.loading"
+          :has-more="pembayaranStore.hasMore"
+          @show-bukti-bayar="handleShowBuktiBayar"
+          @approve="handleApprove"
+          @reject="handleReject"
+          @load-more="handleLoadMore"
+          @change-page="handleChangePage"
+          @change-limit="handleChangeLimit"
+        />
       </VCol>
-
     </VRow>
 
     <!-- Dialog Bukti Bayar -->
-    <PaymentProofImageDialog v-model="showPaymentProof" :judul-iuran="itemSelected?.informasi_iuran.judul_iuran"
+    <PaymentProofImageDialog
+      v-model="showPaymentProof"
+      :judul-iuran="itemSelected?.informasi_iuran.judul_iuran"
       :nama-warga="itemSelected?.warga.nama_warga"
-      :src="config.public.backendUrl + '/storage/' + itemSelected?.bukti_pembayaran"
-      :item="(itemSelected as Pembayaran)" />
+      :src="`${config.public.backendUrl}/storage/${itemSelected?.bukti_pembayaran}`"
+      :item="itemSelected as Pembayaran"
+    />
 
     <!-- Dialog Konfirmasi Approve -->
-    <ConfirmDialog v-model="showConfirmation" :title="confirmOptions.title" :message="confirmOptions.message"
-      :confirm-text="confirmOptions.confirmText" :cancel-text="confirmOptions.cancelText"
-      :confirm-color="confirmOptions.confirmColor" :confirm-icon="confirmOptions.confirmIcon"
-      :loading="isLoadingConfirm" @confirm="handleConfirmApprove" />
+    <ConfirmDialog
+      v-model="showConfirmation"
+      :title="confirmOptions.title"
+      :message="confirmOptions.message"
+      :confirm-text="confirmOptions.confirmText"
+      :cancel-text="confirmOptions.cancelText"
+      :confirm-color="confirmOptions.confirmColor"
+      :confirm-icon="confirmOptions.confirmIcon"
+      :loading="isLoadingConfirm"
+      @confirm="handleConfirmApprove"
+    />
 
     <!-- Dialog Reject -->
-    <VDialog v-model="showRejectDialog" max-width="450">
+    <VDialog
+      v-model="showRejectDialog"
+      max-width="450"
+    >
       <VCard>
         <VCardItem>
-          <VCardTitle class="mb-1">Tolak Pembayaran</VCardTitle>
+          <VCardTitle class="mb-1">
+            Tolak Pembayaran
+          </VCardTitle>
           <p class="text-body-2 text-medium-emphasis mb-4">
             Pembayaran iuran dari warga atas nama
             <strong>{{ itemSelected?.warga.nama_warga }}</strong>
           </p>
 
-          <VTextarea v-model="rejectReason" label="Alasan Penolakan" placeholder="Masukkan alasan penolakan..." rows="3"
-            auto-grow />
+          <VTextarea
+            v-model="rejectReason"
+            label="Alasan Penolakan"
+            placeholder="Masukkan alasan penolakan..."
+            rows="3"
+            auto-grow
+          />
 
           <div class="d-flex gap-2 justify-end mt-4">
-            <VBtn variant="text" @click="showRejectDialog = false">
+            <VBtn
+              variant="text"
+              @click="showRejectDialog = false"
+            >
               Batal
             </VBtn>
-            <VBtn color="error" variant="flat" :loading="isLoadingValidasi" :disabled="!rejectReason"
-              @click="handleConfirmReject">
-              <VIcon icon="ri-close-line" class="me-1" />
+            <VBtn
+              color="error"
+              variant="flat"
+              :loading="isLoadingValidasi"
+              :disabled="!rejectReason"
+              @click="handleConfirmReject"
+            >
+              <VIcon
+                icon="ri-close-line"
+                class="me-1"
+              />
               Tolak Pembayaran
             </VBtn>
           </div>
@@ -205,7 +259,10 @@ const handleBack = () => {
     </VDialog>
 
     <!-- Success Dialog -->
-    <SuccessDialog v-model="showSuccessConfirm" title="Berhasil" :message="successMessage" />
-
+    <SuccessDialog
+      v-model="showSuccessConfirm"
+      title="Berhasil"
+      :message="successMessage"
+    />
   </div>
 </template>

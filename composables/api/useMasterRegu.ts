@@ -1,5 +1,5 @@
-import type { AddAnggotaPayload, AddAnggotaResponse, CreateReguPayload, CreateReguResponse, DeleteReguResponse, GetAnggotaReguResponse, GetMasterReguResponse, ResetAnggotaAllResponse, ResetAnggotaByReguResponse, ResetAnggotaResponse, SetLeaderAnggotaResponse, UpdateReguResponse, UpdateStatusReguResponse } from '@/types/api/master-regu'
 import { useApi } from './useApi'
+import type { AddAnggotaPayload, AddAnggotaResponse, CreateReguPayload, CreateReguResponse, DeleteReguResponse, GetAnggotaReguResponse, GetMasterReguResponse, ResetAnggotaAllResponse, ResetAnggotaByReguResponse, ResetAnggotaResponse, SetLeaderAnggotaResponse, UpdateReguResponse, UpdateStatusReguResponse } from '@/types/api/master-regu'
 
 export const useMasterRegu = () => {
   const { api } = useApi()

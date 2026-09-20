@@ -1,7 +1,7 @@
+import { defineStore } from 'pinia'
 import { useNotification } from '@/composables/api/useNotification'
 import type { Notification } from '@/types/api/notification'
 import type { PaginationMeta } from '@/types/common'
-import { defineStore } from 'pinia'
 
 export const useNotificationStore = defineStore('notification', {
   state: () => ({
@@ -18,12 +18,12 @@ export const useNotificationStore = defineStore('notification', {
   }),
 
   getters: {
-    hasData: (state) => state.notifications.length > 0,
+    hasData: state => state.notifications.length > 0,
 
-    hasMore: (state) =>
+    hasMore: state =>
       state.meta ? state.notifications.length < state.meta.total : false,
 
-    hasFilter: (state) =>
+    hasFilter: state =>
       !!state.filters.type,
   },
 
@@ -35,13 +35,15 @@ export const useNotificationStore = defineStore('notification', {
       }
 
       const api = useNotification()
+
       this.loading = true
 
       try {
         const newFilter: Record<string, any> = {}
 
         Object.entries(this.filters).forEach(([key, value]) => {
-          if (value) newFilter[key] = value
+          if (value)
+            newFilter[key] = value
         })
 
         const res = await api.getNotifications({
@@ -52,9 +54,11 @@ export const useNotificationStore = defineStore('notification', {
 
         this.notifications = [...this.notifications, ...res.data.data]
 
-        const { data, ...meta } = res.data
+        const { data: _, ...meta } = res.data
+
         this.meta = meta
-      } finally {
+      }
+      finally {
         this.loading = false
       }
     },
@@ -74,9 +78,11 @@ export const useNotificationStore = defineStore('notification', {
 
       const notif = this.notifications.find(n => n.id === id)
 
-      if (notif) notif.is_read = true
+      if (notif)
+        notif.is_read = true
 
-      if (this.unreadCount > 0) this.unreadCount--
+      if (this.unreadCount > 0)
+        this.unreadCount--
     },
 
     async markAllAsRead() {
@@ -94,7 +100,7 @@ export const useNotificationStore = defineStore('notification', {
 
     setFilter(
       key: keyof typeof this.filters,
-      value: string
+      value: string,
     ) {
       this.filters[key] = value
     },

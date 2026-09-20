@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { AddInformasiIuranPayload, MasterInformasiIuran } from '@/types/api/master-informasi-iuran';
-import DataTableInformasiIuran from '@/views/informasi-iuran/DataTable.vue';
-import DialogFormDataInformasiIuran from '@/views/informasi-iuran/DialogFormData.vue';
-import FormFilterInformasiIuran from '@/views/informasi-iuran/FormFilter.vue';
+import type { AddInformasiIuranPayload, MasterInformasiIuran } from '@/types/api/master-informasi-iuran'
+import DataTableInformasiIuran from '@/views/informasi-iuran/DataTable.vue'
+import DialogFormDataInformasiIuran from '@/views/informasi-iuran/DialogFormData.vue'
+import FormFilterInformasiIuran from '@/views/informasi-iuran/FormFilter.vue'
 
 definePageMeta({ onlyAdmin: true })
 
@@ -30,19 +30,6 @@ const handleEditData = async (item: MasterInformasiIuran) => {
 }
 
 const showConfirmation = ref(false)
-const isLoadingConfirm = ref(false)
-
-async function deleteItem() {
-  isLoadingConfirm.value = true
-
-  // contoh request
-  await new Promise(res => setTimeout(res, 1000))
-
-  isLoadingConfirm.value = false
-  showConfirmation.value = false
-
-  // console.log("Item dihapus!")
-}
 
 const confirmOptions = {
   title: '',
@@ -54,44 +41,6 @@ const confirmOptions = {
   action: () => { },
 }
 
-const handleDeleteData = (item: MasterInformasiIuran) => {
-  confirmOptions.title = 'Hapus Data?'
-  confirmOptions.message = 'Apakah Anda yakin ingin menghapus data ini? Tindakan ini tidak dapat dibatalkan.'
-  confirmOptions.confirmText = 'Hapus'
-  confirmOptions.cancelText = 'Batal'
-  confirmOptions.confirmColor = 'error'
-  confirmOptions.confirmIcon = 'ri-delete-bin-line'
-
-  showConfirmation.value = true
-  itemSelected.value = item
-}
-
-const showAnggota = ref(false)
-const isLoadingGetAnggota = ref(false)
-
-const handleShowAnggota = (item: MasterInformasiIuran) => {
-  isLoadingGetAnggota.value = true
-
-  setTimeout(() => {
-    isLoadingGetAnggota.value = false
-  }, 5000)
-
-  showAnggota.value = true
-  itemSelected.value = item
-}
-
-// const handleUpdateStatus = (item: object) => {
-//   confirmOptions.title = 'Nonaktif Warga?'
-//   confirmOptions.message = `Apakah Anda yakin ingin mengnonaktifkan data informasi iuran ${item?.nama}?.`
-//   confirmOptions.confirmText = 'Nonaktif'
-//   confirmOptions.cancelText = 'Batal'
-//   confirmOptions.confirmColor = 'error'
-//   confirmOptions.confirmIcon = 'ri-eye-off-line'
-
-//   showConfirmation.value = true 
-//   itemSelected.value = item
-// }
-
 const page = ref(1)
 const limit = ref(10)
 
@@ -101,7 +50,7 @@ const handleShowFormData = () => {
   showFormData.value = true
 }
 
-const handleFilter = (filters: { keyword: string, status_aktif: null | number, jenis_iuran: string | null }) => {
+const handleFilter = (filters: { keyword: string; status_aktif: null | number; jenis_iuran: string | null }) => {
   page.value = 1
   masterInformasiIuranStore.reload = true
   Object.entries(filters).forEach(([key, value]) => {
@@ -128,7 +77,8 @@ const handleDelete = async () => {
       masterInformasiIuranStore.reload = true
       await masterInformasiIuranStore.fetchInformasiIuran({ limit: limit.value, page: page.value, mode: 'admin' })
     }
-  } finally {
+  }
+  finally {
     showConfirmation.value = false
   }
 }
@@ -157,7 +107,8 @@ const handleUpdateStatus = async () => {
       masterInformasiIuranStore.reload = true
       await masterInformasiIuranStore.fetchInformasiIuran({ limit: limit.value, page: page.value, mode: 'admin' })
     }
-  } finally {
+  }
+  finally {
     showConfirmation.value = false
   }
 }
@@ -166,9 +117,11 @@ const handleShowConfirmUpdateStatus = (item: MasterInformasiIuran) => {
   const statusAktif = item.status_aktif
 
   const setMessageWhenToActive = () => {
-    if (item.is_deleted) return `Sebelumnya data informasi iuran dengan judul ${item?.judul_iuran} sudah anda hapus, Yakin ingin mengaktifkan kembali data informasi iuran ini?.`
+    if (item.is_deleted)
+      return `Sebelumnya data informasi iuran dengan judul ${item?.judul_iuran} sudah anda hapus, Yakin ingin mengaktifkan kembali data informasi iuran ini?.`
 
-    if (statusAktif) return `Apakah Anda yakin ingin mengaktifkan kembali data informasi iuran atas judul ${item?.judul_iuran}?.`
+    if (statusAktif)
+      return `Apakah Anda yakin ingin mengaktifkan kembali data informasi iuran atas judul ${item?.judul_iuran}?.`
   }
 
   confirmOptions.title = statusAktif === 1 ? 'Nonaktif Informasi Iuran?' : 'Aktifkan Kembali?'
@@ -204,6 +157,7 @@ const isFetchSuccess = ref(false)
 
 const handleUpdate = async (params: AddInformasiIuranPayload) => {
   isFetchSuccess.value = false
+
   const res = await masterInformasiIuranStore.fetchUpdateInformasiIuran(params, itemSelected.value?.id as number)
 
   if (res.success) {
@@ -234,11 +188,11 @@ const handleAddData = async (params: AddInformasiIuranPayload) => {
 }
 
 onMounted(async () => {
-  if (masterInformasiIuranStore.page) page.value = masterInformasiIuranStore.page
+  if (masterInformasiIuranStore.page)
+    page.value = masterInformasiIuranStore.page
 
-  if (masterInformasiIuranStore.page === 0) {
+  if (masterInformasiIuranStore.page === 0)
     await masterInformasiIuranStore.fetchInformasiIuran({ limit: limit.value, page: page.value, mode: 'admin' })
-  }
 
   await dropdownStore.fetchWargaForDropdown()
 })
@@ -252,30 +206,55 @@ onMounted(async () => {
     </div>
     <VRow class="match-height">
       <VCol cols="12">
-        <FormFilterInformasiIuran :initial-keyword="masterInformasiIuranStore.filters?.keyword ?? ''"
+        <FormFilterInformasiIuran
+          :initial-keyword="masterInformasiIuranStore.filters?.keyword ?? ''"
           :initial-status-aktif="masterInformasiIuranStore.filters?.status_aktif ? masterInformasiIuranStore.filters?.status_aktif : null"
           :initial-jenis-iuran="masterInformasiIuranStore.filters?.jenis_iuran ? masterInformasiIuranStore.filters?.jenis_iuran : null"
-          @filter="handleFilter" @reload="handleReload" @show-form-data="handleShowFormData" />
+          @filter="handleFilter"
+          @reload="handleReload"
+          @show-form-data="handleShowFormData"
+        />
       </VCol>
 
       <VCol cols="12">
-        <DataTableInformasiIuran :data="masterInformasiIuranStore.informasiIuran" :meta="masterInformasiIuranStore.meta"
-          :loading="masterInformasiIuranStore.loading" :has-more="masterInformasiIuranStore.hasMore"
-          :has-filter="masterInformasiIuranStore.hasFilter" @edit="handleEditData" @delete="handleShowConfirmDelData"
-          @update-status="handleShowConfirmUpdateStatus" @load-more="handleLoadMore" @change-page="handleChangePage"
-          @change-limit="handleChangeLimit" />
+        <DataTableInformasiIuran
+          :data="masterInformasiIuranStore.informasiIuran"
+          :meta="masterInformasiIuranStore.meta"
+          :loading="masterInformasiIuranStore.loading"
+          :has-more="masterInformasiIuranStore.hasMore"
+          :has-filter="masterInformasiIuranStore.hasFilter"
+          @edit="handleEditData"
+          @delete="handleShowConfirmDelData"
+          @update-status="handleShowConfirmUpdateStatus"
+          @load-more="handleLoadMore"
+          @change-page="handleChangePage"
+          @change-limit="handleChangeLimit"
+        />
       </VCol>
     </VRow>
 
-    <DialogFormDataInformasiIuran :is-fetch-success="isFetchSuccess" :loading="masterInformasiIuranStore.loading"
-      :is-show="showFormData" :is-edit="isEdit" :item="itemSelected"
+    <DialogFormDataInformasiIuran
+      :is-fetch-success="isFetchSuccess"
+      :loading="masterInformasiIuranStore.loading"
+      :is-show="showFormData"
+      :is-edit="isEdit"
+      :item="itemSelected"
       :item-dropdown-warga="dropdownStore.itemWargaForDropdown"
-      :loading-dropdown-warga="dropdownStore.loading.wargaForDropdown" @close="handleCloseFormData"
-      @submit="isEdit ? handleUpdate($event) : handleAddData($event)" />
+      :loading-dropdown-warga="dropdownStore.loading.wargaForDropdown"
+      @close="handleCloseFormData"
+      @submit="isEdit ? handleUpdate($event) : handleAddData($event)"
+    />
 
-    <ConfirmDialog v-model="showConfirmation" :title="confirmOptions.title" :message="confirmOptions.message"
-      :confirm-text="confirmOptions.confirmText" :cancel-text="confirmOptions.cancelText"
-      :confirm-color="confirmOptions.confirmColor" :confirm-icon="confirmOptions.confirmIcon"
-      :loading="masterInformasiIuranStore.loading" @confirm="confirmOptions.action" />
+    <ConfirmDialog
+      v-model="showConfirmation"
+      :title="confirmOptions.title"
+      :message="confirmOptions.message"
+      :confirm-text="confirmOptions.confirmText"
+      :cancel-text="confirmOptions.cancelText"
+      :confirm-color="confirmOptions.confirmColor"
+      :confirm-icon="confirmOptions.confirmIcon"
+      :loading="masterInformasiIuranStore.loading"
+      @confirm="confirmOptions.action"
+    />
   </div>
 </template>

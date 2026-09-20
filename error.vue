@@ -1,10 +1,10 @@
 <script setup lang="ts">
+import type { NuxtError } from 'nuxt/app'
+import { useTheme } from 'vuetify'
 import misc404 from '@images/pages/404.png'
 import miscMaskDark from '@images/pages/misc-mask-dark.png'
 import miscMaskLight from '@images/pages/misc-mask-light.png'
 import tree from '@images/pages/tree.png'
-import type { NuxtError } from 'nuxt/app'
-import { useTheme } from 'vuetify'
 
 defineOptions({
   inheritAttrs: false,
@@ -49,8 +49,8 @@ const errToShow = computed(() => {
 })
 
 const roles: Record<'admin' | 'ketua_regu', string> = {
-  'admin': '/',
-  'ketua_regu': '/create-pembayaran',
+  admin: '/',
+  ketua_regu: '/create-pembayaran',
 }
 
 const handleError = () => clearError({ redirect: authStore.isLoggedIn ? roles[authStore.role] : '/login' })

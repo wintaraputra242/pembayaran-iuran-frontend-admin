@@ -1,13 +1,6 @@
 <script lang="ts" setup>
-import eCommerce2 from '@images/eCommerce/2.png';
-import qris from '@images/pages/qris.png';
-
-const emit = defineEmits<{
-  (e: 'reload'): void;
-  (e: 'close'): void;
-  (e: 'showBuktiBayar'): void;
-  (e: 'sendNotif'): void;
-}>();
+import eCommerce2 from '@images/eCommerce/2.png'
+import qris from '@images/pages/qris.png'
 
 const props = withDefaults(defineProps<{
   isShow: boolean
@@ -17,8 +10,15 @@ const props = withDefaults(defineProps<{
   item: () => ({
     nama_warga: '',
     regu: '',
-  })
+  }),
 })
+
+const emit = defineEmits<{
+  (e: 'reload'): void
+  (e: 'close'): void
+  (e: 'showBuktiBayar'): void
+  (e: 'sendNotif'): void
+}>()
 
 const handleClose = () => {
   emit('close')
@@ -31,163 +31,163 @@ const isLoading = ref(false)
 const dataDummyHistory = [
   {
     id: 1,
-    transaksi_id: "TRX-202501-001",
-    warga: "I Wayan Sudarma",
-    regu: "Regu A",
-    judul_iuran: "Iuran Bulanan Januari",
+    transaksi_id: 'TRX-202501-001',
+    warga: 'I Wayan Sudarma',
+    regu: 'Regu A',
+    judul_iuran: 'Iuran Bulanan Januari',
     nominal: 25000,
-    metode_bayar: "QRIS",
-    tanggal_bayar: "2025-01-12T08:45:00",
-    petugas: "Admin Desa",
-    status: "Lunas",
+    metode_bayar: 'QRIS',
+    tanggal_bayar: '2025-01-12T08:45:00',
+    petugas: 'Admin Desa',
+    status: 'Lunas',
   },
   {
     id: 2,
-    transaksi_id: "TRX-202501-002",
-    warga: "I Made Adi Putra",
-    regu: "Regu B",
-    judul_iuran: "Iuran Bulanan Januari",
+    transaksi_id: 'TRX-202501-002',
+    warga: 'I Made Adi Putra',
+    regu: 'Regu B',
+    judul_iuran: 'Iuran Bulanan Januari',
     nominal: 25000,
-    metode_bayar: "Tunai",
-    tanggal_bayar: "2025-01-13T14:20:00",
-    petugas: "Ketua Regu B",
-    status: "Lunas",
+    metode_bayar: 'Tunai',
+    tanggal_bayar: '2025-01-13T14:20:00',
+    petugas: 'Ketua Regu B',
+    status: 'Lunas',
   },
   {
     id: 3,
-    transaksi_id: "TRX-202501-003",
-    warga: "Ni Luh Ayu Sulastri",
-    regu: "Regu C",
-    judul_iuran: "Iuran Kematian",
+    transaksi_id: 'TRX-202501-003',
+    warga: 'Ni Luh Ayu Sulastri',
+    regu: 'Regu C',
+    judul_iuran: 'Iuran Kematian',
     nominal: 100000,
-    metode_bayar: "Transfer",
-    tanggal_bayar: "2025-01-15T10:12:00",
-    petugas: "Admin Desa",
-    status: "Lunas",
+    metode_bayar: 'Transfer',
+    tanggal_bayar: '2025-01-15T10:12:00',
+    petugas: 'Admin Desa',
+    status: 'Lunas',
   },
   {
     id: 4,
-    transaksi_id: "TRX-202501-004",
-    warga: "I Ketut Dwi Arta",
-    regu: "Regu A",
-    judul_iuran: "Iuran Bulanan Februari",
+    transaksi_id: 'TRX-202501-004',
+    warga: 'I Ketut Dwi Arta',
+    regu: 'Regu A',
+    judul_iuran: 'Iuran Bulanan Februari',
     nominal: 25000,
-    metode_bayar: "QRIS",
-    tanggal_bayar: "2025-01-17T18:55:00",
-    petugas: "Ketua Regu A",
-    status: "Pending",
+    metode_bayar: 'QRIS',
+    tanggal_bayar: '2025-01-17T18:55:00',
+    petugas: 'Ketua Regu A',
+    status: 'Pending',
   },
   {
     id: 5,
-    transaksi_id: "TRX-202501-005",
-    warga: "Ni Kadek Mirah Santi",
-    regu: "Regu B",
-    judul_iuran: "Iuran Bulanan Februari",
+    transaksi_id: 'TRX-202501-005',
+    warga: 'Ni Kadek Mirah Santi',
+    regu: 'Regu B',
+    judul_iuran: 'Iuran Bulanan Februari',
     nominal: 25000,
-    metode_bayar: "Tunai",
-    tanggal_bayar: "2025-01-20T09:30:00",
-    petugas: "Admin Desa",
-    status: "Lunas",
+    metode_bayar: 'Tunai',
+    tanggal_bayar: '2025-01-20T09:30:00',
+    petugas: 'Admin Desa',
+    status: 'Lunas',
   },
   {
     id: 6,
-    transaksi_id: "TRX-202501-006",
-    warga: "I Putu Gede Pratama",
-    regu: "Regu D",
-    judul_iuran: "Iuran Kematian",
+    transaksi_id: 'TRX-202501-006',
+    warga: 'I Putu Gede Pratama',
+    regu: 'Regu D',
+    judul_iuran: 'Iuran Kematian',
     nominal: 100000,
-    metode_bayar: "Transfer",
-    tanggal_bayar: "2025-01-21T11:07:00",
-    petugas: "Ketua Regu D",
-    status: "Lunas",
+    metode_bayar: 'Transfer',
+    tanggal_bayar: '2025-01-21T11:07:00',
+    petugas: 'Ketua Regu D',
+    status: 'Lunas',
   },
   {
     id: 7,
-    transaksi_id: "TRX-202501-007",
-    warga: "Ni Komang Sari Dewi",
-    regu: "Regu C",
-    judul_iuran: "Iuran Bulanan Januari",
+    transaksi_id: 'TRX-202501-007',
+    warga: 'Ni Komang Sari Dewi',
+    regu: 'Regu C',
+    judul_iuran: 'Iuran Bulanan Januari',
     nominal: 25000,
-    metode_bayar: "QRIS",
-    tanggal_bayar: "2025-01-22T07:55:00",
-    petugas: "Admin Desa",
-    status: "Lunas",
+    metode_bayar: 'QRIS',
+    tanggal_bayar: '2025-01-22T07:55:00',
+    petugas: 'Admin Desa',
+    status: 'Lunas',
   },
   {
     id: 8,
-    transaksi_id: "TRX-202501-008",
-    warga: "I Nyoman Surya",
-    regu: "Regu A",
-    judul_iuran: "Iuran Bulanan Februari",
+    transaksi_id: 'TRX-202501-008',
+    warga: 'I Nyoman Surya',
+    regu: 'Regu A',
+    judul_iuran: 'Iuran Bulanan Februari',
     nominal: 25000,
-    metode_bayar: "Tunai",
-    tanggal_bayar: "2025-01-23T16:45:00",
-    petugas: "Ketua Regu A",
-    status: "Pending",
+    metode_bayar: 'Tunai',
+    tanggal_bayar: '2025-01-23T16:45:00',
+    petugas: 'Ketua Regu A',
+    status: 'Pending',
   },
   {
     id: 9,
-    transaksi_id: "TRX-202501-009",
-    warga: "Ni Ketut Ayu Pertiwi",
-    regu: "Regu B",
-    judul_iuran: "Iuran Kematian",
+    transaksi_id: 'TRX-202501-009',
+    warga: 'Ni Ketut Ayu Pertiwi',
+    regu: 'Regu B',
+    judul_iuran: 'Iuran Kematian',
     nominal: 100000,
-    metode_bayar: "Transfer",
-    tanggal_bayar: "2025-01-24T13:10:00",
-    petugas: "Admin Desa",
-    status: "Lunas",
+    metode_bayar: 'Transfer',
+    tanggal_bayar: '2025-01-24T13:10:00',
+    petugas: 'Admin Desa',
+    status: 'Lunas',
   },
   {
     id: 10,
-    transaksi_id: "TRX-202501-010",
-    warga: "I Made Yoga Saputra",
-    regu: "Regu D",
-    judul_iuran: "Iuran Bulanan Januari",
+    transaksi_id: 'TRX-202501-010',
+    warga: 'I Made Yoga Saputra',
+    regu: 'Regu D',
+    judul_iuran: 'Iuran Bulanan Januari',
     nominal: 25000,
-    metode_bayar: "QRIS",
-    tanggal_bayar: "2025-01-25T08:20:00",
-    petugas: "Ketua Regu D",
-    status: "Lunas",
+    metode_bayar: 'QRIS',
+    tanggal_bayar: '2025-01-25T08:20:00',
+    petugas: 'Ketua Regu D',
+    status: 'Lunas',
   },
 ]
 
 const dataDummyNoPayment = [
   {
     id: 1,
-    judul_iuran: "Iuran Kebersihan Bulanan",
-    jenis_iuran: "Bulanan",
-    tgl_buat: "2025-01-10",
+    judul_iuran: 'Iuran Kebersihan Bulanan',
+    jenis_iuran: 'Bulanan',
+    tgl_buat: '2025-01-10',
     jumlah_iuran: 20000,
   },
   {
     id: 2,
-    judul_iuran: "Iuran Piodalan",
-    jenis_iuran: "Insidental",
-    tgl_buat: "2025-01-05",
+    judul_iuran: 'Iuran Piodalan',
+    jenis_iuran: 'Insidental',
+    tgl_buat: '2025-01-05',
     jumlah_iuran: 50000,
   },
   {
     id: 3,
-    judul_iuran: "Iuran Kegiatan Pecalang",
-    jenis_iuran: "Kegiatan",
-    tgl_buat: "2025-02-01",
+    judul_iuran: 'Iuran Kegiatan Pecalang',
+    jenis_iuran: 'Kegiatan',
+    tgl_buat: '2025-02-01',
     jumlah_iuran: 30000,
   },
   {
     id: 4,
-    judul_iuran: "Iuran Perbaikan Balai Banjar",
-    jenis_iuran: "Perbaikan",
-    tgl_buat: "2025-02-15",
+    judul_iuran: 'Iuran Perbaikan Balai Banjar',
+    jenis_iuran: 'Perbaikan',
+    tgl_buat: '2025-02-15',
     jumlah_iuran: 100000,
   },
   {
     id: 5,
-    judul_iuran: "Iuran Suka Duka",
-    jenis_iuran: "Sosial",
-    tgl_buat: "2025-03-01",
+    judul_iuran: 'Iuran Suka Duka',
+    jenis_iuran: 'Sosial',
+    tgl_buat: '2025-03-01',
     jumlah_iuran: 25000,
-  }
-];
+  },
+]
 
 type PaymentStatus =
   | 'pending'
@@ -206,12 +206,21 @@ const statusChipsColor: Record<PaymentStatus, string> = {
 </script>
 
 <template>
-  <VDialog v-model="props.isShow" max-width="1200">
+  <VDialog
+    :model-value="props.isShow"
+    max-width="1200"
+    @update:model-value="emit('close')"
+  >
     <VCard>
       <VCardTitle class="pt-3">
         <div class="d-flex align-center justify-space-between">
           <h3>Riwayat Pembayaran</h3>
-          <IconBtn variant="text" color="secondary" size="small" @click="handleClose">
+          <IconBtn
+            variant="text"
+            color="secondary"
+            size="small"
+            @click="handleClose"
+          >
             <VIcon icon="ri-close-line" />
           </IconBtn>
         </div>
@@ -228,34 +237,71 @@ const statusChipsColor: Record<PaymentStatus, string> = {
           </p>
         </div>
 
-        <VTabs v-model="tab" color="primary">
-          <VTab value="history">Riwayat</VTab>
-          <VTab value="no-payment">Belum Bayar</VTab>
+        <VTabs
+          v-model="tab"
+          color="primary"
+        >
+          <VTab value="history">
+            Riwayat
+          </VTab>
+          <VTab value="no-payment">
+            Belum Bayar
+          </VTab>
         </VTabs>
 
         <VDivider />
 
         <VTabsWindow v-model="tab">
-
           <!-- ================= HISTORY ================= -->
           <VTabsWindowItem value="history">
-            <VTable fixed-header height="400px" class="my-table mt-3">
+            <VTable
+              fixed-header
+              height="400px"
+              class="my-table mt-3"
+            >
               <thead>
                 <tr>
-                  <th style="width: 70px;">No.</th>
-                  <th style="width: 200px;">ID Transaksi</th>
-                  <th style="width: 180px;">Tanggal Bayar</th>
-                  <th style="width: 220px;">Judul Iuran</th>
-                  <th style="width: 160px;">Metode Bayar</th>
-                  <th style="width: 160px;">Nominal</th>
-                  <th style="width: 200px;">Petugas/Admin</th>
-                  <th class="text-center" style="width: 150px;">Status</th>
-                  <th class="text-center" style="width: 200px;">Bukti</th>
+                  <th style="width: 70px;">
+                    No.
+                  </th>
+                  <th style="width: 200px;">
+                    ID Transaksi
+                  </th>
+                  <th style="width: 180px;">
+                    Tanggal Bayar
+                  </th>
+                  <th style="width: 220px;">
+                    Judul Iuran
+                  </th>
+                  <th style="width: 160px;">
+                    Metode Bayar
+                  </th>
+                  <th style="width: 160px;">
+                    Nominal
+                  </th>
+                  <th style="width: 200px;">
+                    Petugas/Admin
+                  </th>
+                  <th
+                    class="text-center"
+                    style="width: 150px;"
+                  >
+                    Status
+                  </th>
+                  <th
+                    class="text-center"
+                    style="width: 200px;"
+                  >
+                    Bukti
+                  </th>
                 </tr>
               </thead>
 
               <tbody>
-                <tr v-for="(item, i) in dataDummyHistory" :key="item.id">
+                <tr
+                  v-for="(item, i) in dataDummyHistory"
+                  :key="item.id"
+                >
                   <td>{{ i + 1 }}</td>
                   <td>{{ item.transaksi_id }}</td>
                   <td>{{ formatDateID(item.tanggal_bayar) }}</td>
@@ -296,15 +342,24 @@ const statusChipsColor: Record<PaymentStatus, string> = {
                         class="pa-2 rounded-lg cursor-pointer"
                         @click="emit('showBuktiBayar', item)"
                       >
-                        <VImg :src="item.bukti_bayar || eCommerce2" width="50" />
+                        <VImg
+                          :src="item.bukti_bayar || eCommerce2"
+                          width="50"
+                        />
                       </div>
                     </div>
                   </td>
                 </tr>
 
                 <tr v-if="isLoading">
-                  <td colspan="9" class="text-center py-3">
-                    <VProgressCircular indeterminate size="26" />
+                  <td
+                    colspan="9"
+                    class="text-center py-3"
+                  >
+                    <VProgressCircular
+                      indeterminate
+                      size="26"
+                    />
                   </td>
                 </tr>
               </tbody>
@@ -313,32 +368,54 @@ const statusChipsColor: Record<PaymentStatus, string> = {
 
           <!-- ================= BELUM BAYAR ================= -->
           <VTabsWindowItem value="no-payment">
-
             <div class="mt-3 d-flex justify-end">
               <VBtn
                 variant="flat"
                 color="info"
                 @click="emit('sendNotifAll', props.item)"
               >
-                <VIcon icon="ri-bell-line" class="me-2" />
+                <VIcon
+                  icon="ri-bell-line"
+                  class="me-2"
+                />
                 Kirim Semua Notif
               </VBtn>
             </div>
 
-            <VTable fixed-header height="400px" class="my-table mt-3">
+            <VTable
+              fixed-header
+              height="400px"
+              class="my-table mt-3"
+            >
               <thead>
                 <tr>
-                  <th style="width: 70px;">No.</th>
-                  <th style="width: 250px;">Judul Iuran</th>
-                  <th class="text-center" style="width: 150px;">Jenis</th>
-                  <th style="width: 180px;">Tgl. Buat</th>
-                  <th style="width: 180px;">Jumlah</th>
-                  <th style="width: 80px;"></th>
+                  <th style="width: 70px;">
+                    No.
+                  </th>
+                  <th style="width: 250px;">
+                    Judul Iuran
+                  </th>
+                  <th
+                    class="text-center"
+                    style="width: 150px;"
+                  >
+                    Jenis
+                  </th>
+                  <th style="width: 180px;">
+                    Tgl. Buat
+                  </th>
+                  <th style="width: 180px;">
+                    Jumlah
+                  </th>
+                  <th style="width: 80px;" />
                 </tr>
               </thead>
 
               <tbody>
-                <tr v-for="(item, i) in dataDummyNoPayment" :key="item.id">
+                <tr
+                  v-for="(item, i) in dataDummyNoPayment"
+                  :key="item.id"
+                >
                   <td>{{ i + 1 }}</td>
                   <td>{{ item.judul_iuran }}</td>
 
@@ -370,13 +447,18 @@ const statusChipsColor: Record<PaymentStatus, string> = {
                 </tr>
 
                 <tr v-if="isLoading">
-                  <td colspan="6" class="text-center py-3">
-                    <VProgressCircular indeterminate size="26" />
+                  <td
+                    colspan="6"
+                    class="text-center py-3"
+                  >
+                    <VProgressCircular
+                      indeterminate
+                      size="26"
+                    />
                   </td>
                 </tr>
               </tbody>
             </VTable>
-
           </VTabsWindowItem>
         </VTabsWindow>
       </VCardText>

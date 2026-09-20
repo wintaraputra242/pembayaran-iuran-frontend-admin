@@ -68,6 +68,6 @@ export const useUiStore = defineStore('ui', {
 
     changeStatusFirstLoadWebToFalse() {
       this.firstLoadWeb = false
-    }
+    },
   },
 })

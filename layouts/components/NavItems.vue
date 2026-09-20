@@ -1,13 +1,15 @@
 <script lang="ts" setup>
-import VerticalNavSectionTitle from '@/@layouts/components/VerticalNavSectionTitle.vue';
-import menu from '@/navigations/vertical';
-import VerticalNavGroup from '@layouts/components/VerticalNavGroup.vue';
-import VerticalNavLink from '@layouts/components/VerticalNavLink.vue';
+import VerticalNavSectionTitle from '@/@layouts/components/VerticalNavSectionTitle.vue'
+import menu from '@/navigations/vertical'
+import VerticalNavGroup from '@layouts/components/VerticalNavGroup.vue'
+import VerticalNavLink from '@layouts/components/VerticalNavLink.vue'
 </script>
 
 <template>
-  <template v-for="(item, i) in menu" :key="i">
-
+  <template
+    v-for="(item, i) in menu"
+    :key="i"
+  >
     <!-- Section Title -->
     <VerticalNavSectionTitle
       v-if="item.type === 'section-title'"

@@ -12,15 +12,16 @@ export default defineNuxtPlugin(() => {
     storageBucket: config.public.firebaseStorageBucket,
     messagingSenderId: config.public.firebaseMessagingSenderId,
     appId: config.public.firebaseAppId,
-    measurementId: config.public.measurementId
+    measurementId: config.public.measurementId,
   })
 
   const messaging = getMessaging(firebaseApp)
 
-  onMessage(messaging, (payload) => {
+  onMessage(messaging, payload => {
     console.log('Foreground message:', payload)
 
     if (Notification.permission === 'granted') {
+      // eslint-disable-next-line no-new
       new Notification(payload.notification?.title ?? 'Notifikasi', {
         body: payload.notification?.body,
         icon: '/icons/icon-192x192.png',

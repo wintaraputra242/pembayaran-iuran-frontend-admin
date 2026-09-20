@@ -1,5 +1,5 @@
-import type { AddInformasiIuranPayload, AddInformasiIuranResponse, DeleteInformasiIuranResponse, GetDetailMasterInformasiIuranResponse, GetMasterInformasiIuranResponse, UpdateInformasiIuranResponse, UpdateStatusInformasiIuranResponse } from '@/types/api/master-informasi-iuran'
 import { useApi } from './useApi'
+import type { AddInformasiIuranPayload, AddInformasiIuranResponse, DeleteInformasiIuranResponse, GetDetailMasterInformasiIuranResponse, GetMasterInformasiIuranResponse, UpdateInformasiIuranResponse, UpdateStatusInformasiIuranResponse } from '@/types/api/master-informasi-iuran'
 
 export const useMasterInformasiIuran = () => {
   const { api } = useApi()

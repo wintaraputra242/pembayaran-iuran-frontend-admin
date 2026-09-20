@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { PaginationMeta } from '@/types/common'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useDisplay } from 'vuetify'
+import type { PaginationMeta } from '@/types/common'
 
 interface Header {
   key: string
@@ -19,6 +19,7 @@ const props = withDefaults(defineProps<{
   noDataText?: string
   variant?: 'text' | 'elevated' | 'flat' | 'outlined' | 'tonal' | 'plain'
   perPage?: number
+
   // Meta pagination dari backend (Laravel-style: current_page, last_page, total, per_page, from, to).
   // Kalau diisi, tabel desktop pakai pagination server-side yang sebenarnya (bukan potongan
   // dari data yang sudah ter-load). Kalau tidak diisi, fallback ke mode lama (lihat di bawah).
@@ -55,12 +56,15 @@ const sentinel = ref<HTMLElement | null>(null)
 let observer: IntersectionObserver | null = null
 
 const setupObserver = async () => {
-  if (!smAndDown.value) return
-  if (!props.hasMore || props.loading) return
+  if (!smAndDown.value)
+    return
+  if (!props.hasMore || props.loading)
+    return
 
   await nextTick()
 
-  if (!sentinel.value) return
+  if (!sentinel.value)
+    return
 
   observer?.disconnect()
 
@@ -94,6 +98,7 @@ watch(smAndDown, () => setupObserver())
 // ================= PAGINATION SERVER-SIDE (kalau ada `meta`) =================
 const currentPageFromMeta = computed(() => props.meta?.current_page ?? 1)
 const totalPagesFromMeta = computed(() => props.meta?.last_page ?? 1)
+
 const limitModel = computed({
   get: () => props.meta?.per_page ?? props.perPage,
   set: (value: number) => emit('changeLimit', value),
@@ -147,7 +152,8 @@ const startIndex = computed(() => {
 })
 
 const displayedItems = computed(() => {
-  if (hasServerMeta.value) return props.items
+  if (hasServerMeta.value)
+    return props.items
 
   const start = startIndex.value
 
@@ -158,7 +164,8 @@ const rangeInfoText = computed(() => {
   if (hasServerMeta.value && props.meta) {
     const { from, to, total } = props.meta
 
-    if (!total) return `0 dari 0 data`
+    if (!total)
+      return '0 dari 0 data'
 
     return `Menampilkan ${from ?? 0}–${to ?? 0} dari ${total} data`
   }
@@ -170,8 +177,10 @@ const rangeInfoText = computed(() => {
 })
 
 const alignClass = (align?: string) => {
-  if (align === 'center') return 'text-center'
-  if (align === 'end') return 'text-end'
+  if (align === 'center')
+    return 'text-center'
+  if (align === 'end')
+    return 'text-end'
 
   return 'text-start'
 }
@@ -187,9 +196,22 @@ const WRAP_COLUMN_KEYS = new Set(['actions', 'aksi'])
 // halaman. Kalau suatu saat ada tabel baru dengan kolom "alamat_kantor" atau "nama_ahli_waris"
 // misalnya, otomatis ikut ter-wrap tanpa perlu ubah kode lagi.
 const LONG_TEXT_KEYWORDS = [
-  'nama', 'name', 'alamat', 'address', 'deskripsi', 'description',
-  'keterangan', 'pesan', 'message', 'catatan', 'note', 'alasan',
-  'judul', 'title', 'petugas', 'warga',
+  'nama',
+  'name',
+  'alamat',
+  'address',
+  'deskripsi',
+  'description',
+  'keterangan',
+  'pesan',
+  'message',
+  'catatan',
+  'note',
+  'alasan',
+  'judul',
+  'title',
+  'petugas',
+  'warga',
 ]
 
 // Kalau LABEL header-nya sendiri panjang (mis. "Jumlah Iuran yang Harus Dibayar"), tetap
@@ -240,8 +262,14 @@ const colStyle = (header: Header, index: number) => {
 
 <template>
   <!-- ================= DESKTOP / TABLET (tabel) ================= -->
-  <div v-if="!smAndDown" class="app-data-table-wrapper">
-    <VTable hover class="app-data-table">
+  <div
+    v-if="!smAndDown"
+    class="app-data-table-wrapper"
+  >
+    <VTable
+      hover
+      class="app-data-table"
+    >
       <thead>
         <tr>
           <th
@@ -256,7 +284,10 @@ const colStyle = (header: Header, index: number) => {
       </thead>
 
       <tbody>
-        <tr v-for="(item, i) in displayedItems" :key="item.id ?? i">
+        <tr
+          v-for="(item, i) in displayedItems"
+          :key="item.id ?? i"
+        >
           <td
             v-for="(header, hi) in headers"
             :key="header.key"
@@ -267,7 +298,11 @@ const colStyle = (header: Header, index: number) => {
               {{ startIndex + i + 1 }}
             </template>
             <template v-else>
-              <slot :name="`cell-${header.key}`" :item="item" :index="startIndex + i">
+              <slot
+                :name="`cell-${header.key}`"
+                :item="item"
+                :index="startIndex + i"
+              >
                 {{ item[header.key] ?? '-' }}
               </slot>
             </template>
@@ -275,23 +310,38 @@ const colStyle = (header: Header, index: number) => {
         </tr>
 
         <tr v-if="displayedItems.length === 0 && !loading">
-          <td :colspan="headers.length" class="text-center py-6">
+          <td
+            :colspan="headers.length"
+            class="text-center py-6"
+          >
             {{ hasFilter ? 'Data tidak ditemukan' : noDataText }}
           </td>
         </tr>
       </tbody>
     </VTable>
 
-    <div v-if="loading" class="text-center py-4">
-      <VProgressCircular indeterminate size="26" />
+    <div
+      v-if="loading"
+      class="text-center py-4"
+    >
+      <VProgressCircular
+        indeterminate
+        size="26"
+      />
     </div>
 
     <!-- Footer pagination: info rentang data + rows-per-page (kalau server-side) + nomor halaman -->
-    <div v-if="displayedItems.length > 0 || totalPages > 1" class="app-data-table-footer">
+    <div
+      v-if="displayedItems.length > 0 || totalPages > 1"
+      class="app-data-table-footer"
+    >
       <span class="text-caption text-medium-emphasis">{{ rangeInfoText }}</span>
 
       <div class="d-flex align-center flex-wrap justify-center ga-4">
-        <div v-if="hasServerMeta" class="d-flex align-center ga-2">
+        <div
+          v-if="hasServerMeta"
+          class="d-flex align-center ga-2"
+        >
           <span class="text-caption text-medium-emphasis text-no-wrap">Baris per halaman</span>
           <VSelect
             v-model="limitModel"
@@ -318,40 +368,89 @@ const colStyle = (header: Header, index: number) => {
   </div>
 
   <!-- ================= MOBILE (kartu) ================= -->
-  <div v-else class="list-data">
+  <div
+    v-else
+    class="list-data"
+  >
     <VRow>
-      <VCol v-for="(item, i) in items" :key="item.id ?? i" cols="12" sm="6">
-        <VCard class="mb-0" rounded="lg" border="sm" :variant="props.variant" position="relative" height="100%">
+      <VCol
+        v-for="(item, i) in items"
+        :key="item.id ?? i"
+        cols="12"
+        sm="6"
+      >
+        <VCard
+          class="mb-0"
+          rounded="lg"
+          border="sm"
+          :variant="props.variant"
+          position="relative"
+          height="100%"
+        >
           <VCardText class="d-flex flex-column gap-2">
             <div class="text-caption text-medium-emphasis">
               #{{ i + 1 }}
             </div>
 
-            <div v-for="header in headers.slice(1)" :key="header.key">
+            <div
+              v-for="header in headers.slice(1)"
+              :key="header.key"
+            >
               <div class="text-caption text-medium-emphasis">
-                <slot :name="`label-${header.key}`" :item="item" :label="header.label">
+                <slot
+                  :name="`label-${header.key}`"
+                  :item="item"
+                  :label="header.label"
+                >
                   {{ header.label }}
                 </slot>
               </div>
 
-              <div v-if="header.key === 'is_deleted'" class="font-weight-medium" />
+              <div
+                v-if="header.key === 'is_deleted'"
+                class="font-weight-medium"
+              />
 
-              <div v-else-if="header.key !== 'actions'" class="font-weight-medium">
-                <slot :name="`cell-${header.key}`" :item="item" :index="i">
+              <div
+                v-else-if="header.key !== 'actions'"
+                class="font-weight-medium"
+              >
+                <slot
+                  :name="`cell-${header.key}`"
+                  :item="item"
+                  :index="i"
+                >
                   {{ item[header.key] || '-' }}
                 </slot>
               </div>
 
-              <div v-else class="position-absolute" style="bottom: 12px; right: 12px;">
+              <div
+                v-else
+                class="position-absolute"
+                style="bottom: 12px; right: 12px;"
+              >
                 <div class="d-flex justify-end gap-2">
-                  <slot :name="`cell-${header.key}`" :item="item" :index="i">
+                  <slot
+                    :name="`cell-${header.key}`"
+                    :item="item"
+                    :index="i"
+                  >
                     {{ item[header.key] }}
                   </slot>
                 </div>
               </div>
 
-              <div v-if="header.key === 'is_deleted' && item?.is_deleted" class="d-flex justify-end gap-2 mt-2">
-                <VChip class="position-absolute" variant="flat" style="top: 10px; right: 10px;" size="small" color="error">
+              <div
+                v-if="header.key === 'is_deleted' && item?.is_deleted"
+                class="d-flex justify-end gap-2 mt-2"
+              >
+                <VChip
+                  class="position-absolute"
+                  variant="flat"
+                  style="top: 10px; right: 10px;"
+                  size="small"
+                  color="error"
+                >
                   Dihapus
                 </VChip>
               </div>
@@ -362,14 +461,29 @@ const colStyle = (header: Header, index: number) => {
     </VRow>
 
     <!-- sentinel & loading tetap sama -->
-    <div v-if="hasMore" ref="sentinel" style="height: 1px" />
+    <div
+      v-if="hasMore"
+      ref="sentinel"
+      style="height: 1px"
+    />
 
-    <div v-if="loading" class="text-center py-4">
-      <VProgressCircular indeterminate size="26" />
+    <div
+      v-if="loading"
+      class="text-center py-4"
+    >
+      <VProgressCircular
+        indeterminate
+        size="26"
+      />
     </div>
 
-    <div v-if="props.items.length === 0 && !props.loading" class="text-center py-6">
-      <p class="text-center ma-0">{{ props.hasFilter ? 'Data tidak ditemukan' : props.noDataText }}</p>
+    <div
+      v-if="props.items.length === 0 && !props.loading"
+      class="text-center py-6"
+    >
+      <p class="text-center ma-0">
+        {{ props.hasFilter ? 'Data tidak ditemukan' : props.noDataText }}
+      </p>
     </div>
   </div>
 </template>

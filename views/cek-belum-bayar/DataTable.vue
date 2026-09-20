@@ -1,7 +1,6 @@
 <script setup lang="ts">
-// import qris from '@images/pages/qris.png'
-import type { UnpaidWarga } from '@/types/api/pembayaran';
-import type { PaginationMeta } from '@/types/common';
+import type { UnpaidWarga } from '@/types/api/pembayaran'
+import type { PaginationMeta } from '@/types/common'
 
 const props = withDefaults(defineProps<{
   data: UnpaidWarga[]
@@ -30,24 +29,20 @@ const headers = [
   { label: 'Jumlah Iuran yang Harus Dibayar', key: 'jumlah_iuran', width: '220px' },
   { label: 'Aksi', key: 'aksi', width: '160px', align: 'center', sortable: false },
 ]
-
-type PaymentStatus = 'pending' | 'success' | 'failed' | 'expired' | 'cancelled'
-
-const statusChipsColor: Record<PaymentStatus, string> = {
-  pending: 'info',
-  success: 'success',
-  failed: 'error',
-  expired: 'secondary',
-  cancelled: 'secondary',
-}
 </script>
 
 <template>
-  <AppDataTable :headers="headers" :items="props.data" :meta="props.meta" :loading="props.loading"
+  <AppDataTable
+    :headers="headers"
+    :items="props.data"
+    :meta="props.meta"
+    :loading="props.loading"
     :has-more="props.hasMore"
     :no-data-text="!hasFilter ? 'Tolong lakukan pencaharian informasi iuran terlebih dahulu' : 'Tidak ada data'"
-    @load-more="emit('loadMore')" @change-page="emit('changePage', $event)" @change-limit="emit('changeLimit', $event)">
-
+    @load-more="emit('loadMore')"
+    @change-page="emit('changePage', $event)"
+    @change-limit="emit('changeLimit', $event)"
+  >
     <!-- Nama Warga -->
     <template #cell-nama_warga="{ item }">
       {{ item.nama_warga }}
@@ -59,7 +54,7 @@ const statusChipsColor: Record<PaymentStatus, string> = {
     </template>
 
     <!-- Jumlah Iuran -->
-    <template #cell-jumlah_iuran="{ item }">
+    <template #cell-jumlah_iuran>
       <span class="font-weight-bold text-error">
         {{ formatRupiah(jmlIuran as number) }}
       </span>
@@ -68,14 +63,21 @@ const statusChipsColor: Record<PaymentStatus, string> = {
     <!-- Aksi -->
     <template #cell-aksi="{ item }">
       <div class="d-flex gap-1 justify-center">
-        <VBtn size="small" variant="flat" color="secondary"
-          :loading="loadingSendNotif && (item.nik === nikNotifSended)" @click="emit('sendNotif', item)">
-          <VIcon icon="ri-bell-line" class="me-1" />
+        <VBtn
+          size="small"
+          variant="flat"
+          color="secondary"
+          :loading="loadingSendNotif && (item.nik === nikNotifSended)"
+          @click="emit('sendNotif', item)"
+        >
+          <VIcon
+            icon="ri-bell-line"
+            class="me-1"
+          />
           Kirim Notif
         </VBtn>
       </div>
     </template>
-
   </AppDataTable>
 </template>
 

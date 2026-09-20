@@ -1,4 +1,4 @@
-import { defineStore } from "pinia"
+import { defineStore } from 'pinia'
 
 export type ToastColor =
   | 'success'
@@ -20,7 +20,7 @@ export const useToastStore = defineStore('toast', {
       options?: {
         color?: ToastColor
         timeout?: number
-      }
+      },
     ) {
       // 🔁 reset dulu supaya toast lama benar-benar hilang
       this.show = false

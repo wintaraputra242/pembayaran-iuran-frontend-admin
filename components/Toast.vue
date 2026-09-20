@@ -14,7 +14,7 @@ const toast = useToastStore()
 
     <template #actions>
       <VBtn
-        icon="mdi-close"
+        icon="ri-close-line"
         variant="text"
         @click="toast.close"
       />

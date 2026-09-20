@@ -11,11 +11,9 @@ definePageMeta({ onlyAdmin: true })
 
 const config = useRuntimeConfig()
 
-const router = useRouter()
 const route = useRoute()
 
 const pembayaranStore = usePembayaranStore()
-const dropdownStore = useDropdownStore()
 
 const page = ref(1)
 const limit = ref(10)
@@ -56,38 +54,9 @@ const handleCloseShowHistoryPaymentWarga = () => {
   showHistoryPayment.value = false
 }
 
-async function deleteItem() {
-  isLoadingConfirm.value = true
-  await new Promise(res => setTimeout(res, 1000))
-  isLoadingConfirm.value = false
-  showConfirmation.value = false
-}
-
-const handleDeleteData = (item: Pembayaran) => {
-  confirmOptions.title = 'Hapus Data?'
-  confirmOptions.message =
-    'Apakah Anda yakin ingin menghapus data ini? Tindakan ini tidak dapat dibatalkan.'
-  confirmOptions.confirmText = 'Hapus'
-  confirmOptions.cancelText = 'Batal'
-  confirmOptions.confirmColor = 'error'
-  confirmOptions.confirmIcon = 'ri-delete-bin-line'
-
-  itemSelected.value = item
-  showConfirmation.value = true
-}
-
-const handleShowAnggota = (item: Pembayaran) => {
-  itemSelected.value = item
-}
-
 const handleShowBuktiBayar = (item: Pembayaran) => {
   showPaymentProof.value = true
   itemSelected.value = item
-}
-
-const handleHistoryPayment = (item: Pembayaran) => {
-  itemSelected.value = item
-  showHistoryPayment.value = true
 }
 
 const handleShowBuktiBayarHistoryPayment = () => {
@@ -96,10 +65,8 @@ const handleShowBuktiBayarHistoryPayment = () => {
   showPaymentProof.value = true
 }
 
-const itemSelectForSendNotif = ref<string | null>(null)
-
 const handleSendNotif = async (item?: import('@/types/api/master-informasi-iuran').MasterInformasiIuran) => {
-  console.log(item);
+  console.log(item)
 
   const newItem = pembayaranStore.itemSelected
 
@@ -107,28 +74,27 @@ const handleSendNotif = async (item?: import('@/types/api/master-informasi-iuran
     await pembayaranStore.fetchNotifyResident({
       id_informasi_iuran: Number(item?.id),
       nik: newItem?.warga.nik as string,
-      month: filters.bulan as number
+      month: filters.bulan as number,
     })
 
     successTitle.value = 'Kirim Notif Berhasil'
-    successMessage.value =
-      'Notifikasi berhasil dikirim ke warga terkait pembayaran.'
+    successMessage.value
+      = 'Notifikasi berhasil dikirim ke warga terkait pembayaran.'
 
     showSuccessConfirm.value = true
-  } catch (error) {
+  }
+  catch (error) {
     console.error(error)
   }
 }
 
 watch(showSuccessConfirm, val => {
   if (!val) {
-    if (fromDialog.value === 'history') {
+    if (fromDialog.value === 'history')
       showHistoryPayment.value = true
-    }
 
-    if (fromDialog.value === 'no-payment') {
+    if (fromDialog.value === 'no-payment')
       showNoPaymentList.value = true
-    }
 
     fromDialog.value = ''
   }
@@ -170,23 +136,8 @@ const filters = reactive<{
 }>({
   informasi_iuran: null,
   bulan: null,
-  nama_warga: null
+  nama_warga: null,
 })
-
-const bulanOptions = [
-  { label: 'Januari', value: 1 },
-  { label: 'Februari', value: 2 },
-  { label: 'Maret', value: 3 },
-  { label: 'April', value: 4 },
-  { label: 'Mei', value: 5 },
-  { label: 'Juni', value: 6 },
-  { label: 'Juli', value: 7 },
-  { label: 'Agustus', value: 8 },
-  { label: 'September', value: 9 },
-  { label: 'Oktober', value: 10 },
-  { label: 'November', value: 11 },
-  { label: 'Desember', value: 12 },
-]
 
 const hasFilterUnpaidWarga = ref(false)
 
@@ -221,11 +172,7 @@ watch(() => filters.informasi_iuran, async (val: any) => {
   hasFilterUnpaidWarga.value = false
 })
 
-const handleGetDropdownInformasiIuran = async () => {
-  await dropdownStore.fetchInformasiIuranForDropdown()
-}
-
-watch(() => filters.bulan, async (val) => {
+watch(() => filters.bulan, async val => {
   if (!val) {
     filters.nama_warga = null
     pembayaranStore.unpaidWarga = []
@@ -242,6 +189,7 @@ watch(() => filters.bulan, async (val) => {
     pembayaranStore.isReloadDataUnpaidWarga = true
 
     await pembayaranStore.fetchUnpaidPembayaran({ limit: limit.value, page: page.value })
+
     return
   }
 
@@ -256,15 +204,16 @@ let debounceTimer: ReturnType<typeof setTimeout> | null = null
 
 watch(
   () => filters.nama_warga,
-  (val) => {
-    if (debounceTimer) clearTimeout(debounceTimer)
+  val => {
+    if (debounceTimer)
+      clearTimeout(debounceTimer)
 
     debounceTimer = setTimeout(() => {
       pembayaranStore.isReloadDataUnpaidWarga = true
       pembayaranStore.setFilter('namaWarga', val as string)
       pembayaranStore.fetchUnpaidPembayaran({ page: 1, limit: 10 })
     }, 500) // delay 500ms setelah berhenti mengetik
-  }
+  },
 )
 
 const handleSendNotifToAll = async () => {
@@ -273,123 +222,200 @@ const handleSendNotifToAll = async () => {
       await pembayaranStore.fetchNotifyResidentAllUnpaid(route.params.nik)
 
       successTitle.value = 'Kirim Notif Berhasil'
-      successMessage.value =
-        'Notifikasi terkait seluruh pembayaran dari warga, berhasil dikirim.'
+      successMessage.value
+        = 'Notifikasi terkait seluruh pembayaran dari warga, berhasil dikirim.'
 
       showSuccessConfirm.value = true
     }
-  } catch (error) {
+  }
+  catch (error) {
     console.error(error)
   }
 }
 
 const tab = ref('history')
 
-watch(tab, async (val) => {
+watch(tab, async val => {
   if (val === 'history') {
     pembayaranStore.historyPaid = []
     page.value = 1
-    if ('nik' in route.params) pembayaranStore.setFilter('nikWarga', route.params.nik)
+    if ('nik' in route.params)
+      pembayaranStore.setFilter('nikWarga', route.params.nik)
     await pembayaranStore.fetchHistoryPaid({ page: page.value, limit: limit.value })
   }
 
   if (val === 'no-payment') {
     pembayaranStore.historyUnpaid = []
     page.value = 1
-    if ('nik' in route.params) pembayaranStore.setFilter('nikWarga', route.params.nik)
+    if ('nik' in route.params)
+      pembayaranStore.setFilter('nikWarga', route.params.nik)
     await pembayaranStore.fetchHistoryUnpaid({ page: page.value, limit: limit.value })
   }
 })
 
 const handleGetData = async () => {
   pembayaranStore.historyPaid = []
-  if ('nik' in route.params) pembayaranStore.setFilter('nikWarga', route.params.nik)
+  if ('nik' in route.params)
+    pembayaranStore.setFilter('nikWarga', route.params.nik)
   await pembayaranStore.fetchHistoryPaid({ page: 1, limit: limit.value })
 }
 
 onMounted(() => {
   handleGetData()
 
-  if (!pembayaranStore.itemSelected && ('nik' in route.params)) {
+  if (!pembayaranStore.itemSelected && ('nik' in route.params))
     pembayaranStore.fetchDetailPembayaran(route.params.nik)
-  }
 })
 </script>
 
-
 <template>
   <div>
-    <VBtn class="px-0 py-1 mb-3" variant="text" size="large" to="/pembayaran">
-      <VIcon icon="ri-arrow-left-s-line" class="me-2" />
+    <VBtn
+      class="px-0 py-1 mb-3"
+      variant="text"
+      size="large"
+      to="/pembayaran"
+    >
+      <VIcon
+        icon="ri-arrow-left-s-line"
+        class="me-2"
+      />
       Kembali
     </VBtn>
 
     <div class="mb-3">
       <h2>Riwayat Pembayaran</h2>
-      <span v-if="!pembayaranStore.loadingDetail" class="text-body-2">Nama: {{
+      <span
+        v-if="!pembayaranStore.loadingDetail"
+        class="text-body-2"
+      >Nama: {{
         pembayaranStore.itemSelected?.warga.nama_warga || '-' }}</span>
     </div>
 
-    <div v-if="pembayaranStore.loadingDetail" class="text-center py-4">
-      <VProgressCircular indeterminate size="26" />
+    <div
+      v-if="pembayaranStore.loadingDetail"
+      class="text-center py-4"
+    >
+      <VProgressCircular
+        indeterminate
+        size="26"
+      />
     </div>
 
-    <VRow v-else class="match-height">
+    <VRow
+      v-else
+      class="match-height"
+    >
       <VCol cols="12">
-        <VTabs v-model="tab" color="primary">
-          <VTab value="history">Riwayat</VTab>
-          <VTab value="no-payment">Belum Bayar</VTab>
+        <VTabs
+          v-model="tab"
+          color="primary"
+        >
+          <VTab value="history">
+            Riwayat
+          </VTab>
+          <VTab value="no-payment">
+            Belum Bayar
+          </VTab>
         </VTabs>
 
         <VDivider />
 
-        <VTabsWindow v-model="tab" class="mt-5 pt-5">
-
+        <VTabsWindow
+          v-model="tab"
+          class="mt-5 pt-5"
+        >
           <!-- ================= HISTORY ================= -->
           <VTabsWindowItem value="history">
-            <DataTableRiwayat :data="pembayaranStore.historyPaid" :meta="pembayaranStore.metaHistoryPaid"
-              :loading="pembayaranStore.loading" :has-more="pembayaranStore.hasMoreHistoryPaid"
-              @load-more="handleLoadMoreHistoryPaid" @show-bukti-bayar="handleShowBuktiBayar"
-              @change-page="handleChangePageHistoryPaid" @change-limit="handleChangeLimitHistoryPaid" />
+            <DataTableRiwayat
+              :data="pembayaranStore.historyPaid"
+              :meta="pembayaranStore.metaHistoryPaid"
+              :loading="pembayaranStore.loading"
+              :has-more="pembayaranStore.hasMoreHistoryPaid"
+              @load-more="handleLoadMoreHistoryPaid"
+              @show-bukti-bayar="handleShowBuktiBayar"
+              @change-page="handleChangePageHistoryPaid"
+              @change-limit="handleChangeLimitHistoryPaid"
+            />
           </VTabsWindowItem>
 
           <!-- ================= BELUM BAYAR ================= -->
           <VTabsWindowItem value="no-payment">
-            <div v-if="pembayaranStore.historyUnpaid.length > 0" class="mb-3">
-              <VBtn variant="flat" color="info" :loading="pembayaranStore.loadingSendNotifToAll"
-                @click="handleSendNotifToAll">
-                <VIcon icon="ri-bell-line" class="me-2" />
+            <div
+              v-if="pembayaranStore.historyUnpaid.length > 0"
+              class="mb-3"
+            >
+              <VBtn
+                variant="flat"
+                color="info"
+                :loading="pembayaranStore.loadingSendNotifToAll"
+                @click="handleSendNotifToAll"
+              >
+                <VIcon
+                  icon="ri-bell-line"
+                  class="me-2"
+                />
                 Kirim Semua Notif
               </VBtn>
             </div>
 
-            <DataTableBelumBayarRiwayat :data="pembayaranStore.historyUnpaid" :loading="pembayaranStore.loading"
-              :loading-send-notif="pembayaranStore.loadingSendNotif" :has-more="pembayaranStore.hasMoreUnpaidWarga"
-              @send-notif="handleSendNotif" @load-more="handleLoadMoreHistoryUnpaid" />
+            <DataTableBelumBayarRiwayat
+              :data="pembayaranStore.historyUnpaid"
+              :loading="pembayaranStore.loading"
+              :loading-send-notif="pembayaranStore.loadingSendNotif"
+              :has-more="pembayaranStore.hasMoreUnpaidWarga"
+              @send-notif="handleSendNotif"
+              @load-more="handleLoadMoreHistoryUnpaid"
+            />
           </VTabsWindowItem>
         </VTabsWindow>
       </VCol>
     </VRow>
 
-    <DialogFormDataRiwayat :is-show="showFormData" :is-edit="isEdit" :item="itemSelected"
-      @close="handleCloseFormData" />
+    <DialogFormDataRiwayat
+      :is-show="showFormData"
+      :is-edit="isEdit"
+      :item="itemSelected"
+      @close="handleCloseFormData"
+    />
 
-    <ConfirmDialog v-model="showConfirmation" :title="confirmOptions.title" :message="confirmOptions.message"
-      :confirm-text="confirmOptions.confirmText" :cancel-text="confirmOptions.cancelText"
-      :confirm-color="confirmOptions.confirmColor" :confirm-icon="confirmOptions.confirmIcon"
-      :loading="isLoadingConfirm" @confirm="deleteItem" />
+    <ConfirmDialog
+      v-model="showConfirmation"
+      :title="confirmOptions.title"
+      :message="confirmOptions.message"
+      :confirm-text="confirmOptions.confirmText"
+      :cancel-text="confirmOptions.cancelText"
+      :confirm-color="confirmOptions.confirmColor"
+      :confirm-icon="confirmOptions.confirmIcon"
+      :loading="isLoadingConfirm"
+      @confirm="deleteItem"
+    />
 
-    <PaymentProofImageDialog v-model="showPaymentProof" :judul-iuran="itemSelected?.informasi_iuran.judul_iuran"
-      :src="config.public.backendUrl + '/storage/' + itemSelected?.bukti_pembayaran"
-      :item="(itemSelected as Pembayaran)" />
+    <PaymentProofImageDialog
+      v-model="showPaymentProof"
+      :judul-iuran="itemSelected?.informasi_iuran.judul_iuran"
+      :src="`${config.public.backendUrl}/storage/${itemSelected?.bukti_pembayaran}`"
+      :item="itemSelected as Pembayaran"
+    />
 
-    <DialogHistoryPaymentWargaRiwayat :is-show="showHistoryPayment" @close="handleCloseShowHistoryPaymentWarga"
-      @show-bukti-bayar="handleShowBuktiBayarHistoryPayment" @send-notif="handleSendNotif" />
+    <DialogHistoryPaymentWargaRiwayat
+      :is-show="showHistoryPayment"
+      @close="handleCloseShowHistoryPaymentWarga"
+      @show-bukti-bayar="handleShowBuktiBayarHistoryPayment"
+      @send-notif="handleSendNotif"
+    />
 
-    <DialogNoPaymentRiwayat :is-show="showNoPaymentList" @close="showNoPaymentList = false"
-      @send-notif="handleSendNotif" />
+    <DialogNoPaymentRiwayat
+      :is-show="showNoPaymentList"
+      @close="showNoPaymentList = false"
+      @send-notif="handleSendNotif"
+    />
 
-    <SuccessDialog v-model="showSuccessConfirm" :title="successTitle" :message="successMessage" />
+    <SuccessDialog
+      v-model="showSuccessConfirm"
+      :title="successTitle"
+      :message="successMessage"
+    />
   </div>
 </template>
 

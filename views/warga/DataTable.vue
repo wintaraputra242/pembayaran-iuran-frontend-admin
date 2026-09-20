@@ -1,6 +1,14 @@
 <script setup lang="ts">
-import type { MasterWarga } from '@/types/api/master-warga';
-import type { PaginationMeta } from '@/types/common';
+import type { MasterWarga } from '@/types/api/master-warga'
+import type { PaginationMeta } from '@/types/common'
+
+const props = withDefaults(defineProps<{
+  data: any[]
+  meta: null | PaginationMeta
+  loading: boolean
+  hasMore: boolean
+  hasFilter: boolean
+}>(), {})
 
 const emit = defineEmits<{
   (e: 'updateStatus', item: MasterWarga): void
@@ -10,14 +18,6 @@ const emit = defineEmits<{
   (e: 'changePage', page: number): void
   (e: 'changeLimit', limit: number): void
 }>()
-
-const props = withDefaults(defineProps<{
-  data: any[]
-  meta: null | PaginationMeta
-  loading: boolean
-  hasMore: boolean
-  hasFilter: boolean
-}>(), {})
 
 const headers = [
   { key: 'no', label: 'No.' },
@@ -30,15 +30,30 @@ const headers = [
 </script>
 
 <template>
-  <AppDataTable :headers="headers" :items="props.data" :meta="props.meta" :loading="props.loading"
-    :has-more="props.hasMore" :has-filter="props.hasFilter" @load-more="emit('loadMore')"
-    @change-page="emit('changePage', $event)" @change-limit="emit('changeLimit', $event)">
+  <AppDataTable
+    :headers="headers"
+    :items="props.data"
+    :meta="props.meta"
+    :loading="props.loading"
+    :has-more="props.hasMore"
+    :has-filter="props.hasFilter"
+    @load-more="emit('loadMore')"
+    @change-page="emit('changePage', $event)"
+    @change-limit="emit('changeLimit', $event)"
+  >
     <!-- Nama + NIK -->
     <template #cell-nama_warga="{ item }">
       <div class="d-flex flex-column">
         <span class="font-weight-medium">{{ item.nama_warga }}</span>
-        <span v-if="item.deleted_at" class="text-caption text-error">
-          <VIcon size="11" icon="ri-delete-bin-line" class="me-1" />
+        <span
+          v-if="item.deleted_at"
+          class="text-caption text-error"
+        >
+          <VIcon
+            size="11"
+            icon="ri-delete-bin-line"
+            class="me-1"
+          />
           Dihapus
         </span>
       </div>
@@ -51,19 +66,42 @@ const headers = [
 
     <!-- No HP -->
     <template #cell-no_hp="{ item }">
-      <a v-if="item?.no_hp" :href="`https://wa.me/${item.no_hp.replace(/\D/g, '').replace(/^0/, '62')}`" target="_blank"
-        rel="noopener noreferrer" class="text-decoration-none d-inline-flex align-center gap-1 px-2 py-1 rounded-lg"
-        style="background: rgba(37, 211, 102, 0.1); border: 1px solid rgba(37, 211, 102, 0.3);">
-        <VIcon icon="ri-whatsapp-line" size="13" color="success" />
-        <p class="ma-0 text-caption font-weight-medium" style="color: #25d366;">{{ item.no_hp }}</p>
-        <VIcon icon="ri-external-link-line" size="11" style="color: #25d366; opacity: 0.7;" />
+      <a
+        v-if="item?.no_hp"
+        :href="`https://wa.me/${item.no_hp.replace(/\D/g, '').replace(/^0/, '62')}`"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="text-decoration-none d-inline-flex align-center gap-1 px-2 py-1 rounded-lg"
+        style="background: rgba(37, 211, 102, 0.1); border: 1px solid rgba(37, 211, 102, 0.3);"
+      >
+        <VIcon
+          icon="ri-whatsapp-line"
+          size="13"
+          color="success"
+        />
+        <p
+          class="ma-0 text-caption font-weight-medium"
+          style="color: #25d366;"
+        >{{ item.no_hp }}</p>
+        <VIcon
+          icon="ri-external-link-line"
+          size="11"
+          style="color: #25d366; opacity: 0.7;"
+        />
       </a>
-      <span v-else class="text-medium-emphasis">-</span>
+      <span
+        v-else
+        class="text-medium-emphasis"
+      >-</span>
     </template>
 
     <!-- Status -->
     <template #cell-status_keaktifan="{ item }">
-      <VChip size="small" :color="item.status_keaktifan === 'aktif' ? 'success' : 'error'" variant="tonal">
+      <VChip
+        size="small"
+        :color="item.status_keaktifan === 'aktif' ? 'success' : 'error'"
+        variant="tonal"
+      >
         {{ item.status_keaktifan === 'aktif' ? 'Aktif' : 'Tidak Aktif' }}
       </VChip>
     </template>
@@ -74,28 +112,52 @@ const headers = [
         <!-- Toggle status -->
         <VTooltip :text="item.status_keaktifan === 'aktif' ? 'Nonaktifkan' : 'Aktifkan'">
           <template #activator="{ props: tp }">
-            <IconBtn v-bind="tp" variant="outlined" class="rounded-lg" size="small"
-              :color="item.status_keaktifan === 'aktif' ? 'warning' : 'success'" @click="emit('updateStatus', item)">
+            <IconBtn
+              v-bind="tp"
+              variant="outlined"
+              class="rounded-lg"
+              size="small"
+              :color="item.status_keaktifan === 'aktif' ? 'warning' : 'success'"
+              @click="emit('updateStatus', item)"
+            >
               <VIcon :icon="item.status_keaktifan === 'aktif' ? 'ri-eye-off-line' : 'ri-eye-line'" />
             </IconBtn>
           </template>
         </VTooltip>
 
         <!-- Edit — hanya kalau belum dihapus -->
-        <VTooltip v-if="!item.deleted_at" text="Edit">
+        <VTooltip
+          v-if="!item.deleted_at"
+          text="Edit"
+        >
           <template #activator="{ props: tp }">
-            <IconBtn v-bind="tp" variant="outlined" class="rounded-lg" size="small" color="info"
-              @click="emit('edit', item)">
+            <IconBtn
+              v-bind="tp"
+              variant="outlined"
+              class="rounded-lg"
+              size="small"
+              color="info"
+              @click="emit('edit', item)"
+            >
               <VIcon icon="ri-edit-line" />
             </IconBtn>
           </template>
         </VTooltip>
 
         <!-- Hapus — hanya kalau belum dihapus -->
-        <VTooltip v-if="!item.deleted_at" text="Hapus">
+        <VTooltip
+          v-if="!item.deleted_at"
+          text="Hapus"
+        >
           <template #activator="{ props: tp }">
-            <IconBtn v-bind="tp" variant="outlined" class="rounded-lg" size="small" color="error"
-              @click="emit('delete', item)">
+            <IconBtn
+              v-bind="tp"
+              variant="outlined"
+              class="rounded-lg"
+              size="small"
+              color="error"
+              @click="emit('delete', item)"
+            >
               <VIcon icon="ri-delete-bin-line" />
             </IconBtn>
           </template>

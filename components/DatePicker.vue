@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { VueDatePicker } from "@vuepic/vue-datepicker"
-import "@vuepic/vue-datepicker/dist/main.css"
+import { VueDatePicker } from '@vuepic/vue-datepicker'
+import '@vuepic/vue-datepicker/dist/main.css'
 import { id } from 'date-fns/locale'
-import { computed, ref, watch } from "vue"
+import { computed, ref, watch } from 'vue'
 
 const props = defineProps({
   modelValue: [String, Date, Array, Object],
   label: String,
   placeholder: String,
-  format: { type: String, default: "dd/MM/yyyy" },
+  format: { type: String, default: 'dd/MM/yyyy' },
   enableTime: { type: Boolean, default: false },
   range: { type: Boolean, default: false },
   disabled: { type: Boolean, default: false },
@@ -21,40 +21,41 @@ const props = defineProps({
   isClearMessage: { type: Boolean, default: false },
 })
 
-const emit = defineEmits(["update:modelValue", 'clearErrorMessage'])
+const emit = defineEmits(['update:modelValue', 'clearErrorMessage'])
 
 const model = computed({
   get: () => props.modelValue,
-  set: (v) => emit("update:modelValue", v),
+  set: v => emit('update:modelValue', v),
 })
 
-const errorMessage = ref("")
+const errorMessage = ref('')
 
 const validate = () => {
   for (const rule of props.rules) {
     const result = rule(model.value)
     if (result !== true) {
       errorMessage.value = result
+
       return false
     }
   }
-  errorMessage.value = ""
+  errorMessage.value = ''
+
   return true
 }
 
 const resetValidation = () => {
-  errorMessage.value = ""
+  errorMessage.value = ''
 }
 
-watch(() => props.isSubmit, (newVal) => {
-  if (newVal) {
+watch(() => props.isSubmit, newVal => {
+  if (newVal)
     validate()
-  }
 })
 
-watch(() => props.isClearMessage, (newVal) => {
+watch(() => props.isClearMessage, newVal => {
   if (newVal) {
-    errorMessage.value = ""
+    errorMessage.value = ''
     emit('clearErrorMessage')
   }
 })
@@ -69,7 +70,10 @@ defineExpose({
 <template>
   <div class="base-date-picker">
     <!-- Label -->
-    <label v-if="label" class="bdp-label">
+    <label
+      v-if="label"
+      class="bdp-label"
+    >
       {{ label }}
     </label>
 
@@ -80,11 +84,11 @@ defineExpose({
       :formats="{ input: format }"
       :range="range"
       :time-config="{
-        enableTimePicker: enableTime
+        enableTimePicker: enableTime,
       }"
       :disabled-dates="disabledDates"
       :dark="false"
-      :teleport="true"
+      teleport
       :disabled="disabled"
       :locale="id"
       :clearable="clearable"
@@ -93,15 +97,19 @@ defineExpose({
       class="bdp-input"
       :class="{ 'disabled-field': disabled }"
       :ui="{
-        menu: showDatePicker ? '' : 'hide-year-picker'
+        menu: showDatePicker ? '' : 'hide-year-picker',
       }"
-      :action-row="{ showSelect: false,  }"
+      :action-row="{ showSelect: false }"
       auto-apply
-      @blur="validate()"
+      @blur="validate"
     />
 
     <!-- Error -->
-    <p v-if="errorMessage" class="bdp-error text-body-2 mb-0" :class="{ 'disabled-error': disabled }">
+    <p
+      v-if="errorMessage"
+      class="bdp-error text-body-2 mb-0"
+      :class="{ 'disabled-error': disabled }"
+    >
       {{ errorMessage }}
     </p>
   </div>

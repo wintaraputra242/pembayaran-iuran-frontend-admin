@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import type { PembayaranByRegu } from '@/types/api/pembayaran';
-import type { PaginationMeta } from '@/types/common';
-import qris from '@images/pages/qris.png'; // sesuaikan path
-
+import type { PembayaranByRegu } from '@/types/api/pembayaran'
+import type { PaginationMeta } from '@/types/common'
+import qris from '@images/pages/qris.png' // sesuaikan path
 
 const props = defineProps<{
   data: PembayaranByRegu[]
@@ -39,9 +38,18 @@ const headers = [
 ]
 
 const bulanLabel: Record<number, string> = {
-  1: 'Jan', 2: 'Feb', 3: 'Mar', 4: 'Apr',
-  5: 'Mei', 6: 'Jun', 7: 'Jul', 8: 'Ags',
-  9: 'Sep', 10: 'Okt', 11: 'Nov', 12: 'Des',
+  1: 'Jan',
+  2: 'Feb',
+  3: 'Mar',
+  4: 'Apr',
+  5: 'Mei',
+  6: 'Jun',
+  7: 'Jul',
+  8: 'Ags',
+  9: 'Sep',
+  10: 'Okt',
+  11: 'Nov',
+  12: 'Des',
 }
 
 const statusChipsColor: Record<string, string> = {
@@ -60,9 +68,17 @@ const statusText: Record<string, string> = {
 </script>
 
 <template>
-  <AppDataTable :headers="headers" :items="props.data" :meta="props.meta" :loading="props.loading"
-    :has-more="props.hasMore" :has-filter="props.hasFilter" @load-more="emit('loadMore')"
-    @change-page="emit('changePage', $event)" @change-limit="emit('changeLimit', $event)">
+  <AppDataTable
+    :headers="headers"
+    :items="props.data"
+    :meta="props.meta"
+    :loading="props.loading"
+    :has-more="props.hasMore"
+    :has-filter="props.hasFilter"
+    @load-more="emit('loadMore')"
+    @change-page="emit('changePage', $event)"
+    @change-limit="emit('changeLimit', $event)"
+  >
     <!-- Nama Warga -->
     <template #cell-nama_warga="{ item }">
       <div class="d-flex flex-column">
@@ -79,7 +95,10 @@ const statusText: Record<string, string> = {
     <!-- Jenis Iuran -->
     <template #cell-jenis_iuran="{ item }">
       <div class="text-capitalize">
-        <VChip size="small" :color="item.informasi_iuran?.jenis_iuran === 'bulanan' ? 'info' : 'error'">
+        <VChip
+          size="small"
+          :color="item.informasi_iuran?.jenis_iuran === 'bulanan' ? 'info' : 'error'"
+        >
           {{ item.informasi_iuran?.jenis_iuran ?? '-' }}
         </VChip>
       </div>
@@ -87,20 +106,39 @@ const statusText: Record<string, string> = {
 
     <!-- Bulan -->
     <template #cell-bulan="{ item }">
-      <div v-if="item.bulan?.length" class="d-flex flex-wrap gap-1">
-        <VChip v-for="b in item.bulan" :key="b" size="x-small" variant="tonal" color="primary">
+      <div
+        v-if="item.bulan?.length"
+        class="d-flex flex-wrap gap-1"
+      >
+        <VChip
+          v-for="b in item.bulan"
+          :key="b"
+          size="x-small"
+          variant="tonal"
+          color="primary"
+        >
           {{ bulanLabel[b] ?? b }}
         </VChip>
       </div>
-      <span v-else class="text-disabled">-</span>
+      <span
+        v-else
+        class="text-disabled"
+      >-</span>
     </template>
 
     <!-- Metode Bayar -->
     <template #cell-metode_bayar="{ item }">
       <div class="d-flex align-center gap-1 text-capitalize">
-        <VIcon v-if="item.metode_bayar !== 'qris'"
-          :icon="item.metode_bayar === 'transfer' ? 'ri-exchange-line' : 'ri-cash-line'" size="20" />
-        <VImg v-if="item.metode_bayar === 'qris'" :src="qris" max-width="20px" />
+        <VIcon
+          v-if="item.metode_bayar !== 'qris'"
+          :icon="item.metode_bayar === 'transfer' ? 'ri-exchange-line' : 'ri-cash-line'"
+          size="20"
+        />
+        <VImg
+          v-if="item.metode_bayar === 'qris'"
+          :src="qris"
+          max-width="20px"
+        />
         {{ item.metode_bayar ?? '-' }}
       </div>
     </template>
@@ -117,7 +155,10 @@ const statusText: Record<string, string> = {
 
     <!-- Status -->
     <template #cell-status="{ item }">
-      <VChip size="small" :color="statusChipsColor[item.status_bayar]">
+      <VChip
+        size="small"
+        :color="statusChipsColor[item.status_bayar]"
+      >
         {{ statusText[item.status_bayar] }}
       </VChip>
     </template>
@@ -129,26 +170,43 @@ const statusText: Record<string, string> = {
 
     <!-- Bukti Pembayaran -->
     <template #cell-bukti_bayar="{ item }">
-      <div v-if="item.bukti_pembayaran" v-ripple class="cursor-pointer d-inline-flex flex-column align-center gap-1"
-        style="max-width: 70px;" @click="emit('showBuktiBayar', item)">
+      <div
+        v-if="item.bukti_pembayaran"
+        v-ripple
+        class="cursor-pointer d-inline-flex flex-column align-center gap-1"
+        style="max-width: 70px;"
+        @click="emit('showBuktiBayar', item)"
+      >
         <div style="position: relative; width: 54px; height: 54px;">
-          <img :src="config.public.backendUrl + '/storage/' + item.bukti_pembayaran"
-            style="width: 54px; height: 54px; object-fit: cover; border-radius: 8px; border: 1px solid rgba(var(--v-theme-primary), 0.3);" />
+          <img
+            :src="`${config.public.backendUrl}/storage/${item.bukti_pembayaran}`"
+            style="width: 54px; height: 54px; object-fit: cover; border-radius: 8px; border: 1px solid rgba(var(--v-theme-primary), 0.3);"
+          >
           <!-- overlay icon zoom -->
-          <div style="
+          <div
+            style="
             position: absolute; inset: 0;
             background: rgba(var(--v-theme-primary), 0.15);
             border-radius: 8px;
             display: flex; align-items: center; justify-content: center;
-          ">
-            <VIcon size="18" color="primary">ri-zoom-in-line</VIcon>
+          "
+          >
+            <VIcon
+              size="18"
+              color="primary"
+            >
+              ri-zoom-in-line
+            </VIcon>
           </div>
         </div>
         <span style="font-size: 10px; color: rgb(var(--v-theme-primary)); white-space: nowrap;">
           Lihat Bukti
         </span>
       </div>
-      <span v-else class="text-medium-emphasis">-</span>
+      <span
+        v-else
+        class="text-medium-emphasis"
+      >-</span>
     </template>
   </AppDataTable>
 </template>

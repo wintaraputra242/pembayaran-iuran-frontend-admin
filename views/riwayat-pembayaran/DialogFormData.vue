@@ -1,9 +1,4 @@
 <script lang="ts" setup>
-const emit = defineEmits<{
-  (e: 'reload'): void;
-  (e: 'close'): void;
-}>();
-
 const props = withDefaults(defineProps<{
   isShow: boolean
   isEdit: boolean
@@ -13,19 +8,28 @@ const props = withDefaults(defineProps<{
   isEdit: false,
 })
 
+const emit = defineEmits<{
+  (e: 'reload'): void
+  (e: 'close'): void
+}>()
+
 const form = ref(null)
 
 const defaultParams = {
   nama_regu: '',
 }
-const params = reactive({...defaultParams})
+
+const params = reactive({ ...defaultParams })
 
 const rules = {
-  required: (v: any) => !!v || "Field wajib diisi",
+  required: (v: any) => !!v || 'Field wajib diisi',
 
   nama: (v: string) => {
-    if (!v) return "Nama Regu wajib diisi"
-    if (v.length < 3) return "Nama minimal 3 karakter"
+    if (!v)
+      return 'Nama Regu wajib diisi'
+    if (v.length < 3)
+      return 'Nama minimal 3 karakter'
+
     return true
   },
 }
@@ -33,41 +37,57 @@ const rules = {
 watch(
   () => params.nama_regu,
   newVal => {
-    if (!newVal) return
+    if (!newVal)
+      return
     params.nama_regu = newVal.toUpperCase()
-  }
+  },
 )
 
 const handleClose = () => {
   form.value?.reset()
-  
+
   emit('close')
 }
 
 watch(
   () => props.isEdit,
   newVal => {
-    if (!newVal) return
+    if (!newVal)
+      return
 
     params.nama_regu = props.item?.nama
-  }
+  },
 )
 </script>
 
 <template>
-  <VDialog v-model="props.isShow">
+  <VDialog
+    :model-value="props.isShow"
+    @update:model-value="emit('close')"
+  >
     <VCard>
       <VCardTitle class="pt-3">
         <div class="d-flex align-center justify-space-between">
           <h3>{{ props.isEdit ? 'Edit' : 'Tambah' }}</h3>
-          <IconBtn variant="text" color="secondary" size="small" @click="handleClose">
+          <IconBtn
+            variant="text"
+            color="secondary"
+            size="small"
+            @click="handleClose"
+          >
             <VIcon icon="ri-close-line" />
           </IconBtn>
         </div>
       </VCardTitle>
       <VCardItem>
-        <VForm ref="form" @submit.prevent="() => {}">
-          <VRow align="center" class="pt-1">
+        <VForm
+          ref="form"
+          @submit.prevent="() => {}"
+        >
+          <VRow
+            align="center"
+            class="pt-1"
+          >
             <VCol cols="12">
               <VTextField
                 v-model="params.nama_regu"
@@ -78,13 +98,29 @@ watch(
             </VCol>
             <VCol cols="12">
               <div class="d-flex justify-end flex-wrap gap-2">
-                <VBtn variant="text" color="secondary" size="small" @click="handleClose">
-                  <VIcon icon="ri-close-line" class="me-1" />
+                <VBtn
+                  variant="text"
+                  color="secondary"
+                  size="small"
+                  @click="handleClose"
+                >
+                  <VIcon
+                    icon="ri-close-line"
+                    class="me-1"
+                  />
                   Batal
                 </VBtn>
-                <VBtn variant="flat" :color="props.isEdit ? 'info' : 'success'" size="small" type="submit">
-                  <VIcon :icon="props.isEdit ? 'ri-save-2-line' : 'ri-add-line'" class="me-1" />
-                  {{ props.isEdit ? 'Simpan' : 'Tambah'}}
+                <VBtn
+                  variant="flat"
+                  :color="props.isEdit ? 'info' : 'success'"
+                  size="small"
+                  type="submit"
+                >
+                  <VIcon
+                    :icon="props.isEdit ? 'ri-save-2-line' : 'ri-add-line'"
+                    class="me-1"
+                  />
+                  {{ props.isEdit ? 'Simpan' : 'Tambah' }}
                 </VBtn>
               </div>
             </VCol>

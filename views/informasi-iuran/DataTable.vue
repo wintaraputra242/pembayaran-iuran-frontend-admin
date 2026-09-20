@@ -1,5 +1,13 @@
 <script setup lang="ts">
-import type { PaginationMeta } from '@/types/common';
+import type { PaginationMeta } from '@/types/common'
+
+const props = withDefaults(defineProps<{
+  data: any[]
+  meta: null | PaginationMeta
+  loading: boolean
+  hasMore: boolean
+  hasFilter: boolean
+}>(), {})
 
 const emit = defineEmits<{
   (e: 'edit', item: any): void
@@ -9,14 +17,6 @@ const emit = defineEmits<{
   (e: 'changePage', page: number): void
   (e: 'changeLimit', limit: number): void
 }>()
-
-const props = withDefaults(defineProps<{
-  data: any[]
-  meta: null | PaginationMeta
-  loading: boolean
-  hasMore: boolean
-  hasFilter: boolean
-}>(), {})
 
 const headers = [
   { key: 'no', label: 'No.' },
@@ -30,14 +30,25 @@ const headers = [
 </script>
 
 <template>
-  <AppDataTable :headers="headers" :items="props.data" :meta="props.meta" :loading="props.loading"
-    :has-more="props.hasMore" :has-filter="props.hasFilter" @load-more="emit('loadMore')"
-    @change-page="emit('changePage', $event)" @change-limit="emit('changeLimit', $event)">
+  <AppDataTable
+    :headers="headers"
+    :items="props.data"
+    :meta="props.meta"
+    :loading="props.loading"
+    :has-more="props.hasMore"
+    :has-filter="props.hasFilter"
+    @load-more="emit('loadMore')"
+    @change-page="emit('changePage', $event)"
+    @change-limit="emit('changeLimit', $event)"
+  >
     <!-- Judul -->
     <template #cell-judul_iuran="{ item }">
       <div class="d-flex flex-column">
         <span class="font-weight-medium">{{ item.judul_iuran }}</span>
-        <span v-if="item.nama_warga_meninggal" class="text-caption text-medium-emphasis">
+        <span
+          v-if="item.nama_warga_meninggal"
+          class="text-caption text-medium-emphasis"
+        >
           Alm. {{ item.nama_warga_meninggal }}
         </span>
       </div>
@@ -45,7 +56,11 @@ const headers = [
 
     <!-- Jenis -->
     <template #cell-jenis_iuran="{ item }">
-      <VChip size="small" :color="item.jenis_iuran === 'kematian' ? 'error' : 'info'" variant="tonal">
+      <VChip
+        size="small"
+        :color="item.jenis_iuran === 'kematian' ? 'error' : 'info'"
+        variant="tonal"
+      >
         {{ item.jenis_iuran === 'kematian' ? 'Kematian' : 'Bulanan' }}
       </VChip>
     </template>
@@ -62,7 +77,11 @@ const headers = [
 
     <!-- Status -->
     <template #cell-status_aktif="{ item }">
-      <VChip size="small" :color="item.status_aktif ? 'success' : 'error'" variant="tonal">
+      <VChip
+        size="small"
+        :color="item.status_aktif ? 'success' : 'error'"
+        variant="tonal"
+      >
         {{ item.status_aktif ? 'Aktif' : 'Tidak Aktif' }}
       </VChip>
     </template>
@@ -72,8 +91,14 @@ const headers = [
       <div class="d-flex gap-1">
         <VTooltip :text="item.status_aktif ? 'Nonaktifkan' : 'Aktifkan'">
           <template #activator="{ props: tp }">
-            <IconBtn v-bind="tp" variant="outlined" class="rounded-lg" size="small"
-              :color="item.status_aktif ? 'warning' : 'success'" @click="emit('updateStatus', item)">
+            <IconBtn
+              v-bind="tp"
+              variant="outlined"
+              class="rounded-lg"
+              size="small"
+              :color="item.status_aktif ? 'warning' : 'success'"
+              @click="emit('updateStatus', item)"
+            >
               <VIcon :icon="item.status_aktif ? 'ri-eye-off-line' : 'ri-eye-line'" />
             </IconBtn>
           </template>
@@ -81,8 +106,14 @@ const headers = [
 
         <VTooltip text="Edit">
           <template #activator="{ props: tp }">
-            <IconBtn v-bind="tp" variant="outlined" class="rounded-lg" size="small" color="info"
-              @click="emit('edit', item)">
+            <IconBtn
+              v-bind="tp"
+              variant="outlined"
+              class="rounded-lg"
+              size="small"
+              color="info"
+              @click="emit('edit', item)"
+            >
               <VIcon icon="ri-edit-line" />
             </IconBtn>
           </template>
@@ -90,8 +121,14 @@ const headers = [
 
         <VTooltip text="Hapus">
           <template #activator="{ props: tp }">
-            <IconBtn v-bind="tp" variant="outlined" class="rounded-lg" size="small" color="error"
-              @click="emit('delete', item)">
+            <IconBtn
+              v-bind="tp"
+              variant="outlined"
+              class="rounded-lg"
+              size="small"
+              color="error"
+              @click="emit('delete', item)"
+            >
               <VIcon icon="ri-delete-bin-line" />
             </IconBtn>
           </template>

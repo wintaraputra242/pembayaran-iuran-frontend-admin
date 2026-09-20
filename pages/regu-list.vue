@@ -1,14 +1,13 @@
 <script setup lang="ts">
-import { useApi } from '@/composables/api/useApi';
-import type { AnggotaRegu } from '@/types/api/master-regu';
-import DataTableAnggotaReguList from '@/views/regu-list/DataTableAnggota.vue';
-import DataTableNoPaymentReguList from '@/views/regu-list/DataTableNoPayment.vue';
-import DataTablePaymentByRegu from '@/views/regu-list/DataTablePayment.vue';
-import DialogDetailAnggotaReguList from '@/views/regu-list/DialogDetailAnggota.vue';
+import { useApi } from '@/composables/api/useApi'
+import type { AnggotaRegu } from '@/types/api/master-regu'
+import DataTableAnggotaReguList from '@/views/regu-list/DataTableAnggota.vue'
+import DataTableNoPaymentReguList from '@/views/regu-list/DataTableNoPayment.vue'
+import DataTablePaymentByRegu from '@/views/regu-list/DataTablePayment.vue'
+import DialogDetailAnggotaReguList from '@/views/regu-list/DialogDetailAnggota.vue'
 
 definePageMeta({ onlyKetuaRegu: true })
 
-const router = useRouter()
 const masterWargaStore = useMasterWargaStore()
 const masterReguStore = useMasterReguStore()
 const pembayaranStore = usePembayaranStore()
@@ -40,6 +39,7 @@ onMounted(async () => {
   await masterReguStore.fetchRegu({ page: 1, limit: 10 })
 
   const regu = masterReguStore.regu?.[0] ?? null
+
   selectedRegu.value = regu
 
   if (regu) {
@@ -54,8 +54,9 @@ onMounted(async () => {
 // -------------------------------------------------------
 // WATCH FILTER SUDAH BAYAR
 // -------------------------------------------------------
-watch(() => filters.anggota_sudah_bayar, useDebounceFn(async (val) => {
-  if (!selectedRegu.value) return
+watch(() => filters.anggota_sudah_bayar, useDebounceFn(async val => {
+  if (!selectedRegu.value)
+    return
 
   // Reset dulu
   pembayaranStore.pembayaranByRegu = []
@@ -71,7 +72,8 @@ watch(() => filters.anggota_sudah_bayar, useDebounceFn(async (val) => {
 // BELUM BAYAR
 // -------------------------------------------------------
 const handleLoadUnpaid = async () => {
-  if (!selectedRegu.value || !filters.id_informasi_iuran) return
+  if (!selectedRegu.value || !filters.id_informasi_iuran)
+    return
 
   showUnpaidPanel.value = true
 
@@ -96,7 +98,8 @@ const handleLoadMoreUnpaid = async () => {
 // SUDAH BAYAR
 // -------------------------------------------------------
 const handleLoadMoreSudahBayar = async () => {
-  if (!selectedRegu.value) return
+  if (!selectedRegu.value)
+    return
   await pembayaranStore.fetchPembayaranByRegu({
     id_regu: selectedRegu.value.id,
     nama_warga: filters.anggota_sudah_bayar || undefined,
@@ -106,7 +109,8 @@ const handleLoadMoreSudahBayar = async () => {
 
 // Pagination desktop (server-side) — ganti data (bukan menambahkan) sesuai halaman/jumlah baris yang dipilih.
 const handleChangePageSudahBayar = async (newPage: number) => {
-  if (!selectedRegu.value) return
+  if (!selectedRegu.value)
+    return
   await pembayaranStore.fetchPembayaranByRegu({
     id_regu: selectedRegu.value.id,
     nama_warga: filters.anggota_sudah_bayar || undefined,
@@ -116,7 +120,8 @@ const handleChangePageSudahBayar = async (newPage: number) => {
 }
 
 const handleChangeLimitSudahBayar = async (newLimit: number) => {
-  if (!selectedRegu.value) return
+  if (!selectedRegu.value)
+    return
   await pembayaranStore.fetchPembayaranByRegu({
     id_regu: selectedRegu.value.id,
     nama_warga: filters.anggota_sudah_bayar || undefined,
@@ -145,9 +150,11 @@ const handleSendNotif = async (item: any) => {
       body: { id_informasi_iuran: pembayaranStore.idInformasiIuran, nik: item.nik },
     })
     uiStore.showSuccess('Notifikasi berhasil dikirim.')
-  } catch (e) {
+  }
+  catch (e) {
     // error dihandle useApi
-  } finally {
+  }
+  finally {
     isLoadingSendNotif.value = false
   }
 }
@@ -178,9 +185,20 @@ const isKetuaRegu = computed(() => authStore.user?.role === 'ketua_regu')
   <div>
     <!-- Header -->
     <div class="mb-4">
-      <div v-if="isKetuaRegu" class="mb-3">
-        <VBtn class="px-0 py-1" variant="text" size="large" to="/create-pembayaran">
-          <VIcon icon="ri-arrow-left-s-line" class="me-2" />
+      <div
+        v-if="isKetuaRegu"
+        class="mb-3"
+      >
+        <VBtn
+          class="px-0 py-1"
+          variant="text"
+          size="large"
+          to="/create-pembayaran"
+        >
+          <VIcon
+            icon="ri-arrow-left-s-line"
+            class="me-2"
+          />
           Kembali
         </VBtn>
       </div>
@@ -191,69 +209,145 @@ const isKetuaRegu = computed(() => authStore.user?.role === 'ketua_regu')
     </div>
 
     <!-- Loading awal -->
-    <div v-if="masterReguStore.loading" class="d-flex justify-center py-6">
-      <VProgressCircular indeterminate size="26" />
+    <div
+      v-if="masterReguStore.loading"
+      class="d-flex justify-center py-6"
+    >
+      <VProgressCircular
+        indeterminate
+        size="26"
+      />
     </div>
 
     <!-- Tidak ada regu -->
-    <VAlert v-else-if="!selectedRegu" type="info" variant="tonal" rounded="lg">
+    <VAlert
+      v-else-if="!selectedRegu"
+      type="info"
+      variant="tonal"
+      rounded="lg"
+    >
       Anda belum terdaftar dalam regu manapun.
     </VAlert>
 
     <!-- Konten -->
     <template v-else>
-      <VTabs v-model="activeTab" color="primary" class="mb-4">
-        <VTab value="anggota">Anggota</VTab>
-        <VTab value="sudah_bayar">Sudah Bayar</VTab>
-        <VTab value="belum_bayar">Belum Bayar</VTab>
+      <VTabs
+        v-model="activeTab"
+        color="primary"
+        class="mb-4"
+      >
+        <VTab value="anggota">
+          Anggota
+        </VTab>
+        <VTab value="sudah_bayar">
+          Sudah Bayar
+        </VTab>
+        <VTab value="belum_bayar">
+          Belum Bayar
+        </VTab>
       </VTabs>
 
       <VTabsWindow v-model="activeTab">
-
         <!-- TAB ANGGOTA -->
-        <VTabsWindowItem value="anggota" class="pt-4">
+        <VTabsWindowItem
+          value="anggota"
+          class="pt-4"
+        >
           <div class="mb-3">
-            <VTextField v-model="filters.anggota" placeholder="Cari anggota" prepend-inner-icon="ri-search-2-line"
-              hide-details />
+            <VTextField
+              v-model="filters.anggota"
+              placeholder="Cari anggota"
+              prepend-inner-icon="ri-search-2-line"
+              hide-details
+            />
           </div>
 
-          <DataTableAnggotaReguList :data="masterReguStore.anggotaRegu" :loading="masterReguStore.loadingAnggota"
-            :keyword="filters.anggota" @detail-anggota="handleDetailAnggota" />
+          <DataTableAnggotaReguList
+            :data="masterReguStore.anggotaRegu"
+            :loading="masterReguStore.loadingAnggota"
+            :keyword="filters.anggota"
+            @detail-anggota="handleDetailAnggota"
+          />
         </VTabsWindowItem>
 
         <!-- TAB SUDAH BAYAR -->
-        <VTabsWindowItem value="sudah_bayar" class="pt-4">
+        <VTabsWindowItem
+          value="sudah_bayar"
+          class="pt-4"
+        >
           <div class="mb-3">
-            <VTextField v-model="filters.anggota_sudah_bayar" placeholder="Cari anggota"
-              prepend-inner-icon="ri-search-2-line" hide-details />
+            <VTextField
+              v-model="filters.anggota_sudah_bayar"
+              placeholder="Cari anggota"
+              prepend-inner-icon="ri-search-2-line"
+              hide-details
+            />
           </div>
 
-          <DataTablePaymentByRegu :data="pembayaranStore.pembayaranByRegu" :meta="pembayaranStore.metaByRegu"
-            :loading="pembayaranStore.loadingByRegu" :has-more="!!pembayaranStore.metaByRegu?.next_page_url"
-            @load-more="handleLoadMoreSudahBayar" @show-bukti-bayar="handleShowBuktiBayar"
-            @change-page="handleChangePageSudahBayar" @change-limit="handleChangeLimitSudahBayar" />
+          <DataTablePaymentByRegu
+            :data="pembayaranStore.pembayaranByRegu"
+            :meta="pembayaranStore.metaByRegu"
+            :loading="pembayaranStore.loadingByRegu"
+            :has-more="!!pembayaranStore.metaByRegu?.next_page_url"
+            @load-more="handleLoadMoreSudahBayar"
+            @show-bukti-bayar="handleShowBuktiBayar"
+            @change-page="handleChangePageSudahBayar"
+            @change-limit="handleChangeLimitSudahBayar"
+          />
         </VTabsWindowItem>
 
         <!-- TAB BELUM BAYAR -->
-        <VTabsWindowItem value="belum_bayar" class="pt-4">
+        <VTabsWindowItem
+          value="belum_bayar"
+          class="pt-4"
+        >
           <!-- Filter -->
           <VCard class="mb-4">
             <VCardItem>
               <VRow align="center">
-                <VCol cols="12" sm="6">
-                  <VAutocomplete v-model="filters.id_informasi_iuran"
-                    :items="dropdownStore.itemInformasiIuranForDropdown" item-title="judul_iuran" item-value="id"
-                    placeholder="Pilih informasi iuran" hide-details return-object clearable />
+                <VCol
+                  cols="12"
+                  sm="6"
+                >
+                  <VAutocomplete
+                    v-model="filters.id_informasi_iuran"
+                    :items="dropdownStore.itemInformasiIuranForDropdown"
+                    item-title="judul_iuran"
+                    item-value="id"
+                    placeholder="Pilih informasi iuran"
+                    hide-details
+                    return-object
+                    clearable
+                  />
                 </VCol>
-                <VCol cols="12" sm="4">
-                  <VSelect v-model="filters.bulan" :items="Array.from({ length: 12 }, (_, i) => ({
-                    title: new Date(0, i).toLocaleString('id-ID', { month: 'long' }),
-                    value: i + 1,
-                  }))" item-title="title" item-value="value" placeholder="Pilih bulan" hide-details clearable />
+                <VCol
+                  cols="12"
+                  sm="4"
+                >
+                  <VSelect
+                    v-model="filters.bulan"
+                    :items="Array.from({ length: 12 }, (_, i) => ({
+                      title: new Date(0, i).toLocaleString('id-ID', { month: 'long' }),
+                      value: i + 1,
+                    }))"
+                    item-title="title"
+                    item-value="value"
+                    placeholder="Pilih bulan"
+                    hide-details
+                    clearable
+                  />
                 </VCol>
-                <VCol cols="12" sm="2">
-                  <VBtn color="primary" block :loading="pembayaranStore.loadingUnpaid"
-                    :disabled="!filters.id_informasi_iuran" @click="handleLoadUnpaid">
+                <VCol
+                  cols="12"
+                  sm="2"
+                >
+                  <VBtn
+                    color="primary"
+                    block
+                    :loading="pembayaranStore.loadingUnpaid"
+                    :disabled="!filters.id_informasi_iuran"
+                    @click="handleLoadUnpaid"
+                  >
                     Cek
                   </VBtn>
                 </VCol>
@@ -262,25 +356,49 @@ const isKetuaRegu = computed(() => authStore.user?.role === 'ketua_regu')
           </VCard>
 
           <!-- Tabel belum bayar -->
-          <DataTableNoPaymentReguList v-if="showUnpaidPanel" :data="pembayaranStore.unpaidWarga"
-            :meta="pembayaranStore.meta" :loading="pembayaranStore.loading" :loading-send-notif="isLoadingSendNotif"
-            :has-more="!!pembayaranStore.meta?.next_page_url" :has-filter="showUnpaidPanel"
-            @load-more="handleLoadMoreUnpaid" @send-notif="handleSendNotif" @change-page="handleChangePageUnpaid"
-            @change-limit="handleChangeLimitUnpaid" />
+          <DataTableNoPaymentReguList
+            v-if="showUnpaidPanel"
+            :data="pembayaranStore.unpaidWarga"
+            :meta="pembayaranStore.meta"
+            :loading="pembayaranStore.loading"
+            :loading-send-notif="isLoadingSendNotif"
+            :has-more="!!pembayaranStore.meta?.next_page_url"
+            :has-filter="showUnpaidPanel"
+            @load-more="handleLoadMoreUnpaid"
+            @send-notif="handleSendNotif"
+            @change-page="handleChangePageUnpaid"
+            @change-limit="handleChangeLimitUnpaid"
+          />
 
-          <div v-else class="text-center py-6 text-medium-emphasis">
-            <VIcon icon="ri-search-line" size="32" class="mb-2 d-block mx-auto" />
-            <p class="ma-0">Pilih informasi iuran dan klik Cek.</p>
+          <div
+            v-else
+            class="text-center py-6 text-medium-emphasis"
+          >
+            <VIcon
+              icon="ri-search-line"
+              size="32"
+              class="mb-2 d-block mx-auto"
+            />
+            <p class="ma-0">
+              Pilih informasi iuran dan klik Cek.
+            </p>
           </div>
         </VTabsWindowItem>
-
       </VTabsWindow>
     </template>
 
-    <PaymentProofImageDialog v-model="showPaymentProof" :judul-iuran="itemSelected?.informasi_iuran?.nama"
+    <PaymentProofImageDialog
+      v-model="showPaymentProof"
+      :judul-iuran="itemSelected?.informasi_iuran?.nama"
       :nama-warga="itemSelected?.nama_warga"
-      :src="config.public.backendUrl + '/storage/' + itemSelected?.bukti_pembayaran" :item="itemSelected" />
+      :src="`${config.public.backendUrl}/storage/${itemSelected?.bukti_pembayaran}`"
+      :item="itemSelected"
+    />
 
-    <DialogDetailAnggotaReguList :is-show="showDetail" :item="itemSelected" @close="showDetail = false" />
+    <DialogDetailAnggotaReguList
+      :is-show="showDetail"
+      :item="itemSelected"
+      @close="showDetail = false"
+    />
   </div>
 </template>

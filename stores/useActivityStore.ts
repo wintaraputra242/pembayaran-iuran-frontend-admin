@@ -1,7 +1,7 @@
+import { defineStore } from 'pinia'
 import { useActivity } from '@/composables/api/useActivity'
 import type { ActivityLog } from '@/types/api/activity'
 import type { PaginationMeta } from '@/types/common'
-import { defineStore } from 'pinia'
 
 export const useActivityStore = defineStore('activity', {
   state: () => ({
@@ -20,19 +20,20 @@ export const useActivityStore = defineStore('activity', {
   }),
 
   getters: {
-    hasData: (state) => state.activities.length > 0,
-    hasMore: (state) => state.meta?.total !== state.activities.length,
-    hasFilter: (state) =>
-      !!state.filters.action ||
-      !!state.filters.user ||
-      !!state.filters.start_date ||
-      !!state.filters.end_date,
+    hasData: state => state.activities.length > 0,
+    hasMore: state => state.meta?.total !== state.activities.length,
+    hasFilter: state =>
+      !!state.filters.action
+      || !!state.filters.user
+      || !!state.filters.start_date
+      || !!state.filters.end_date,
   },
 
   actions: {
     async fetchActivities(params?: {
       page?: number
       limit?: number
+
       // true = ganti seluruh data dengan hasil fetch ini (dipakai pagination desktop).
       // false/undefined = tambahkan ke data yang sudah ada (dipakai infinite-scroll mobile).
       replace?: boolean
@@ -43,13 +44,15 @@ export const useActivityStore = defineStore('activity', {
       }
 
       const api = useActivity()
+
       this.loading = true
 
       try {
         const newFilter: Record<string, any> = {}
 
         Object.entries(this.filters).forEach(([key, value]) => {
-          if (value) newFilter[key] = value
+          if (value)
+            newFilter[key] = value
         })
 
         const res = await api.getActivityLogs({
@@ -60,18 +63,20 @@ export const useActivityStore = defineStore('activity', {
 
         this.activities = params?.replace ? res.data.data : [...this.activities, ...res.data.data]
 
-        const { data, ...meta } = res.data
+        const { data: _, ...meta } = res.data
+
         this.meta = meta
 
         this.page = params?.page as number
-      } finally {
+      }
+      finally {
         this.loading = false
       }
     },
 
     setFilter(
       key: keyof typeof this.filters,
-      value: string
+      value: string,
     ) {
       this.filters[key] = value
     },

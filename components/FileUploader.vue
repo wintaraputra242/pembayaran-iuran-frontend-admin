@@ -1,7 +1,6 @@
 <script setup lang="ts">
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import VueDropzone from 'dropzone-vue3';
-import { computed, ref } from 'vue';
+import VueDropzone from 'dropzone-vue3'
+import { computed, ref } from 'vue'
 
 // Props fleksibel
 const props = defineProps({
@@ -57,10 +56,12 @@ function validateFile(value: any) {
     const result = rule(value)
     if (result !== true) {
       errorMessage.value = result
+
       return false
     }
   }
   errorMessage.value = ''
+
   return true
 }
 
@@ -69,12 +70,14 @@ let oldFile: File | null = null
 // WATCH ketika file ditambahkan
 function handleFileAdded(file: File) {
   if (mergedOptions.value.maxFiles === 1) {
-    if (oldFile) dzRef.value.dropzone.removeFile(oldFile)
+    if (oldFile)
+      dzRef.value.dropzone.removeFile(oldFile)
     files.value = file
   }
 
   if (!validateFile(files.value)) {
     dzRef.value.dropzone.removeFile(file)
+
     return
   }
 
@@ -97,7 +100,7 @@ watch(
   val => {
     files.value = val
     validateFile(val)
-  }
+  },
 )
 
 const handleFileError = (event: any) => {
@@ -111,8 +114,10 @@ const handleFileError = (event: any) => {
 
 // Format ukuran file
 function formatSize(bytes: number) {
-  if (!bytes) return "0 KB"
-  return (bytes / 1024 / 1024).toFixed(2) + " MB"
+  if (!bytes)
+    return '0 KB'
+
+  return `${(bytes / 1024 / 1024).toFixed(2)} MB`
 }
 
 // Tentukan icon berdasarkan file mimetype
@@ -163,31 +168,30 @@ function getFileIcon(file: any) {
   }
 
   if (name.endsWith('.xlsx') || name.endsWith('.xls'))
-    return iconFileFormats['excel']
+    return iconFileFormats.excel
   if (name.endsWith('.pdf'))
-    return iconFileFormats['pdf']
+    return iconFileFormats.pdf
   if (name.endsWith('.doc') || name.endsWith('.docx'))
-    return iconFileFormats['word']
+    return iconFileFormats.word
   if (name.endsWith('.jpg') || name.endsWith('.jpeg') || name.endsWith('.png'))
-    return iconFileFormats['image']
-  
-  return iconFileFormats['file']
-}
+    return iconFileFormats.image
 
+  return iconFileFormats.file
+}
 </script>
 
 <template>
   <div>
     <ClientOnly>
       <VueDropzone
-        ref="dzRef"
         id="my-dropzone"
+        ref="dzRef"
         class="my-dropzone"
         :options="mergedOptions"
-  
+
         @vdropzone-file-added="handleFileAdded"
         @vdropzone-file-removed="handleRemoved"
-  
+
         @vdropzone-success="onEvents.success?.($event)"
         @vdropzone-error="handleFileError"
         @vdropzone-complete="onEvents.complete?.($event)"
@@ -213,13 +217,27 @@ function getFileIcon(file: any) {
             <div v-html="getFileIcon(files)" />
           </div>
           <div class="file-info">
-            <div class="file-name">{{ files.name }}</div>
-            <div class="file-size text-body-2">{{ formatSize(files.size) }}</div>
+            <div class="file-name">
+              {{ files.name }}
+            </div>
+            <div class="file-size text-body-2">
+              {{ formatSize(files.size) }}
+            </div>
           </div>
 
-          <div class="position-absolute" style="right: 5px; top: 4px;">
-            <IconBtn size="small" density="compact" @click="handleRemoved(files)">
-              <VIcon icon="ri-close-line" size="16" />
+          <div
+            class="position-absolute"
+            style="right: 5px; top: 4px;"
+          >
+            <IconBtn
+              size="small"
+              density="compact"
+              @click="handleRemoved(files)"
+            >
+              <VIcon
+                icon="ri-close-line"
+                size="16"
+              />
             </IconBtn>
           </div>
         </div>
@@ -233,16 +251,22 @@ function getFileIcon(file: any) {
           class="preview-item"
         >
           <div class="file-icon">
-            <img :src="getFileIcon(file)" width="40" />
+            <img
+              :src="getFileIcon(file)"
+              width="40"
+            >
           </div>
           <div class="file-info">
-            <div class="file-name">{{ file.name }}</div>
-            <div class="file-size">{{ formatSize(file.size) }}</div>
+            <div class="file-name">
+              {{ file.name }}
+            </div>
+            <div class="file-size">
+              {{ formatSize(file.size) }}
+            </div>
           </div>
         </div>
       </template>
     </div>
-
   </div>
 </template>
 

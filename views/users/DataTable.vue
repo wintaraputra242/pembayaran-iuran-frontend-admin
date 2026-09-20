@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { MasterUser } from '@/types/api/master-users';
-import type { PaginationMeta } from '@/types/common';
+import type { MasterUser } from '@/types/api/master-users'
+import type { PaginationMeta } from '@/types/common'
 
 const props = withDefaults(defineProps<{
   data: MasterUser[]
@@ -29,9 +29,17 @@ const headers = [
 </script>
 
 <template>
-  <AppDataTable :headers="headers" :items="props.data" :meta="props.meta" :loading="props.loading"
-    :has-more="props.hasMore" :has-filter="props.hasFilter" @load-more="emit('loadMore')"
-    @change-page="emit('changePage', $event)" @change-limit="emit('changeLimit', $event)">
+  <AppDataTable
+    :headers="headers"
+    :items="props.data"
+    :meta="props.meta"
+    :loading="props.loading"
+    :has-more="props.hasMore"
+    :has-filter="props.hasFilter"
+    @load-more="emit('loadMore')"
+    @change-page="emit('changePage', $event)"
+    @change-limit="emit('changeLimit', $event)"
+  >
     <!-- Nama -->
     <template #cell-name="{ item }">
       <div class="d-flex flex-column">
@@ -47,38 +55,50 @@ const headers = [
 
     <!-- Role -->
     <template #cell-role="{ item }">
-      <VChip size="small" :color="item.role === 'admin' ? 'success' : 'info'" variant="tonal">
+      <VChip
+        size="small"
+        :color="item.role === 'admin' ? 'success' : 'info'"
+        variant="tonal"
+      >
         {{ item.role === 'admin' ? 'Admin' : 'Ketua Regu' }}
       </VChip>
     </template>
 
     <!-- Status -->
     <template #cell-status="{ item }">
-      <VChip size="small" :color="item.is_active ? 'success' : 'error'" variant="tonal">
+      <VChip
+        size="small"
+        :color="item.is_active ? 'success' : 'error'"
+        variant="tonal"
+      >
         {{ item.is_active ? 'Aktif' : 'Nonaktif' }}
       </VChip>
     </template>
 
     <!-- Aksi -->
-    <template #cell-actions="{ item }">
+    <template #cell-actions>
       <div class="d-flex gap-1">
-        <!-- <VTooltip text="Lihat Akun">
+        <!--
+          <VTooltip text="Lihat Akun">
           <template #activator="{ props: tp }">
-            <IconBtn v-bind="tp" variant="outlined" size="small" color="primary" class="rounded-lg"
-              @click="emit('getPassword', item)">
-              <VIcon icon="ri-key-line" />
-            </IconBtn>
+          <IconBtn v-bind="tp" variant="outlined" size="small" color="primary" class="rounded-lg"
+          @click="emit('getPassword', item)">
+          <VIcon icon="ri-key-line" />
+          </IconBtn>
           </template>
-</VTooltip> -->
+          </VTooltip>
+        -->
 
-        <!-- <VTooltip text="Hapus">
+        <!--
+          <VTooltip text="Hapus">
           <template #activator="{ props: tp }">
-            <IconBtn v-bind="tp" variant="outlined" size="small" color="error" class="rounded-lg"
-              @click="emit('delete', item)">
-              <VIcon icon="ri-delete-bin-line" />
-            </IconBtn>
+          <IconBtn v-bind="tp" variant="outlined" size="small" color="error" class="rounded-lg"
+          @click="emit('delete', item)">
+          <VIcon icon="ri-delete-bin-line" />
+          </IconBtn>
           </template>
-        </VTooltip> -->
+          </VTooltip>
+        -->
       </div>
     </template>
   </AppDataTable>

@@ -65,7 +65,7 @@ export const useLaporanStore = defineStore('laporan', {
 
         this.laporan = [...this.laporan, ...res.data.data]
 
-        const { data, ...meta } = res.data
+        const { data: _, ...meta } = res.data
 
         this.meta = meta
 

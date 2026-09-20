@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import { useAuth } from '@/composables/api/useAuth'
 import { useDisplay } from 'vuetify'
+import { useAuth } from '@/composables/api/useAuth'
 
 definePageMeta({ layout: 'blank', guest: true })
 
 const router = useRouter()
-const route = useRoute()
 
 const { login } = useAuth()
 const uiStore = useUiStore()
@@ -18,7 +17,6 @@ const form = ref({
   password: '',
 })
 
-
 const isPasswordVisible = ref(false)
 
 // Dua instance form (desktop & mobile) dipakai bergantian lewat v-if/v-else di template —
@@ -30,11 +28,13 @@ const formCompMobile = ref()
 
 const isLoadingSubmit = ref(false)
 const errorMessage = ref<string | null>(null)
+
 const onSubmit = async () => {
   const activeForm = mdAndDown.value ? formCompMobile.value : formCompDesktop.value
 
   const { valid } = await activeForm.validate()
-  if (!valid) return
+  if (!valid)
+    return
 
   errorMessage.value = null
   isLoadingSubmit.value = true
@@ -58,10 +58,11 @@ const onSubmit = async () => {
     const defaultRoute = res.data.user.role === 'admin' ? '/' : '/create-pembayaran'
 
     router.push(redirect ?? defaultRoute)
-
-  } catch (e: any) {
+  }
+  catch (e: any) {
     errorMessage.value = e.errors ?? 'Terjadi kesalahan saat login'
-  } finally {
+  }
+  finally {
     isLoadingSubmit.value = false
   }
 }
@@ -83,11 +84,18 @@ onMounted(() => {
 
   <div class="auth-wrapper-v2">
     <!-- ================= DESKTOP: dua kolom (kiri gambar, kanan form) ================= -->
-    <div v-if="!mdAndDown" class="auth-split">
+    <div
+      v-if="!mdAndDown"
+      class="auth-split"
+    >
       <div class="auth-split-image">
         <div class="auth-split-image-overlay" />
         <div class="auth-split-image-brand">
-          <VImg src="/logo.png" width="3.5rem" class="mb-3" />
+          <VImg
+            src="/logo.png"
+            width="3.5rem"
+            class="mb-3"
+          />
           <h2 class="text-white font-weight-bold text-uppercase auth-title-on-photo">
             Pembayaran Iuran <br> Banjar Trijata
           </h2>
@@ -105,36 +113,66 @@ onMounted(() => {
             </p>
           </div>
 
-          <VAlert v-if="errorMessage" type="error" class="mb-4" density="compact">
+          <VAlert
+            v-if="errorMessage"
+            type="error"
+            class="mb-4"
+            density="compact"
+          >
             {{ errorMessage }}
           </VAlert>
 
-          <VForm ref="formCompDesktop" @submit.prevent="onSubmit">
+          <VForm
+            ref="formCompDesktop"
+            @submit.prevent="onSubmit"
+          >
             <VRow>
               <!-- username -->
               <VCol cols="12">
-                <VTextField v-model="form.username" label="Username" type="username" :rules="[
-                  (v: string) => !!v || 'Username harus diisi'
-                ]" />
+                <VTextField
+                  v-model="form.username"
+                  label="Username"
+                  type="username"
+                  :rules="[
+                    (v: string) => !!v || 'Username harus diisi',
+                  ]"
+                />
               </VCol>
 
               <!-- password -->
               <VCol cols="12">
-                <VTextField v-model="form.password" label="Password" placeholder="············"
-                  :type="isPasswordVisible ? 'text' : 'password'" autocomplete="password" :rules="[
-                    (v: string) => !!v || 'Password harus diisi'
-                  ]" :append-inner-icon="isPasswordVisible ? 'ri-eye-off-line' : 'ri-eye-line'"
-                  @click:append-inner="isPasswordVisible = !isPasswordVisible" />
+                <VTextField
+                  v-model="form.password"
+                  label="Password"
+                  placeholder="············"
+                  :type="isPasswordVisible ? 'text' : 'password'"
+                  autocomplete="password"
+                  :rules="[
+                    (v: string) => !!v || 'Password harus diisi',
+                  ]"
+                  :append-inner-icon="isPasswordVisible ? 'ri-eye-off-line' : 'ri-eye-line'"
+                  @click:append-inner="isPasswordVisible = !isPasswordVisible"
+                />
 
                 <div class="text-end mt-1">
-                  <a :href="`https://wa.me/${adminPhone}?text=${encodeURIComponent('Halo, saya lupa password akun iuran warga. Mohon bantu reset password saya.')}`"
-                    target="_blank" class="text-caption text-primary" style="text-decoration: none;">
+                  <a
+                    :href="`https://wa.me/${adminPhone}?text=${encodeURIComponent('Halo, saya lupa password akun iuran warga. Mohon bantu reset password saya.')}`"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-caption text-primary"
+                    style="text-decoration: none;"
+                  >
                     Lupa kata sandi?
                   </a>
                 </div>
 
                 <!-- login button -->
-                <VBtn block type="submit" class="mt-6" :loading="isLoadingSubmit">
+                <VBtn
+                  block
+                  type="submit"
+                  class="mt-6"
+                  :loading="isLoadingSubmit"
+                >
                   Login
                 </VBtn>
               </VCol>
@@ -145,11 +183,18 @@ onMounted(() => {
     </div>
 
     <!-- ================= MOBILE: banner foto + kartu form ================= -->
-    <div v-else class="auth-mobile pa-4">
+    <div
+      v-else
+      class="auth-mobile pa-4"
+    >
       <div class="auth-mobile-banner mb-4">
         <div class="auth-mobile-banner-overlay" />
         <div class="auth-mobile-banner-content">
-          <VAvatar size="64" color="primary" class="auth-mobile-badge mb-3">
+          <VAvatar
+            size="64"
+            color="primary"
+            class="auth-mobile-badge mb-3"
+          >
             <VImg src="/logo.png" />
           </VAvatar>
           <h2 class="text-center font-weight-bold text-white text-uppercase auth-title-on-photo auth-mobile-title">
@@ -158,7 +203,10 @@ onMounted(() => {
         </div>
       </div>
 
-      <VCard class="auth-mobile-card pa-4 pt-6" rounded="lg">
+      <VCard
+        class="auth-mobile-card pa-4 pt-6"
+        rounded="lg"
+      >
         <VCardItem class="justify-center">
           <h2 class="font-weight-medium text-2xl text-capitalize text-center">
             Admin
@@ -166,36 +214,66 @@ onMounted(() => {
         </VCardItem>
 
         <VCardText>
-          <VAlert v-if="errorMessage" type="error" class="mb-4" density="compact">
+          <VAlert
+            v-if="errorMessage"
+            type="error"
+            class="mb-4"
+            density="compact"
+          >
             {{ errorMessage }}
           </VAlert>
 
-          <VForm ref="formCompMobile" @submit.prevent="onSubmit">
+          <VForm
+            ref="formCompMobile"
+            @submit.prevent="onSubmit"
+          >
             <VRow>
               <!-- username -->
               <VCol cols="12">
-                <VTextField v-model="form.username" label="Username" type="username" :rules="[
-                  (v: string) => !!v || 'Username harus diisi'
-                ]" />
+                <VTextField
+                  v-model="form.username"
+                  label="Username"
+                  type="username"
+                  :rules="[
+                    (v: string) => !!v || 'Username harus diisi',
+                  ]"
+                />
               </VCol>
 
               <!-- password -->
               <VCol cols="12">
-                <VTextField v-model="form.password" label="Password" placeholder="············"
-                  :type="isPasswordVisible ? 'text' : 'password'" autocomplete="password" :rules="[
-                    (v: string) => !!v || 'Password harus diisi'
-                  ]" :append-inner-icon="isPasswordVisible ? 'ri-eye-off-line' : 'ri-eye-line'"
-                  @click:append-inner="isPasswordVisible = !isPasswordVisible" />
+                <VTextField
+                  v-model="form.password"
+                  label="Password"
+                  placeholder="············"
+                  :type="isPasswordVisible ? 'text' : 'password'"
+                  autocomplete="password"
+                  :rules="[
+                    (v: string) => !!v || 'Password harus diisi',
+                  ]"
+                  :append-inner-icon="isPasswordVisible ? 'ri-eye-off-line' : 'ri-eye-line'"
+                  @click:append-inner="isPasswordVisible = !isPasswordVisible"
+                />
 
                 <div class="text-end mt-1">
-                  <a :href="`https://wa.me/${adminPhone}?text=${encodeURIComponent('Halo, saya lupa password akun iuran warga. Mohon bantu reset password saya.')}`"
-                    target="_blank" class="text-caption text-primary" style="text-decoration: none;">
+                  <a
+                    :href="`https://wa.me/${adminPhone}?text=${encodeURIComponent('Halo, saya lupa password akun iuran warga. Mohon bantu reset password saya.')}`"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-caption text-primary"
+                    style="text-decoration: none;"
+                  >
                     Lupa kata sandi?
                   </a>
                 </div>
 
                 <!-- login button -->
-                <VBtn block type="submit" class="mt-6" :loading="isLoadingSubmit">
+                <VBtn
+                  block
+                  type="submit"
+                  class="mt-6"
+                  :loading="isLoadingSubmit"
+                >
                   Login
                 </VBtn>
               </VCol>

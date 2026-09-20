@@ -1,5 +1,5 @@
-import type { LoginResponse, MeResponse } from "@/types/api/auth"
-import { useApi } from "./useApi"
+import { useApi } from './useApi'
+import type { LoginResponse, MeResponse } from '@/types/api/auth'
 
 export const useAuth = () => {
   const { api } = useApi()
@@ -7,7 +7,7 @@ export const useAuth = () => {
   const uiStore = useUiStore()
   const router = useRouter()
 
-  const login = async (payload: { username: string; password: string, fcm_token?: string, platform?: string }): Promise<LoginResponse> => {
+  const login = async (payload: { username: string; password: string; fcm_token?: string; platform?: string }): Promise<LoginResponse> => {
     const res = await api<LoginResponse>('/auth/login', {
       method: 'POST',
       body: payload,
@@ -24,12 +24,16 @@ export const useAuth = () => {
 
     try {
       const res: MeResponse = await api('/auth/me')
+
       authStore.setUser(res.data)
       uiStore.endLoading()
+
       return true
-    } catch {
+    }
+    catch {
       authStore.logout()
       uiStore.endLoading()
+
       return false
     }
   }
@@ -37,7 +41,8 @@ export const useAuth = () => {
   const logout = async () => {
     try {
       await api('/auth/logout', { method: 'POST' })
-    } finally {
+    }
+    finally {
       authStore.logout()
       router.push('/login')
     }
@@ -46,7 +51,8 @@ export const useAuth = () => {
   const logoutAll = async () => {
     try {
       await api('/auth/logout-all', { method: 'POST' })
-    } finally {
+    }
+    finally {
       authStore.logout()
       router.push('/login')
     }

@@ -1,3 +1,4 @@
+import { useApi } from './useApi'
 import type {
   AddPembayaranResponse,
   GetDetailPembayaranResponse,
@@ -11,10 +12,8 @@ import type {
   NotifyResidentResponse,
   NotifyResponse,
   NotifyUnpaidPayload,
-  NotifyUnpaidResponse
+  NotifyUnpaidResponse,
 } from '@/types/api/pembayaran'
-
-import { useApi } from './useApi'
 
 export const usePembayaran = () => {
   const { api } = useApi()
@@ -224,6 +223,6 @@ export const usePembayaran = () => {
     cancelPembayaran,
     getUnpaidWarga,
     getRiwayatKetuaRegu,
-    getDetailPembayaranById
+    getDetailPembayaranById,
   }
 }

@@ -23,9 +23,16 @@ const handleClick = (value: typeof active.value) => {
 
 <template>
   <div class="d-flex flex-wrap gap-2">
-    <VBtn v-for="f in filters" :key="f.value" :prepend-icon="f.icon"
-      :variant="active === f.value ? 'elevated' : 'tonal'" :color="active === f.value ? 'primary' : 'default'"
-      size="small" rounded="lg" @click="handleClick(f.value)">
+    <VBtn
+      v-for="f in filters"
+      :key="f.value"
+      :prepend-icon="f.icon"
+      :variant="active === f.value ? 'elevated' : 'tonal'"
+      :color="active === f.value ? 'primary' : 'default'"
+      size="small"
+      rounded="lg"
+      @click="handleClick(f.value)"
+    >
       {{ f.label }}
     </VBtn>
   </div>

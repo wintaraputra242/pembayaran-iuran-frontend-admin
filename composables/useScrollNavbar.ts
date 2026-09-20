@@ -8,17 +8,20 @@ export function useScrollStatus(offset: number = 10) {
   const checkOverlay = () => {
     // Vuetify selalu menambahkan .v-overlay--active ketika ada dialog/overlay terbuka
     const activeOverlay = document.querySelector('.v-overlay--active')
+
     isOverlayActive.value = !!activeOverlay
   }
 
   const handleScroll = (): void => {
-    if (isOverlayActive.value) return
+    if (isOverlayActive.value)
+      return
 
     isScrolled.value = window.scrollY > offset
   }
 
   const scrollToTop = (behavior: ScrollBehavior = 'smooth') => {
-    if (isOverlayActive.value) return
+    if (isOverlayActive.value)
+      return
 
     window.scrollTo({
       top: 0,
@@ -29,7 +32,9 @@ export function useScrollStatus(offset: number = 10) {
   onMounted(() => {
     isScrolled.value = window.scrollY > offset
     checkOverlay()
+
     const observer = new MutationObserver(checkOverlay)
+
     observer.observe(document.body, {
       childList: true,
       subtree: true,
@@ -44,6 +49,6 @@ export function useScrollStatus(offset: number = 10) {
 
   return {
     isScrolled,
-    scrollToTop
+    scrollToTop,
   }
 }

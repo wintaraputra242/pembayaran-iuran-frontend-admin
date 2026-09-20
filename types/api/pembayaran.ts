@@ -1,4 +1,4 @@
-import type { PaginatedResponse } from "../common"
+import type { PaginatedResponse } from '../common'
 
 export interface Pembayaran {
   id: number
@@ -52,7 +52,6 @@ export interface Pembayaran {
   }
 }
 
-
 export interface GetPembayaranResponse {
   code: number
   success: boolean
@@ -104,7 +103,6 @@ export interface UnpaidWarga {
   updated_at: string
 }
 
-
 export interface GetUnpaidPembayaranResponse {
   code: number
   success: boolean
@@ -135,6 +133,7 @@ export interface NotifyResidentPayload {
   id_informasi_iuran: number
   nik: string
   month: number | null
+
   // title: string
   // message: string
 }
@@ -144,13 +143,6 @@ export interface NotifyResidentResponse {
   success: boolean
   message: string
   data: null
-}
-
-export interface GetUnpaidPembayaranResponse {
-  code: number
-  success: boolean
-  message: string
-  data: PaginatedResponse<UnpaidWarga>
 }
 
 export interface GetPaidPembayaranByWargaResponse {
@@ -212,9 +204,9 @@ export interface GetQrisResponse {
   success: boolean
   message: string
   data: {
-    image: string,
-    nama_rekening: string,
-    nomor_rekening: string,
-    keterangan: string,
+    image: string
+    nama_rekening: string
+    nomor_rekening: string
+    keterangan: string
   }
 }

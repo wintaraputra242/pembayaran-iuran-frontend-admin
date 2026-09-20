@@ -1,10 +1,5 @@
 <script lang="ts" setup>
-import type { CreateReguPayload, MasterRegu } from '@/types/api/master-regu';
-
-const emit = defineEmits<{
-  (e: 'submit', params: CreateReguPayload): void;
-  (e: 'close'): void;
-}>();
+import type { CreateReguPayload, MasterRegu } from '@/types/api/master-regu'
 
 const props = withDefaults(defineProps<{
   isShow: boolean
@@ -17,19 +12,28 @@ const props = withDefaults(defineProps<{
   isEdit: false,
 })
 
+const emit = defineEmits<{
+  (e: 'submit', params: CreateReguPayload): void
+  (e: 'close'): void
+}>()
+
 const form = ref()
 
 const defaultParams = {
   nama_regu: '',
 }
+
 const params = reactive({ ...defaultParams })
 
 const rules = {
-  required: (v: any) => !!v || "Field wajib diisi",
+  required: (v: any) => !!v || 'Field wajib diisi',
 
   nama: (v: string) => {
-    if (!v) return "Nama Regu wajib diisi"
-    if (v.length < 3) return "Nama minimal 3 karakter"
+    if (!v)
+      return 'Nama Regu wajib diisi'
+    if (v.length < 3)
+      return 'Nama minimal 3 karakter'
+
     return true
   },
 }
@@ -46,7 +50,8 @@ const handleClose = () => {
 }
 
 watch(() => props.isEdit, newVal => {
-  if (!newVal) return
+  if (!newVal)
+    return
   form.value?.reset()
   nextTick(() => {
     params.nama_regu = props.item?.nama_regu as string
@@ -63,45 +68,81 @@ const handleSubmit = async () => {
       ...params,
       nama_regu: params.nama_regu.toUpperCase(),
     }
+
     emit('submit', finalParams)
   }
-
 }
 
-watch(() => props.isFetchSuccess, (newVal) => {
-  if (newVal) {
+watch(() => props.isFetchSuccess, newVal => {
+  if (newVal)
     handleClose()
-  }
 }, { immediate: true })
 </script>
 
 <template>
-  <VDialog v-model="props.isShow">
+  <VDialog
+    :model-value="props.isShow"
+    @update:model-value="emit('close')"
+  >
     <VCard>
       <VCardTitle class="pt-3">
         <div class="d-flex align-center justify-space-between">
           <h3>{{ props.isEdit ? 'Edit' : 'Tambah' }}</h3>
-          <IconBtn variant="text" :disabled="props.loading" color="secondary" size="small" @click="handleClose">
+          <IconBtn
+            variant="text"
+            :disabled="props.loading"
+            color="secondary"
+            size="small"
+            @click="handleClose"
+          >
             <VIcon icon="ri-close-line" />
           </IconBtn>
         </div>
       </VCardTitle>
       <VCardItem>
-        <VForm ref="form" @submit.prevent="handleSubmit">
-          <VRow align="center" class="pt-1">
+        <VForm
+          ref="form"
+          @submit.prevent="handleSubmit"
+        >
+          <VRow
+            align="center"
+            class="pt-1"
+          >
             <VCol cols="12">
-              <VTextField v-model="params.nama_regu" label="Nama Regu" placeholder="Masukkan nama regu"
-                :rules="[rules.nama]" class="uppercase-input" />
+              <VTextField
+                v-model="params.nama_regu"
+                label="Nama Regu"
+                placeholder="Masukkan nama regu"
+                :rules="[rules.nama]"
+                class="uppercase-input"
+              />
             </VCol>
             <VCol cols="12">
               <div class="d-flex justify-end flex-wrap gap-2">
-                <VBtn variant="text" :disabled="props.loading" color="secondary" size="small" @click="handleClose">
-                  <VIcon icon="ri-close-line" class="me-1" />
+                <VBtn
+                  variant="text"
+                  :disabled="props.loading"
+                  color="secondary"
+                  size="small"
+                  @click="handleClose"
+                >
+                  <VIcon
+                    icon="ri-close-line"
+                    class="me-1"
+                  />
                   Batal
                 </VBtn>
-                <VBtn variant="flat" :loading="props.loading" :color="props.isEdit ? 'info' : 'success'" size="small"
-                  type="submit">
-                  <VIcon :icon="props.isEdit ? 'ri-save-2-line' : 'ri-add-line'" class="me-1" />
+                <VBtn
+                  variant="flat"
+                  :loading="props.loading"
+                  :color="props.isEdit ? 'info' : 'success'"
+                  size="small"
+                  type="submit"
+                >
+                  <VIcon
+                    :icon="props.isEdit ? 'ri-save-2-line' : 'ri-add-line'"
+                    class="me-1"
+                  />
                   {{ props.isEdit ? 'Simpan' : 'Tambah' }}
                 </VBtn>
               </div>

@@ -20,7 +20,7 @@ export const themes: Record<string, ThemeDefinition> = {
       'success-darken-1': '#4DB600',
       'on-success': '#fff',
 
-      'info': '#2563EB',         // biru info yang lebih cocok dengan primary baru
+      'info': '#2563EB', // biru info yang lebih cocok dengan primary baru
       'info-darken-1': '#1D4ED8',
       'on-info': '#fff',
 
@@ -33,7 +33,7 @@ export const themes: Record<string, ThemeDefinition> = {
       'on-error': '#fff',
 
       'background': '#f4f5fa',
-      'on-background': '#1E293B',    // lebih selaras dengan tema biru
+      'on-background': '#1E293B', // lebih selaras dengan tema biru
 
       'surface': '#fff',
       'on-surface': '#1E293B',
@@ -56,12 +56,12 @@ export const themes: Record<string, ThemeDefinition> = {
 
       'expansion-panel-text-custom-bg': '#fafafa',
 
-      'track-bg': '#ECF1FF',   // subtle blue
-      'chat-bg': '#F4F7FF',    // subtle blue
+      'track-bg': '#ECF1FF', // subtle blue
+      'chat-bg': '#F4F7FF', // subtle blue
     },
 
     variables: {
-      'code-color': '#1E3A8A',            // sebelumnya ungu → ganti biru
+      'code-color': '#1E3A8A', // sebelumnya ungu → ganti biru
       'overlay-scrim-background': '#1E293B',
       'tooltip-background': '#1E3A8A',
 
@@ -77,7 +77,7 @@ export const themes: Record<string, ThemeDefinition> = {
       'border-color': '#1E293B',
       'border-opacity': 0.12,
 
-      'table-header-color': '#EEF2FF',   // biru muda netral
+      'table-header-color': '#EEF2FF', // biru muda netral
 
       'high-emphasis-opacity': 0.9,
       'medium-emphasis-opacity': 0.7,
@@ -108,7 +108,7 @@ export const themes: Record<string, ThemeDefinition> = {
       'success-darken-1': '#4DB600',
       'on-success': '#fff',
 
-      'info': '#3B82F6',         // biru info untuk dark mode
+      'info': '#3B82F6', // biru info untuk dark mode
       'info-darken-1': '#2563EB',
       'on-info': '#fff',
 
@@ -120,7 +120,7 @@ export const themes: Record<string, ThemeDefinition> = {
       'error-darken-1': '#E64449',
       'on-error': '#fff',
 
-      'background': '#1C2234',        // dark blue-gray, bukan ungu
+      'background': '#1C2234', // dark blue-gray, bukan ungu
       'on-background': '#E5E9F5',
 
       'surface': '#242B3D',
@@ -148,7 +148,7 @@ export const themes: Record<string, ThemeDefinition> = {
     },
 
     variables: {
-      'code-color': '#60A5FA',        // biru terang untuk dark mode
+      'code-color': '#60A5FA', // biru terang untuk dark mode
       'overlay-scrim-background': '#1C2234',
       'tooltip-background': '#E5E9F5',
 

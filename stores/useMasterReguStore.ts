@@ -1,7 +1,7 @@
+import { defineStore } from 'pinia'
 import { useMasterRegu } from '@/composables/api/useMasterRegu'
 import type { AddAnggotaPayload, AnggotaRegu, CreateReguPayload, MasterRegu } from '@/types/api/master-regu'
 import type { PaginationMeta } from '@/types/common'
-import { defineStore } from 'pinia'
 
 export const useMasterReguStore = defineStore('master-regu', {
   state: () => ({
@@ -21,15 +21,16 @@ export const useMasterReguStore = defineStore('master-regu', {
   }),
 
   getters: {
-    hasData: (state) => state.regu.length > 0,
-    hasMore: (state) => state.meta?.total !== state.regu.length,
-    hasFilter: (state) => !!state.filters.nama_regu || !!state.filters.status_keaktifan
+    hasData: state => state.regu.length > 0,
+    hasMore: state => state.meta?.total !== state.regu.length,
+    hasFilter: state => !!state.filters.nama_regu || !!state.filters.status_keaktifan,
   },
 
   actions: {
     async fetchRegu(params?: {
       page?: number
       limit?: number
+
       // true = ganti seluruh data dengan hasil fetch ini (dipakai pagination desktop).
       // false/undefined = tambahkan ke data yang sudah ada (dipakai infinite-scroll mobile).
       replace?: boolean
@@ -40,16 +41,15 @@ export const useMasterReguStore = defineStore('master-regu', {
       }
 
       const api = useMasterRegu()
+
       this.loading = true
 
       try {
         const newFilter: Record<string, string> = {}
 
         Object.entries(this.filters).forEach(([key, value]) => {
-
-          if (value) {
+          if (value)
             newFilter[key] = value
-          }
         })
 
         const res = await api.getRegu({
@@ -60,69 +60,68 @@ export const useMasterReguStore = defineStore('master-regu', {
 
         this.regu = params?.replace ? res.data.data : [...this.regu, ...res.data.data]
 
-        const { data, ...meta } = res.data
+        const { data: _, ...meta } = res.data
+
         this.meta = meta
 
         this.page = params?.page as number
-      } finally {
+      }
+      finally {
         this.loading = false
       }
     },
 
     async createRegu(params: CreateReguPayload) {
-      if (this.filters.nama_regu) {
+      if (this.filters.nama_regu)
         this.regu = []
-      }
 
       const api = useMasterRegu()
+
       this.loading = true
 
       try {
-        const res = await api.createRegu(params)
-
-        return res
-      } finally {
+        return await api.createRegu(params)
+      }
+      finally {
         this.loading = false
       }
     },
 
     async fetchUpdateRegu(params: CreateReguPayload, id: number) {
       const api = useMasterRegu()
+
       this.loading = true
 
       try {
-        const res = await api.updateRegu(params, id)
-
-        return res
-      } finally {
+        return await api.updateRegu(params, id)
+      }
+      finally {
         this.loading = false
       }
     },
 
     async fetchDeleteRegu(id: number) {
-
       const api = useMasterRegu()
+
       this.loading = true
 
       try {
-        const res = await api.deleteRegu(id)
-
-        return res
-      } finally {
+        return await api.deleteRegu(id)
+      }
+      finally {
         this.loading = false
       }
     },
 
-    async fetchUpdateStatus(params: { id: number, status_keaktifan: 'aktif' | 'tidak_aktif' }) {
-
+    async fetchUpdateStatus(params: { id: number; status_keaktifan: 'aktif' | 'tidak_aktif' }) {
       const api = useMasterRegu()
+
       this.loading = true
 
       try {
-        const res = await api.updateStatusRegu(params)
-
-        return res
-      } finally {
+        return await api.updateStatusRegu(params)
+      }
+      finally {
         this.loading = false
       }
     },
@@ -134,19 +133,18 @@ export const useMasterReguStore = defineStore('master-regu', {
     resetFilter() {
       this.filters = {
         nama_regu: '',
-        status_keaktifan: ''
+        status_keaktifan: '',
       }
     },
 
     // Anggota Regu
     async fetchAnggotaRegu(id_regu?: number) {
-
       const api = useMasterRegu()
+
       this.loadingAnggota = true
       this.anggotaRegu = []
 
       try {
-
         const res = await api.getAnggotaRegu({
           id_regu,
         })
@@ -155,75 +153,73 @@ export const useMasterReguStore = defineStore('master-regu', {
         this.leaderAvailable = res.data.leader_available
 
         return res
-      } finally {
+      }
+      finally {
         this.loadingAnggota = false
       }
     },
 
     async fetchAddAnggota(params: AddAnggotaPayload) {
       const api = useMasterRegu()
+
       this.loadingAnggota = true
 
       try {
-        const res = await api.addAnggotaRegu(params)
-
-        return res
-      } finally {
+        return await api.addAnggotaRegu(params)
+      }
+      finally {
         this.loadingAnggota = false
       }
     },
 
     async fetchResetAnggota(id: number) {
-
       const api = useMasterRegu()
+
       this.loadingAnggota = true
 
       try {
-        const res = await api.resetAnggota(id)
-
-        return res
-      } finally {
+        return await api.resetAnggota(id)
+      }
+      finally {
         this.loadingAnggota = false
       }
     },
 
     async fetchResetAnggotaByRegu(id_regu: number) {
-
       const api = useMasterRegu()
+
       this.loadingAnggota = true
 
       try {
-        const res = await api.resetAnggotaByRegu(id_regu)
-
-        return res
-      } finally {
+        return await api.resetAnggotaByRegu(id_regu)
+      }
+      finally {
         this.loadingAnggota = false
       }
     },
 
     async fetchResetAnggotaAll() {
-
       const api = useMasterRegu()
+
       this.loadingAnggota = true
 
       try {
-        const res = await api.resetAnggotaAll()
-
-        return res
-      } finally {
+        return await api.resetAnggotaAll()
+      }
+      finally {
         this.loadingAnggota = false
       }
     },
 
-    async fetchSetLeaderAnggota(params: { id_regu: number, nik: string }) {
+    async fetchSetLeaderAnggota(params: { id_regu: number; nik: string }) {
       const api = useMasterRegu()
+
       this.loadingAnggota = true
 
       try {
-        const res = await api.setLeaderAnggota(params)
-
-        return res
-      } finally {
+        return await api.setLeaderAnggota(params)
+      }
+      finally {
         this.loadingAnggota = false
       }
     },

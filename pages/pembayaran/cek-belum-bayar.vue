@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useDisplay } from 'vuetify'
 import type { InformasiIuranForDropdown } from '@/types/api/dropdown'
 import type { Pembayaran, UnpaidWarga } from '@/types/api/pembayaran'
 import DataTableCekBelumBayar from '@/views/cek-belum-bayar/DataTable.vue'
@@ -6,7 +7,6 @@ import DialogFormDataCekBelumBayar from '@/views/cek-belum-bayar/DialogFormData.
 import DialogHistoryPaymentWargaCekBelumBayar from '@/views/cek-belum-bayar/DialogHistoryPaymentWarga.vue'
 import DialogNoPaymentCekBelumBayar from '@/views/cek-belum-bayar/DialogNoPayment.vue'
 import eCommerce2 from '@images/eCommerce/2.png'
-import { useDisplay } from 'vuetify'
 
 definePageMeta({ onlyAdmin: true })
 
@@ -56,7 +56,7 @@ const handleCloseShowHistoryPaymentWarga = () => {
 
 async function deleteItem() {
   isLoadingConfirm.value = true
-  await new Promise(res => setTimeout(res, 1000))
+  await new Promise(resolve => setTimeout(resolve, 1000))
   isLoadingConfirm.value = false
   showConfirmation.value = false
 }
@@ -70,7 +70,8 @@ const handleShowBuktiBayarHistoryPayment = () => {
 const itemSelectForSendNotif = ref<string | null>(null)
 
 const handleSendNotif = async (item?: UnpaidWarga) => {
-  if (!item) return
+  if (!item)
+    return
 
   itemSelectForSendNotif.value = item.nik
 
@@ -78,28 +79,27 @@ const handleSendNotif = async (item?: UnpaidWarga) => {
     await pembayaranStore.fetchNotifyResident({
       id_informasi_iuran: Number(filters.informasi_iuran?.id),
       nik: item.nik,
-      month: filters.bulan as number
+      month: filters.bulan as number,
     })
 
     successTitle.value = 'Kirim Notif Berhasil'
-    successMessage.value =
-      'Notifikasi berhasil dikirim ke warga terkait pembayaran.'
+    successMessage.value
+      = 'Notifikasi berhasil dikirim ke warga terkait pembayaran.'
 
     showSuccessConfirm.value = true
-  } catch (error) {
+  }
+  catch (error) {
     console.error(error)
   }
 }
 
 watch(showSuccessConfirm, val => {
   if (!val) {
-    if (fromDialog.value === 'history') {
+    if (fromDialog.value === 'history')
       showHistoryPayment.value = true
-    }
 
-    if (fromDialog.value === 'no-payment') {
+    if (fromDialog.value === 'no-payment')
       showNoPaymentList.value = true
-    }
 
     fromDialog.value = ''
   }
@@ -136,7 +136,7 @@ const filters = reactive<{
 }>({
   informasi_iuran: null,
   bulan: null,
-  regu: null
+  regu: null,
 })
 
 const bulanOptions = [
@@ -162,15 +162,19 @@ const hasFilterUnpaidWarga = ref(false)
 const visibleFilterFieldCount = computed(() => {
   let count = 1 // "Pilih informasi iuran" selalu tampil
 
-  if (filters.informasi_iuran?.jenis_iuran === 'bulanan') count++
-  if (pembayaranStore.unpaidWarga.length > 0 || filters.regu) count++
+  if (filters.informasi_iuran?.jenis_iuran === 'bulanan')
+    count++
+  if (pembayaranStore.unpaidWarga.length > 0 || filters.regu)
+    count++
 
   return count
 })
 
 const filterColMd = computed(() => {
-  if (visibleFilterFieldCount.value <= 1) return 4
-  if (visibleFilterFieldCount.value === 2) return 6
+  if (visibleFilterFieldCount.value <= 1)
+    return 4
+  if (visibleFilterFieldCount.value === 2)
+    return 6
 
   return 4
 })
@@ -210,7 +214,7 @@ const handleGetDropdownInformasiIuran = async () => {
   await dropdownStore.fetchInformasiIuranForDropdown()
 }
 
-watch(() => filters.bulan, async (val) => {
+watch(() => filters.bulan, async val => {
   if (!val) {
     filters.regu = null
     pembayaranStore.unpaidWarga = []
@@ -227,6 +231,7 @@ watch(() => filters.bulan, async (val) => {
     pembayaranStore.isReloadDataUnpaidWarga = true
 
     await pembayaranStore.fetchUnpaidPembayaran({ limit: limit.value, page: page.value })
+
     return
   }
 
@@ -241,19 +246,21 @@ let debounceTimer: ReturnType<typeof setTimeout> | null = null
 
 watch(
   () => filters.regu,
-  (val) => {
-    if (debounceTimer) clearTimeout(debounceTimer)
+  val => {
+    if (debounceTimer)
+      clearTimeout(debounceTimer)
 
     debounceTimer = setTimeout(() => {
       pembayaranStore.isReloadDataUnpaidWarga = true
       pembayaranStore.setFilter('idRegu', val?.id ?? null) // NOTE: key 'idRegu' perlu disesuaikan juga di backend
       pembayaranStore.fetchUnpaidPembayaran({ page: 1, limit: limit.value })
     }, 500)
-  }
+  },
 )
 
 const handleSendNotifToAll = async () => {
-  if (!pembayaranStore.idInformasiIuran) return
+  if (!pembayaranStore.idInformasiIuran)
+    return
 
   try {
     await pembayaranStore.fetchNotifyUnpaid({
@@ -262,11 +269,12 @@ const handleSendNotifToAll = async () => {
     })
 
     successTitle.value = 'Kirim Notif Berhasil'
-    successMessage.value =
-      'Notifikasi berhasil dikirim ke semua warga yang belum membayar.'
+    successMessage.value
+      = 'Notifikasi berhasil dikirim ke semua warga yang belum membayar.'
 
     showSuccessConfirm.value = true
-  } catch (error) {
+  }
+  catch (error) {
     console.error(error)
   }
 }
@@ -276,11 +284,10 @@ const handleLeaveCreatePembayaran = () => {
   filters.bulan = null
   filters.regu = null
 
-  if (window.history.length > 1) {
+  if (window.history.length > 1)
     router.back()
-  } else {
+  else
     navigateTo('/pembayaran')
-  }
 }
 
 onMounted(() => {
@@ -289,11 +296,18 @@ onMounted(() => {
 })
 </script>
 
-
 <template>
   <div>
-    <VBtn class="px-0 py-1 mb-3" variant="text" size="large" @click="handleLeaveCreatePembayaran">
-      <VIcon icon="ri-arrow-left-s-line" class="me-2" />
+    <VBtn
+      class="px-0 py-1 mb-3"
+      variant="text"
+      size="large"
+      @click="handleLeaveCreatePembayaran"
+    >
+      <VIcon
+        icon="ri-arrow-left-s-line"
+        class="me-2"
+      />
       Kembali
     </VBtn>
 
@@ -308,63 +322,144 @@ onMounted(() => {
         <VCard>
           <VCardItem>
             <VRow>
-              <VCol cols="12" sm="6" :md="filterColMd">
-                <VAutocomplete v-model="filters.informasi_iuran" placeholder="Pilih informasi iuran"
-                  :items="dropdownStore.itemInformasiIuranForDropdown" return-object item-title="judul_iuran"
-                  item-value="id" clearable :loading="dropdownStore.loading.informasiIuranForDropdown"
-                  @click:clear="filters.bulan = null" />
+              <VCol
+                cols="12"
+                sm="6"
+                :md="filterColMd"
+              >
+                <VAutocomplete
+                  v-model="filters.informasi_iuran"
+                  placeholder="Pilih informasi iuran"
+                  :items="dropdownStore.itemInformasiIuranForDropdown"
+                  return-object
+                  item-title="judul_iuran"
+                  item-value="id"
+                  clearable
+                  :loading="dropdownStore.loading.informasiIuranForDropdown"
+                  @click:clear="filters.bulan = null"
+                />
               </VCol>
 
-              <VCol v-if="filters.informasi_iuran?.jenis_iuran === 'bulanan'" cols="12" sm="6" :md="filterColMd">
-                <VSelect v-model="filters.bulan" placeholder="Pilih Bulan" :items="bulanOptions" item-title="label"
-                  item-value="value" clearable :loading="dropdownStore.loading.informasiIuranForDropdown" />
+              <VCol
+                v-if="filters.informasi_iuran?.jenis_iuran === 'bulanan'"
+                cols="12"
+                sm="6"
+                :md="filterColMd"
+              >
+                <VSelect
+                  v-model="filters.bulan"
+                  placeholder="Pilih Bulan"
+                  :items="bulanOptions"
+                  item-title="label"
+                  item-value="value"
+                  clearable
+                  :loading="dropdownStore.loading.informasiIuranForDropdown"
+                />
               </VCol>
 
-              <VCol v-if="pembayaranStore.unpaidWarga.length > 0 || filters.regu" cols="12" sm="6" :md="filterColMd">
-                <VAutocomplete v-model="filters.regu" placeholder="Cari berdasarkan Regu"
-                  :items="dropdownStore.reguForDropdown" return-object item-title="nama_regu" item-value="id" clearable
-                  :loading="dropdownStore.loading.reguForDropdown" />
+              <VCol
+                v-if="pembayaranStore.unpaidWarga.length > 0 || filters.regu"
+                cols="12"
+                sm="6"
+                :md="filterColMd"
+              >
+                <VAutocomplete
+                  v-model="filters.regu"
+                  placeholder="Cari berdasarkan Regu"
+                  :items="dropdownStore.reguForDropdown"
+                  return-object
+                  item-title="nama_regu"
+                  item-value="id"
+                  clearable
+                  :loading="dropdownStore.loading.reguForDropdown"
+                />
               </VCol>
 
-              <VCol v-if="pembayaranStore.unpaidWarga.length > 0" cols="12" class="d-flex align-center">
-                <VBtn type="submit" variant="flat" color="primary" :block="display.smAndDown.value"
-                  :loading="pembayaranStore.loadingSendNotifToAll" @click="handleSendNotifToAll">
-                  <VIcon icon="ri-send-plane-fill" class="me-2" />
+              <VCol
+                v-if="pembayaranStore.unpaidWarga.length > 0"
+                cols="12"
+                class="d-flex align-center"
+              >
+                <VBtn
+                  type="submit"
+                  variant="flat"
+                  color="primary"
+                  :block="display.smAndDown.value"
+                  :loading="pembayaranStore.loadingSendNotifToAll"
+                  @click="handleSendNotifToAll"
+                >
+                  <VIcon
+                    icon="ri-send-plane-fill"
+                    class="me-2"
+                  />
                   Kirim Notif ke Semua Warga
                 </VBtn>
               </VCol>
-
             </VRow>
           </VCardItem>
         </VCard>
       </VCol>
 
       <VCol cols="12">
-        <DataTableCekBelumBayar :data="pembayaranStore.unpaidWarga" :meta="pembayaranStore.meta"
-          :loading="pembayaranStore.loading" :loading-send-notif="pembayaranStore.loadingSendNotif"
-          :has-more="pembayaranStore.hasMoreUnpaidWarga" :has-filter="hasFilterUnpaidWarga"
-          :jml-iuran="filters.informasi_iuran?.jumlah_iuran" :nik-notif-sended="itemSelectForSendNotif"
-          @send-notif="handleSendNotif" @load-more="handleLoadMore" @change-page="handleChangePage"
-          @change-limit="handleChangeLimit" />
+        <DataTableCekBelumBayar
+          :data="pembayaranStore.unpaidWarga"
+          :meta="pembayaranStore.meta"
+          :loading="pembayaranStore.loading"
+          :loading-send-notif="pembayaranStore.loadingSendNotif"
+          :has-more="pembayaranStore.hasMoreUnpaidWarga"
+          :has-filter="hasFilterUnpaidWarga"
+          :jml-iuran="filters.informasi_iuran?.jumlah_iuran"
+          :nik-notif-sended="itemSelectForSendNotif"
+          @send-notif="handleSendNotif"
+          @load-more="handleLoadMore"
+          @change-page="handleChangePage"
+          @change-limit="handleChangeLimit"
+        />
       </VCol>
     </VRow>
 
-    <DialogFormDataCekBelumBayar :is-show="showFormData" :is-edit="isEdit" :item="itemSelected"
-      @close="handleCloseFormData" />
+    <DialogFormDataCekBelumBayar
+      :is-show="showFormData"
+      :is-edit="isEdit"
+      :item="itemSelected"
+      @close="handleCloseFormData"
+    />
 
-    <ConfirmDialog v-model="showConfirmation" :title="confirmOptions.title" :message="confirmOptions.message"
-      :confirm-text="confirmOptions.confirmText" :cancel-text="confirmOptions.cancelText"
-      :confirm-color="confirmOptions.confirmColor" :confirm-icon="confirmOptions.confirmIcon"
-      :loading="isLoadingConfirm" @confirm="deleteItem" />
+    <ConfirmDialog
+      v-model="showConfirmation"
+      :title="confirmOptions.title"
+      :message="confirmOptions.message"
+      :confirm-text="confirmOptions.confirmText"
+      :cancel-text="confirmOptions.cancelText"
+      :confirm-color="confirmOptions.confirmColor"
+      :confirm-icon="confirmOptions.confirmIcon"
+      :loading="isLoadingConfirm"
+      @confirm="deleteItem"
+    />
 
-    <PaymentProofImageDialog v-model="showPaymentProof" :src="eCommerce2" :item="(itemSelected as Pembayaran)" />
+    <PaymentProofImageDialog
+      v-model="showPaymentProof"
+      :src="eCommerce2"
+      :item="itemSelected as Pembayaran"
+    />
 
-    <DialogHistoryPaymentWargaCekBelumBayar :is-show="showHistoryPayment" @close="handleCloseShowHistoryPaymentWarga"
-      @show-bukti-bayar="handleShowBuktiBayarHistoryPayment" @send-notif="handleSendNotif" />
+    <DialogHistoryPaymentWargaCekBelumBayar
+      :is-show="showHistoryPayment"
+      @close="handleCloseShowHistoryPaymentWarga"
+      @show-bukti-bayar="handleShowBuktiBayarHistoryPayment"
+      @send-notif="handleSendNotif"
+    />
 
-    <DialogNoPaymentCekBelumBayar :is-show="showNoPaymentList" @close="showNoPaymentList = false"
-      @send-notif="handleSendNotif" />
+    <DialogNoPaymentCekBelumBayar
+      :is-show="showNoPaymentList"
+      @close="showNoPaymentList = false"
+      @send-notif="handleSendNotif"
+    />
 
-    <SuccessDialog v-model="showSuccessConfirm" :title="successTitle" :message="successMessage" />
+    <SuccessDialog
+      v-model="showSuccessConfirm"
+      :title="successTitle"
+      :message="successMessage"
+    />
   </div>
 </template>

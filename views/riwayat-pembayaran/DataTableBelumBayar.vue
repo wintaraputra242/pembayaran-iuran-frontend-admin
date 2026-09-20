@@ -1,9 +1,7 @@
 <script setup lang="ts">
-// import qris from '@images/pages/qris.png'
-import type { Pembayaran, UnpaidWarga } from '@/types/api/pembayaran';
+import type { Pembayaran, UnpaidWarga } from '@/types/api/pembayaran'
 
-
-const props = withDefaults(defineProps<{
+withDefaults(defineProps<{
   data: UnpaidWarga[]
   loading: boolean
   loadingSendNotif: boolean
@@ -12,7 +10,7 @@ const props = withDefaults(defineProps<{
 
 const emit = defineEmits<{
   (e: 'loadMore'): void
-  (e: 'showBuktiBayar', item: Pembayaran): void;
+  (e: 'showBuktiBayar', item: Pembayaran): void
   (e: 'sendNotif', item: UnpaidWarga): void
 }>()
 
@@ -35,9 +33,13 @@ const handleSendNotif = (item: UnpaidWarga, index: number) => {
 </script>
 
 <template>
-  <AppDataTable :headers="headers" :items="data" :loading="loading" :has-more="false"
-    no-data-text="Tidak ada data iuran">
-
+  <AppDataTable
+    :headers="headers"
+    :items="data"
+    :loading="loading"
+    :has-more="false"
+    no-data-text="Tidak ada data iuran"
+  >
     <!-- Judul Iuran -->
     <template #cell-judul_iuran="{ item }">
       {{ item.judul_iuran }}
@@ -46,7 +48,10 @@ const handleSendNotif = (item: UnpaidWarga, index: number) => {
     <!-- Jenis -->
     <template #cell-jenis_iuran="{ item }">
       <div class="text-capitalize">
-        <VChip size="small" :color="item.jenis_iuran === 'bulanan' ? 'info' : 'error'">
+        <VChip
+          size="small"
+          :color="item.jenis_iuran === 'bulanan' ? 'info' : 'error'"
+        >
           {{ item.jenis_iuran }}
         </VChip>
       </div>
@@ -65,14 +70,18 @@ const handleSendNotif = (item: UnpaidWarga, index: number) => {
     <!-- Aksi -->
     <template #cell-actions="{ item, index }">
       <div class="d-flex justify-center">
-        <IconBtn variant="outlined" class="rounded-lg" size="small" color="secondary"
+        <IconBtn
+          variant="outlined"
+          class="rounded-lg"
+          size="small"
+          color="secondary"
           :loading="index === indexSelected && loadingSendNotif"
-          @click="handleSendNotif(item as UnpaidWarga, index as number)">
+          @click="handleSendNotif(item as UnpaidWarga, index as number)"
+        >
           <VIcon icon="ri-bell-line" />
         </IconBtn>
       </div>
     </template>
-
   </AppDataTable>
 </template>
 

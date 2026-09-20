@@ -1,9 +1,8 @@
+import { useApi } from './useApi'
 import type {
   GetActivityLogDetailResponse,
-  GetActivityLogsResponse
+  GetActivityLogsResponse,
 } from '@/types/api/activity'
-
-import { useApi } from './useApi'
 
 export const useActivity = () => {
   const { api } = useApi()
